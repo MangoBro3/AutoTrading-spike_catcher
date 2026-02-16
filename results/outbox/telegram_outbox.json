@@ -992,5 +992,19 @@
         "retry_count": 0,
         "next_retry_ts": 1770915678.5397358,
         "last_error": null
+    },
+    {
+        "id": "1771231975303_ALL_SYSTEM",
+        "ts": "2026-02-16T17:52:55.303156",
+        "event_type": "SYSTEM",
+        "exchange": "ALL",
+        "severity": "INFO",
+        "title": "[ALL] [SYSTEM] HEALTH CHECK",
+        "message": "HEALTH CHECK\nOverall: OK\nUpbit: {'status': 'OK', 'latency_ms': 185.31, 'details': None}\nTelegram: {'status': 'OK'}",
+        "dedupe_key": null,
+        "status": "SENT",
+        "retry_count": 0,
+        "next_retry_ts": 1771231975.3031545,
+        "last_error": null
     }
 ]

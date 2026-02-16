@@ -57,3 +57,4 @@
 2026-02-12T22:13:56.445411 HealthCheck overall=OK upbit={'status': 'OK', 'latency_ms': 113.03, 'details': None} telegram={'status': 'OK'}
 2026-02-12T22:14:30.413350 HealthCheck overall=OK upbit={'status': 'OK', 'latency_ms': 116.03, 'details': None} telegram={'status': 'OK'}
 2026-02-12T22:16:58.668414 HealthCheck overall=OK upbit={'status': 'OK', 'latency_ms': 128.03, 'details': None} telegram={'status': 'OK'}
+2026-02-16T17:52:55.292549 HealthCheck overall=OK upbit={'status': 'OK', 'latency_ms': 185.31, 'details': None} telegram={'status': 'OK'}
