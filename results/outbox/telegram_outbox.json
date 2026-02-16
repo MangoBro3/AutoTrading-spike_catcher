@@ -2122,9 +2122,37 @@
         "title": "[UPBIT] [WATCH] SELL SIGNAL",
         "message": "SELL SIGNAL\nKRW-KAITO\nReason: dropped from watchlist\nPrev Score: 0.337\nPrev Detail: Price 461 | RSI 35.5 | VolSpike 0.16x | Gap 0.00% | ATR(exec) 48 | CoolingBox 511 | Tag B_Pullback | SignalExec NO | PumpState COOLING | Penalty x0.45 | AntiChase cooling_wait_rebreak",
         "dedupe_key": "WATCH_SELL_KRW-KAITO",
-        "status": "PENDING",
+        "status": "SENT",
         "retry_count": 0,
         "next_retry_ts": 1771232407.2127726,
+        "last_error": null
+    },
+    {
+        "id": "1771232407268_UPBIT_WATCH",
+        "ts": "2026-02-16T18:00:07.268495",
+        "event_type": "WATCH",
+        "exchange": "UPBIT",
+        "severity": "INFO",
+        "title": "[UPBIT] [WATCH] SELL SIGNAL",
+        "message": "SELL SIGNAL\nKRW-ZBT\nReason: dropped from watchlist\nPrev Score: 0.336\nPrev Detail: Price 105 | RSI 41.2 | VolSpike 0.14x | Gap -0.93% | ATR(exec) 9 | CoolingBox 113 | Tag B_Pullback | SignalExec NO | PumpState COOLING | Penalty x0.45 | AntiChase cooling_wait_rebreak",
+        "dedupe_key": "WATCH_SELL_KRW-ZBT",
+        "status": "SENT",
+        "retry_count": 0,
+        "next_retry_ts": 1771232407.2684908,
+        "last_error": null
+    },
+    {
+        "id": "1771232408634_UPBIT_WATCH",
+        "ts": "2026-02-16T18:00:08.634717",
+        "event_type": "WATCH",
+        "exchange": "UPBIT",
+        "severity": "INFO",
+        "title": "[UPBIT] [WATCH] SELL SIGNAL",
+        "message": "SELL SIGNAL\nKRW-LAYER\nReason: dropped from watchlist\nPrev Score: 0.313\nPrev Detail: Price 132 | RSI 38.5 | VolSpike 0.14x | Gap 0.76% | ATR(exec) 13 | CoolingBox 146 | Tag B_Pullback | SignalExec NO | PumpState COOLING | Penalty x0.45 | AntiChase cooling_wait_rebreak",
+        "dedupe_key": "WATCH_SELL_KRW-LAYER",
+        "status": "PENDING",
+        "retry_count": 0,
+        "next_retry_ts": 1771232408.6347134,
         "last_error": null
     }
 ]
