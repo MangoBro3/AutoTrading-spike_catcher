@@ -1,0 +1,29 @@
+2026-02-04 13:55:50,737 [INFO] [AutoTuner] Starting 5 trials (Workers=2)...
+2026-02-04 13:55:50,907 [WARNING] [GPUGuard] Failed to set PL to 240W: 
+2026-02-04 13:55:52,605 [INFO] [AutoTuner] Results saved.
+2026-02-04 13:56:33,884 [WARNING] Upbit Keys missing. Read-Only potential issues.
+2026-02-04 13:56:33,888 [ERROR] Init Failed
+Traceback (most recent call last):
+  File "c:\Users\nak\Desktop\DHR 런처\python\Auto Trading\launcher.py", line 74, in start_trading_thread
+    ledger = CapitalLedger(initial_capital=seed, mode=mode)
+TypeError: CapitalLedger.__init__() got an unexpected keyword argument 'initial_capital'
+2026-02-04 14:02:43,584 [WARNING] Upbit Keys missing. Read-Only potential issues.
+2026-02-04 14:02:43,588 [INFO] [LOCK] Acquired lock for PID 15732
+2026-02-04 14:02:43,589 [INFO] [RunController] Loop STARTED. Mode=PAPER
+2026-02-04 14:02:43,719 [INFO] Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 112787000, SMA20: 127865900)
+2026-02-04 14:02:43,719 [ERROR] [Strategy] Tick Failed: 'UpbitAdapter' object has no attribute 'emit_event'
+2026-02-04 14:05:41,219 [INFO] [LOCK] Released lock.
+2026-02-08 17:30:47,048 [WARNING] Upbit Keys missing. Read-Only potential issues.
+2026-02-08 17:30:47,052 [INFO] [LOCK] Acquired lock for PID 26848
+2026-02-08 17:30:47,052 [INFO] [RunController] Loop STARTED. Mode=PAPER
+2026-02-08 17:30:50,059 [INFO] 🛑 **RUN STOPPED**
+2026-02-08 17:30:50,061 [WARNING] Telegram token/chat_id not set. Mocking send.
+2026-02-08 17:30:50,065 [INFO] [LOCK] Released lock.
+2026-02-08 17:30:50,089 [INFO] [RunController] Loop STOPPED.
+2026-02-08 17:32:20,498 [WARNING] Upbit Keys missing. Read-Only potential issues.
+2026-02-08 17:32:20,500 [INFO] Loaded 1 events from outbox.
+2026-02-08 17:32:20,501 [INFO] [LOCK] Acquired lock for PID 22124
+2026-02-08 17:32:20,502 [INFO] [RunController] Loop STARTED. Mode=PAPER
+2026-02-08 17:32:20,626 [INFO] Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 104466000, SMA20: 119991550)
+2026-02-08 17:32:20,628 [WARNING] Telegram token/chat_id not set. Mocking send.
+2026-02-08 17:33:27,370 [INFO] [LOCK] Released lock.

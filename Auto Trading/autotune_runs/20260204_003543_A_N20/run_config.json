@@ -1,0 +1,24 @@
+{
+    "group": "A",
+    "num_trials": 20,
+    "seed": 42,
+    "base_params": {
+        "breakout_days_A": 7,
+        "trigger_vol_A": 2.0,
+        "close_confirm_pct_A": 0.005,
+        "rsi_ceiling_A": 70,
+        "max_gap_pct_A": 0.15,
+        "use_regime_filter_A": true,
+        "trend_ma_fast_B": 20,
+        "trend_ma_slow_B": 60,
+        "rsi_entry_B": 45,
+        "allocation_A_pct": 60,
+        "allocation_B_pct": 40,
+        "max_entries_per_day": 2,
+        "max_open_positions": 3,
+        "daily_loss_limit_pct": 2.0,
+        "cooldown_days_after_sl": 3,
+        "min_turnover_krw": 100000000,
+        "universe_top_n": 50
+    }
+}

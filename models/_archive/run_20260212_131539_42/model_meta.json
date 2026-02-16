@@ -1,0 +1,15 @@
+{
+    "model_id": "run_20260212_131539_42",
+    "created_at": "2026-02-12T13:15:39.876222",
+    "strategy_name": "KRW_SPOT_LONG_ONLY",
+    "strategy_hash": "bc8347b309aa8b6cd5e377e880d8f8097c877d0e67edf7af3f4b2a304a6f9511",
+    "seed": 42,
+    "train_range": {
+        "start": "2025-09-23 00:00:00",
+        "end": "2026-01-20 00:00:00"
+    },
+    "oos_range": {
+        "start": "2026-01-23 00:00:00",
+        "end": "2026-02-12 00:00:00"
+    }
+}

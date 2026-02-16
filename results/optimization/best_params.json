@@ -1,0 +1,9 @@
+{
+  "best_score": -5.018322289844885,
+  "best_params": {
+    "x": -2.812510893443651,
+    "y": -1.0282254346590172,
+    "simulate_cuda_crash": false
+  },
+  "trials": 5
+}

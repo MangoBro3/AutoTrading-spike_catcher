@@ -1,0 +1,38 @@
+2026-02-09T00:16:26.476825 Backtest completed.
+2026-02-11T23:09:26.552499 Scheduler trigger now=2026-02-11T23:09:26.551499 slot=2026-02-11T09:00:00 next=2026-02-12T09:00:00 anchor=09:00 interval_h=24
+2026-02-11T23:09:36.093429 OOS tuning FAIL. run_id=run_20260211_230936_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-11T23:13:23.018088 OOS tuning FAIL. run_id=run_20260211_231323_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-12T01:09:29.899021 WARN labs status write failed: simulated
+2026-02-12T07:52:31.271785 OOS tuning FAIL. run_id=run_20260212_075231_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-12T07:58:33.965348 Backtest completed for OOS window 2026-01-15~2026-02-11.
+2026-02-12T07:58:53.940145 Scheduler trigger now=2026-02-12T07:58:53.940145 slot=2026-02-11T09:00:00 next=2026-02-12T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770850733940
+2026-02-12T07:59:00.535280 OOS tuning FAIL. run_id=run_20260212_075900_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-12T09:00:24.988085 Scheduler trigger now=2026-02-12T09:00:24.988085 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770854424988
+2026-02-12T09:00:31.594667 OOS tuning FAIL. run_id=run_20260212_090031_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-12T13:08:57.316023 Backtest completed for OOS window 2026-01-16~2026-02-12.
+2026-02-12T13:09:24.206391 Scheduler trigger now=2026-02-12T13:09:24.205392 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770869364205
+2026-02-12T13:15:39.972244 OOS tuning FAIL. run_id=run_20260212_131539_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<1
+2026-02-12T13:42:33.757672 OOS tuning FAIL. run_id=run_20260212_134233_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-12T13:42:46.390010 Backtest completed for OOS window 2026-01-16~2026-02-12.
+2026-02-12T13:43:06.670424 Scheduler trigger now=2026-02-12T13:43:06.669423 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770871386669
+2026-02-12T13:43:13.906315 OOS tuning FAIL. run_id=run_20260212_134313_42 reasons=weekly_robustness_fail:0/4, min_trades_fail:0<20
+2026-02-12T15:32:57.836973 OOS tuning FAIL. run_id=run_20260212_153257_42 reasons=weekly_robustness_fail, min_trades_fail, Positive Weeks < 3 (0), Trades < 20 (0)
+2026-02-12T16:15:55.293860 OOS tuning FAIL. run_id=run_20260212_161555_42 reasons=weekly_robustness_fail, min_trades_fail, Positive Weeks < 3 (0), Trades < 20 (0)
+2026-02-12T16:16:05.126401 Backtest completed for OOS window 2026-01-16~2026-02-12.
+2026-02-12T16:16:08.126858 Scheduler trigger now=2026-02-12T16:16:08.125858 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770880568125
+2026-02-12T16:16:14.899877 OOS tuning FAIL. run_id=run_20260212_161614_42 reasons=weekly_robustness_fail, min_trades_fail, Positive Weeks < 3 (0), Trades < 20 (0)
+2026-02-12T16:29:26.040347 Scheduler trigger now=2026-02-12T16:29:26.040347 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770881366040
+2026-02-12T16:29:27.683719 Backtest completed for OOS window 2026-01-16~2026-02-12.
+2026-02-12T16:29:28.403882 Universe fallback enabled: watchlist_too_narrow (2<5) -> mode=market_all symbols=643
+2026-02-12T16:47:00.661896 Backtest universe fallback enabled: watchlist_too_narrow (2<5), fallback_top_n=80 -> mode=market_top_n symbols=80
+2026-02-12T16:47:03.337613 Backtest completed for OOS window 2026-01-16~2026-02-12.
+2026-02-12T16:47:10.639688 Scheduler trigger now=2026-02-12T16:47:10.638687 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770882430638
+2026-02-12T16:47:12.366037 Universe fallback enabled: watchlist_too_narrow (2<5), fallback_top_n=80 -> mode=market_top_n symbols=80
+2026-02-12T16:59:45.310529 Scheduler trigger now=2026-02-12T16:59:45.309529 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770883185309
+2026-02-12T16:59:47.522029 Universe fallback enabled: watchlist_too_narrow (2<5), fallback_top_n=80 -> mode=market_top_n symbols=80
+2026-02-12T16:59:51.743984 Backtest universe fallback enabled: watchlist_too_narrow (2<5), fallback_top_n=80 -> mode=market_top_n symbols=80
+2026-02-12T16:59:53.667420 Scheduler trigger now=2026-02-12T16:59:53.666419 slot=2026-02-12T09:00:00 next=2026-02-13T09:00:00 anchor=09:00 interval_h=24 job_id=evo_1770883193666
+2026-02-12T16:59:54.525613 Backtest completed for OOS window 2026-01-16~2026-02-12.
+2026-02-12T16:59:55.554846 Universe fallback enabled: watchlist_too_narrow (2<5), fallback_top_n=80 -> mode=market_top_n symbols=80
+2026-02-12T17:35:35.312125 OOS tuning FAIL. run_id=run_20260212_173529_42 reasons=weekly_robustness_fail, max_dd_fail, Positive Weeks < 3 (2), MDD Exceeded -15.00% (-17.94%)
+2026-02-12T17:36:09.965964 OOS tuning FAIL. run_id=run_20260212_173603_42 reasons=weekly_robustness_fail, max_dd_fail, Positive Weeks < 3 (2), MDD Exceeded -15.00% (-17.94%)

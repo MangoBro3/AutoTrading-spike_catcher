@@ -1,0 +1,32 @@
+{
+    "group": "A",
+    "num_trials": 2,
+    "seed": 42,
+    "base_params": {
+        "enable_strategy_A": true,
+        "enable_strategy_B": true,
+        "trigger_vol_A": 2.0,
+        "breakout_days_A": 7,
+        "close_confirm_pct_A": 0.005,
+        "rsi_ceiling_A": 75,
+        "entry_delay_bars_A": 1,
+        "trend_ma_fast_B": 20,
+        "trend_ma_slow_B": 60,
+        "rsi_entry_B": 45,
+        "allocation_A_pct": 60,
+        "allocation_B_pct": 40,
+        "max_entries_per_day": 2,
+        "max_open_positions": 3,
+        "cooldown_days_after_sl": 5,
+        "daily_loss_limit_pct": 2.0,
+        "min_turnover_krw": 10000000,
+        "universe_top_n": 0,
+        "sl_atr_mult_A": 1.8,
+        "trail_atr_mult_A": 2.5,
+        "partial_tp_r_A": 1.2,
+        "time_stop_days_A": 3,
+        "sl_atr_mult_B": 1.4,
+        "partial_tp_r_B": 1.0,
+        "max_hold_days_B": 5
+    }
+}

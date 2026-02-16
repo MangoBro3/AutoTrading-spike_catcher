@@ -1,0 +1,182 @@
+{
+    "run_id": "run_20260212_173603_42",
+    "created_at": "2026-02-12T17:36:03.802570",
+    "strategy_name": "KRW_SPOT_LONG_ONLY",
+    "seed": 42,
+    "windows": {
+        "data_end": "2026-02-12 00:00:00",
+        "train_start": "2025-07-18 00:00:00",
+        "train_end": "2026-01-13 00:00:00",
+        "embargo_start": "2026-01-14 00:00:00",
+        "embargo_end": "2026-01-15 00:00:00",
+        "oos_start": "2026-01-16 00:00:00",
+        "oos_end": "2026-02-12 00:00:00",
+        "train_days": 180,
+        "oos_days": 28,
+        "embargo_days": 2
+    },
+    "policy": {
+        "score_formula": "ROI - 0.5 * abs(MDD) - 0.2 * CostDrop",
+        "oos_gate": {
+            "positive_weeks_min": 3,
+            "oos_min_trades": 20,
+            "mdd_cap": -0.15,
+            "delta_min": 0.0
+        },
+        "invariants": {
+            "signal_lag_gte_1": true,
+            "turnover_lag_gte_1": true,
+            "cost_unit_rate": true
+        }
+    },
+    "candidate": {
+        "params": {
+            "enable_strategy_A": true,
+            "enable_strategy_B": true,
+            "trigger_vol_A": 1.5,
+            "breakout_days_A": 5,
+            "close_confirm_pct_A": 0.003,
+            "rsi_ceiling_A": 75,
+            "entry_delay_bars_A": 1,
+            "use_regime_filter_A": false,
+            "trend_ma_fast_B": 20,
+            "trend_ma_slow_B": 60,
+            "rsi_entry_B": 30,
+            "allocation_A_pct": 50,
+            "allocation_B_pct": 50,
+            "max_entries_per_day": 3,
+            "max_open_positions": 5,
+            "cooldown_days_after_sl": 5,
+            "daily_loss_limit_pct": 2.0,
+            "min_turnover_krw": 100000,
+            "universe_top_n": 200,
+            "sl_atr_mult_A": 1.5,
+            "trail_atr_mult_A": 3.0,
+            "partial_tp_r_A": 2.0,
+            "time_stop_days_A": 4,
+            "sl_atr_mult_B": 2.0,
+            "partial_tp_r_B": 0.9,
+            "max_hold_days_B": 7
+        },
+        "train_metrics": {
+            "roi": 208.3186413644128,
+            "mdd": -0.35778507207078636,
+            "trades": 363,
+            "win_rate": 0.6639118457300276,
+            "roi_cost_1_0": 208.3186413644128,
+            "roi_cost_1_5": 208.3186413644128,
+            "cost_drop": 0.0,
+            "worst_week": -0.05216024898489591,
+            "negative_weeks": 1,
+            "positive_weeks": 23,
+            "weekly_std": 0.7694032045726371,
+            "weekly_pnl": [
+                1.867323958186386,
+                1.1163288038093717,
+                1.7547361013603533,
+                0.09527211448440209,
+                1.2571239077822516,
+                0.9764938451753011,
+                0.2595693352382788,
+                0.9364384318286826,
+                1.9814267058014086,
+                0.5393512455795879,
+                1.287966603591518,
+                2.626090091906045,
+                1.471151803429155,
+                2.8333349582925,
+                0.7591066135537627,
+                0.4978862606986658,
+                1.7057238181196919,
+                1.045778401801743,
+                -0.05216024898489591,
+                0.5595553014213901,
+                0.733491126457845,
+                2.2039463553105665,
+                0.41299620017807115,
+                0.9869306597901998
+            ],
+            "score": 208.1397488283774
+        },
+        "oos_metrics": {
+            "roi": 0.15286839636871008,
+            "mdd": -0.17939203653489363,
+            "trades": 60,
+            "win_rate": 0.31666666666666665,
+            "roi_cost_1_0": 0.15286839636871008,
+            "roi_cost_1_5": 0.1384525579783169,
+            "cost_drop": 0.014415838390393176,
+            "worst_week": -0.15154854792790817,
+            "negative_weeks": 2,
+            "positive_weeks": 2,
+            "weekly_std": 0.5038802285506083,
+            "weekly_pnl": [
+                0.013566330660947035,
+                -0.15154854792790817,
+                -0.01693147033608606,
+                0.9458573596914027
+            ],
+            "score": 0.06028921042318463
+        },
+        "weekly_pnl": [
+            -0.08417897643855758,
+            -0.19984110991854082,
+            0.14109441074206291,
+            0.933869347703391
+        ],
+        "positive_weeks": 2
+    },
+    "active_baseline": {
+        "model_id": null,
+        "oos_metrics": null
+    },
+    "gate": {
+        "pass": false,
+        "decision": "FAIL",
+        "reasons": [
+            "weekly_robustness_fail",
+            "max_dd_fail",
+            "Positive Weeks < 3 (2)",
+            "MDD Exceeded -15.00% (-17.94%)"
+        ],
+        "reason": "Positive Weeks < 3 (2), MDD Exceeded -15.00% (-17.94%)",
+        "delta": null
+    },
+    "ranking_top5": [
+        {
+            "rank": 1,
+            "score": 208.1397488283774,
+            "roi": 208.3186413644128,
+            "mdd": -0.35778507207078636,
+            "trades": 363
+        },
+        {
+            "rank": 2,
+            "score": 176.64606848130165,
+            "roi": 176.9376781455228,
+            "mdd": -0.5832193284422583,
+            "trades": 358
+        },
+        {
+            "rank": 3,
+            "score": 124.24780767890134,
+            "roi": 124.42658008494647,
+            "mdd": -0.3575448120902665,
+            "trades": 206
+        },
+        {
+            "rank": 4,
+            "score": 112.89181099993976,
+            "roi": 113.18254395775502,
+            "mdd": -0.5814659156305041,
+            "trades": 304
+        },
+        {
+            "rank": 5,
+            "score": 102.67230698617179,
+            "roi": 102.91473982719619,
+            "mdd": -0.48486568204878056,
+            "trades": 195
+        }
+    ]
+}

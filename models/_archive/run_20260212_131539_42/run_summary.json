@@ -1,0 +1,115 @@
+{
+    "run_id": "run_20260212_131539_42",
+    "created_at": "2026-02-12T13:15:39.876222",
+    "strategy_name": "KRW_SPOT_LONG_ONLY",
+    "seed": 42,
+    "windows": {
+        "data_end": "2026-02-12 00:00:00",
+        "train_start": "2025-09-23 00:00:00",
+        "train_end": "2026-01-20 00:00:00",
+        "embargo_start": "2026-01-21 00:00:00",
+        "embargo_end": "2026-01-22 00:00:00",
+        "oos_start": "2026-01-23 00:00:00",
+        "oos_end": "2026-02-12 00:00:00",
+        "train_days": 120,
+        "oos_days": 21,
+        "embargo_days": 2
+    },
+    "policy": {
+        "score_formula": "ROI - 0.5 * abs(MDD)",
+        "oos_gate": {
+            "positive_weeks_min": 3,
+            "oos_min_trades": 1,
+            "delta_min": 0.0
+        },
+        "invariants": {
+            "signal_lag_gte_1": true,
+            "turnover_lag_gte_1": true,
+            "cost_unit_rate": true
+        }
+    },
+    "candidate": {
+        "params": {
+            "enable_strategy_A": true,
+            "enable_strategy_B": true,
+            "trigger_vol_A": 1.5,
+            "breakout_days_A": 5,
+            "close_confirm_pct_A": 0.001,
+            "rsi_ceiling_A": 65,
+            "entry_delay_bars_A": 1,
+            "use_regime_filter_A": false,
+            "trend_ma_fast_B": 20,
+            "trend_ma_slow_B": 60,
+            "rsi_entry_B": 50,
+            "allocation_A_pct": 50,
+            "allocation_B_pct": 50,
+            "max_entries_per_day": 1,
+            "max_open_positions": 4,
+            "cooldown_days_after_sl": 1,
+            "daily_loss_limit_pct": 3.0,
+            "min_turnover_krw": 100000,
+            "universe_top_n": 200,
+            "sl_atr_mult_A": 1.5,
+            "trail_atr_mult_A": 2.0,
+            "partial_tp_r_A": 1.2,
+            "time_stop_days_A": 4,
+            "sl_atr_mult_B": 2.0,
+            "partial_tp_r_B": 0.9,
+            "max_hold_days_B": 7
+        },
+        "train_metrics": {
+            "roi": 0.059434461116525394,
+            "mdd": -0.005673783399567064,
+            "trades": 5,
+            "win_rate": 1.0,
+            "score": 0.056597569416741864
+        },
+        "oos_metrics": {
+            "roi": 0.0,
+            "mdd": 0.0,
+            "trades": 0,
+            "win_rate": 0.0,
+            "score": 0.0
+        },
+        "weekly_pnl": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "positive_weeks": 0
+    },
+    "active_baseline": {
+        "model_id": null,
+        "oos_metrics": {
+            "roi": 0.0,
+            "mdd": 0.0,
+            "trades": 0,
+            "win_rate": 0.0,
+            "score": 0.0
+        }
+    },
+    "gate": {
+        "pass": false,
+        "reasons": [
+            "weekly_robustness_fail:0/4",
+            "min_trades_fail:0<1"
+        ]
+    },
+    "ranking_top5": [
+        {
+            "rank": 1,
+            "score": 0.056597569416741864,
+            "roi": 0.059434461116525394,
+            "mdd": -0.005673783399567064,
+            "trades": 5
+        },
+        {
+            "rank": 2,
+            "score": 0.029998279988006624,
+            "roi": 0.032835171687790154,
+            "mdd": -0.005673783399567064,
+            "trades": 3
+        }
+    ]
+}

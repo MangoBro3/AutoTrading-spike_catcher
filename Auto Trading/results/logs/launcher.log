@@ -1,0 +1,16 @@
+2026-02-04 13:49:10,290 [WARNING] Upbit Keys missing. Read-Only potential issues.
+2026-02-04 13:49:10,293 [ERROR] Init Failed
+Traceback (most recent call last):
+  File "C:\Users\nak\Desktop\DHR 런처\python\Auto Trading\launcher.py", line 73, in start_trading_thread
+    notifier = TelegramNotifier(token=None, chat_id=None) # Will load env inside
+TypeError: TelegramNotifier.__init__() got an unexpected keyword argument 'token'
+2026-02-04 14:25:04,626 [WARNING] Upbit Keys missing. Read-Only potential issues.
+2026-02-04 14:25:04,633 [INFO] [LOCK] Acquired lock for PID 10464
+2026-02-04 14:25:04,634 [INFO] [RunController] Loop STARTED. Mode=PAPER
+2026-02-04 14:25:04,753 [INFO] Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 112648000, SMA20: 127858950)
+2026-02-04 14:25:04,754 [ERROR] [Strategy] Tick Failed: 'UpbitAdapter' object has no attribute 'emit_event'
+2026-02-04 14:26:01,763 [INFO] 🛑 **RUN STOPPED**
+2026-02-04 14:26:01,765 [WARNING] Telegram token/chat_id not set. Mocking send.
+2026-02-04 14:26:01,771 [WARNING] Telegram token/chat_id not set. Mocking send.
+2026-02-04 14:26:01,773 [INFO] [LOCK] Released lock.
+2026-02-04 14:26:02,319 [INFO] [RunController] Loop STOPPED.

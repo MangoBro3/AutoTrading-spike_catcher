@@ -1,0 +1,2 @@
+timestamp,symbol,signal_price,passed,reason,factor,spread_bp,depth_ratio,chase_pct,target_money
+2026-02-09T00:08:29.826450,KRW-BTC,100000.0,False,ORDER_FAIL:BUY_FAIL,1.0,1,9999.9999999999,0.1,100000

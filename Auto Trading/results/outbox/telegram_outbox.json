@@ -1,0 +1,30 @@
+[
+    {
+        "id": "1770182761763_ALL_SYSTEM",
+        "ts": "2026-02-04T14:26:01.763175",
+        "event_type": "SYSTEM",
+        "exchange": "ALL",
+        "severity": "INFO",
+        "title": "[ALL] [SYSTEM] BOT STOPPED",
+        "message": "🛑 **RUN STOPPED**",
+        "dedupe_key": null,
+        "status": "SENT",
+        "retry_count": 0,
+        "next_retry_ts": 1770182761.763176,
+        "last_error": null
+    },
+    {
+        "id": "1770182761768_ALL_SYSTEM",
+        "ts": "2026-02-04T14:26:01.768569",
+        "event_type": "SYSTEM",
+        "exchange": "ALL",
+        "severity": "INFO",
+        "title": "[ALL] [SYSTEM] BOT STOPPED",
+        "message": "🛑 **RUN STOPPED**",
+        "dedupe_key": null,
+        "status": "SENT",
+        "retry_count": 0,
+        "next_retry_ts": 1770182761.7685697,
+        "last_error": null
+    }
+]

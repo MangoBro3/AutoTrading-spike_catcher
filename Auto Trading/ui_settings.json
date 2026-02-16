@@ -1,0 +1,39 @@
+{
+  "mode": "PAPER",
+  "exchange": "UPBIT",
+  "seed_krw": 100000,
+  "watchlist": [
+    "KRW-BTC",
+    "KRW-ETH"
+  ],
+  "watch_refresh_sec": 60,
+  "watch_score_min": 1.0,
+  "watch_alert_score": 2.0,
+  "watch_highlight_top": 3,
+  "watch_alert_cooldown_min": 60,
+  "auto_buy_score_min_100": 100,
+  "watch_exclude_symbols": [
+    "USDT",
+    "USDC"
+  ],
+  "auto_data_update_enabled": true,
+  "auto_data_update_interval_min": 60,
+  "evolution_enabled": true,
+  "evolution_interval_hours": 24,
+  "evolution_anchor_time": "09:00",
+  "evolution_lookback_days": 180,
+  "evolution_trials_per_group": 20,
+  "evolution_min_improve_pct": 5,
+  "evolution_min_trades": 50,
+  "evolution_max_dd": 0.2,
+  "evolution_require_sharpe": true,
+  "tuning_seed": 42,
+  "tuning_trials": 30,
+  "tuning_train_days": 180,
+  "tuning_oos_days": 28,
+  "tuning_embargo_days": 2,
+  "tuning_oos_min_trades": 20,
+  "tuning_delta_min": 0.0,
+  "tuning_cadence_days": 7,
+  "trainer_cooldown_minutes_on_boot": 15
+}

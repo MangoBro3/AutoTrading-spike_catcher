@@ -1,0 +1,1790 @@
+{
+    "KRW-BTC": {
+        "next_to": "2013-12-26T15:00:00",
+        "done": true
+    },
+    "KRW-ETH": {
+        "next_to": "2016-09-28T15:00:00",
+        "done": true
+    },
+    "KRW-ETC": {
+        "next_to": "2017-05-17T15:00:00",
+        "done": true
+    },
+    "KRW-XRP": {
+        "next_to": "2017-05-30T15:00:00",
+        "done": true
+    },
+    "KRW-BCH": {
+        "next_to": "2017-08-03T15:00:00",
+        "done": true
+    },
+    "KRW-QTUM": {
+        "next_to": "2017-10-19T15:00:00",
+        "done": true
+    },
+    "KRW-A": {
+        "next_to": "2017-12-11T15:00:00",
+        "done": true
+    },
+    "KRW-ICX": {
+        "next_to": "2018-03-22T15:00:00",
+        "done": true
+    },
+    "KRW-TRX": {
+        "next_to": "2018-04-05T15:00:00",
+        "done": true
+    },
+    "KRW-ELF": {
+        "next_to": "2018-04-11T15:00:00",
+        "done": true
+    },
+    "KRW-KNC": {
+        "next_to": "2018-04-25T15:00:00",
+        "done": true
+    },
+    "KRW-GLM": {
+        "next_to": "2018-05-02T15:00:00",
+        "done": true
+    },
+    "KRW-ZIL": {
+        "next_to": "2018-05-09T15:00:00",
+        "done": true
+    },
+    "KRW-WAXP": {
+        "next_to": "2018-05-15T15:00:00",
+        "done": true
+    },
+    "KRW-POWR": {
+        "next_to": "2018-05-15T15:00:00",
+        "done": true
+    },
+    "KRW-LRC": {
+        "next_to": "2018-05-15T15:00:00",
+        "done": true
+    },
+    "KRW-STEEM": {
+        "next_to": "2018-05-23T15:00:00",
+        "done": true
+    },
+    "KRW-ZRX": {
+        "next_to": "2018-05-29T15:00:00",
+        "done": true
+    },
+    "KRW-SNT": {
+        "next_to": "2018-06-13T15:00:00",
+        "done": true
+    },
+    "KRW-ADA": {
+        "next_to": "2018-06-13T15:00:00",
+        "done": true
+    },
+    "KRW-BAT": {
+        "next_to": "2018-11-21T15:00:00",
+        "done": true
+    },
+    "KRW-THETA": {
+        "next_to": "2018-08-23T15:00:00",
+        "done": true
+    },
+    "KRW-CVC": {
+        "next_to": "2024-03-13T15:00:00",
+        "done": true
+    },
+    "KRW-WAVES": {
+        "next_to": "2018-09-19T15:00:00",
+        "done": true
+    },
+    "KRW-LINK": {
+        "next_to": "2018-09-19T15:00:00",
+        "done": true
+    },
+    "KRW-ENJ": {
+        "next_to": "2018-09-27T15:00:00",
+        "done": true
+    },
+    "KRW-VET": {
+        "next_to": "2018-09-20T15:00:00",
+        "done": true
+    },
+    "KRW-MTL": {
+        "next_to": "2019-01-23T15:00:00",
+        "done": true
+    },
+    "KRW-IOST": {
+        "next_to": "2018-12-05T15:00:00",
+        "done": true
+    },
+    "KRW-AMO": {
+        "next_to": "2019-01-01T15:00:00",
+        "done": true
+    },
+    "KRW-BSV": {
+        "next_to": "2018-11-19T15:00:00",
+        "done": true
+    },
+    "KRW-ORBS": {
+        "next_to": "2019-04-17T15:00:00",
+        "done": true
+    },
+    "KRW-TFUEL": {
+        "next_to": "2021-03-30T15:00:00",
+        "done": true
+    },
+    "KRW-ANKR": {
+        "next_to": "2019-05-02T15:00:00",
+        "done": true
+    },
+    "KRW-CRO": {
+        "next_to": "2019-07-23T15:00:00",
+        "done": true
+    },
+    "KRW-CHR": {
+        "next_to": "2019-09-10T15:00:00",
+        "done": true
+    },
+    "KRW-MBL": {
+        "next_to": "2019-12-09T15:00:00",
+        "done": true
+    },
+    "KRW-FCT2": {
+        "next_to": "2019-11-06T15:00:00",
+        "done": true
+    },
+    "KRW-MEV": {
+        "next_to": "2020-02-18T15:00:00",
+        "done": true
+    },
+    "KRW-SXP": {
+        "next_to": "2020-01-29T15:00:00",
+        "done": true
+    },
+    "KRW-COS": {
+        "next_to": "2020-03-10T15:00:00",
+        "done": true
+    },
+    "KRW-EL": {
+        "next_to": "2020-03-24T15:00:00",
+        "done": true
+    },
+    "KRW-HIVE": {
+        "next_to": "2020-08-19T15:00:00",
+        "done": true
+    },
+    "KRW-XPR": {
+        "next_to": "2020-04-28T15:00:00",
+        "done": true
+    },
+    "KRW-EGG": {
+        "next_to": "2020-04-21T15:00:00",
+        "done": true
+    },
+    "KRW-BORA": {
+        "next_to": "2020-08-04T15:00:00",
+        "done": true
+    },
+    "KRW-ARPA": {
+        "next_to": "2020-05-12T15:00:00",
+        "done": true
+    },
+    "KRW-CTC": {
+        "next_to": "2021-12-22T15:00:00",
+        "done": true
+    },
+    "KRW-CKB": {
+        "next_to": "2021-05-09T15:00:00",
+        "done": true
+    },
+    "KRW-AERGO": {
+        "next_to": "2021-03-24T15:00:00",
+        "done": true
+    },
+    "KRW-UNI": {
+        "next_to": "2020-10-13T15:00:00",
+        "done": true
+    },
+    "KRW-YFI": {
+        "next_to": "2020-11-10T15:00:00",
+        "done": true
+    },
+    "KRW-UMA": {
+        "next_to": "2020-12-15T15:00:00",
+        "done": true
+    },
+    "KRW-AAVE": {
+        "next_to": "2021-03-03T15:00:00",
+        "done": true
+    },
+    "KRW-COMP": {
+        "next_to": "2021-03-10T15:00:00",
+        "done": true
+    },
+    "KRW-RSR": {
+        "next_to": "2021-06-21T15:00:00",
+        "done": true
+    },
+    "KRW-NMR": {
+        "next_to": "2021-08-02T15:00:00",
+        "done": true
+    },
+    "KRW-RLC": {
+        "next_to": "2021-05-05T15:00:00",
+        "done": true
+    },
+    "KRW-UOS": {
+        "next_to": "2021-08-23T15:00:00",
+        "done": true
+    },
+    "KRW-SAND": {
+        "next_to": "2020-11-11T15:00:00",
+        "done": true
+    },
+    "KRW-AWE": {
+        "next_to": "2023-04-05T15:00:00",
+        "done": true
+    },
+    "KRW-BEL": {
+        "next_to": "2021-01-27T15:00:00",
+        "done": true
+    },
+    "KRW-OBSR": {
+        "next_to": "2020-12-02T15:00:00",
+        "done": true
+    },
+    "KRW-POLA": {
+        "next_to": "2020-11-18T15:00:00",
+        "done": true
+    },
+    "KRW-ADP": {
+        "next_to": "2020-11-25T15:00:00",
+        "done": true
+    },
+    "KRW-GHX": {
+        "next_to": "2021-06-03T15:00:00",
+        "done": true
+    },
+    "KRW-CBK": {
+        "next_to": "2025-01-15T15:00:00",
+        "done": true
+    },
+    "KRW-MVC": {
+        "next_to": "2021-03-28T15:00:00",
+        "done": true
+    },
+    "KRW-BLY": {
+        "next_to": "2021-06-03T15:00:00",
+        "done": true
+    },
+    "KRW-GRT": {
+        "next_to": "2021-02-24T15:00:00",
+        "done": true
+    },
+    "KRW-BIOT": {
+        "next_to": "2021-03-07T15:00:00",
+        "done": true
+    },
+    "KRW-SNX": {
+        "next_to": "2021-03-03T15:00:00",
+        "done": true
+    },
+    "KRW-GRACY": {
+        "next_to": "2021-05-20T15:00:00",
+        "done": true
+    },
+    "KRW-OXT": {
+        "next_to": "2021-03-10T15:00:00",
+        "done": true
+    },
+    "KRW-MAPO": {
+        "next_to": "2021-04-25T15:00:00",
+        "done": true
+    },
+    "KRW-AQT": {
+        "next_to": "2021-05-20T15:00:00",
+        "done": true
+    },
+    "KRW-WIKEN": {
+        "next_to": "2021-06-07T15:00:00",
+        "done": true
+    },
+    "KRW-CTSI": {
+        "next_to": "2021-06-17T15:00:00",
+        "done": true
+    },
+    "KRW-MANA": {
+        "next_to": "2021-04-11T15:00:00",
+        "done": true
+    },
+    "KRW-LPT": {
+        "next_to": "2021-05-09T15:00:00",
+        "done": true
+    },
+    "KRW-SUSHI": {
+        "next_to": "2021-03-21T15:00:00",
+        "done": true
+    },
+    "KRW-PUNDIX": {
+        "next_to": "2021-03-31T15:00:00",
+        "done": true
+    },
+    "KRW-CELR": {
+        "next_to": "2021-06-02T15:00:00",
+        "done": true
+    },
+    "KRW-BFC": {
+        "next_to": "2021-08-23T15:00:00",
+        "done": true
+    },
+    "KRW-ALICE": {
+        "next_to": "2021-04-11T15:00:00",
+        "done": true
+    },
+    "KRW-OGN": {
+        "next_to": "2022-04-26T15:00:00",
+        "done": true
+    },
+    "KRW-COTI": {
+        "next_to": "2021-12-22T15:00:00",
+        "done": true
+    },
+    "KRW-CAKE": {
+        "next_to": "2021-06-09T15:00:00",
+        "done": true
+    },
+    "KRW-BNT": {
+        "next_to": "2021-06-28T15:00:00",
+        "done": true
+    },
+    "KRW-XVS": {
+        "next_to": "2021-06-09T15:00:00",
+        "done": true
+    },
+    "KRW-SWAP": {
+        "next_to": "2022-04-20T15:00:00",
+        "done": true
+    },
+    "KRW-CHZ": {
+        "next_to": "2021-04-28T15:00:00",
+        "done": true
+    },
+    "KRW-AXS": {
+        "next_to": "2021-08-11T15:00:00",
+        "done": true
+    },
+    "KRW-DAO": {
+        "next_to": "2022-01-19T15:00:00",
+        "done": true
+    },
+    "KRW-SIX": {
+        "next_to": "2022-04-26T15:00:00",
+        "done": true
+    },
+    "KRW-USDS": {
+        "next_to": "2021-06-02T15:00:00",
+        "done": true
+    },
+    "KRW-SHIB": {
+        "next_to": "2023-02-22T15:00:00",
+        "done": true
+    },
+    "KRW-POL": {
+        "next_to": "2021-06-06T15:00:00",
+        "done": true
+    },
+    "KRW-WOO": {
+        "next_to": "2022-01-19T15:00:00",
+        "done": true
+    },
+    "KRW-ACH": {
+        "next_to": "2022-04-12T15:00:00",
+        "done": true
+    },
+    "KRW-XLM": {
+        "next_to": "2018-11-15T15:00:00",
+        "done": true
+    },
+    "KRW-ONT": {
+        "next_to": "2020-09-08T15:00:00",
+        "done": true
+    },
+    "KRW-META": {
+        "next_to": "2020-05-06T15:00:00",
+        "done": true
+    },
+    "KRW-KAIA": {
+        "next_to": "2021-05-13T15:00:00",
+        "done": true
+    },
+    "KRW-ONG": {
+        "next_to": "2020-09-08T15:00:00",
+        "done": true
+    },
+    "KRW-ALGO": {
+        "next_to": "2020-07-29T15:00:00",
+        "done": true
+    },
+    "KRW-JST": {
+        "next_to": "2020-11-30T15:00:00",
+        "done": true
+    },
+    "KRW-XTZ": {
+        "next_to": "2020-08-18T15:00:00",
+        "done": true
+    },
+    "KRW-MLK": {
+        "next_to": "2020-08-26T15:00:00",
+        "done": true
+    },
+    "KRW-DOT": {
+        "next_to": "2020-10-06T15:00:00",
+        "done": true
+    },
+    "KRW-ATOM": {
+        "next_to": "2020-11-25T15:00:00",
+        "done": true
+    },
+    "KRW-TEMCO": {
+        "next_to": "2020-12-08T15:00:00",
+        "done": true
+    },
+    "KRW-DOGE": {
+        "next_to": "2021-05-13T15:00:00",
+        "done": true
+    },
+    "KRW-KSM": {
+        "next_to": "2021-05-24T15:00:00",
+        "done": true
+    },
+    "KRW-CTK": {
+        "next_to": "2021-06-30T15:00:00",
+        "done": true
+    },
+    "KRW-BNB": {
+        "next_to": "2021-05-26T15:00:00",
+        "done": true
+    },
+    "KRW-NFT": {
+        "next_to": "2022-01-05T15:00:00",
+        "done": true
+    },
+    "KRW-SUN": {
+        "next_to": "2021-06-15T15:00:00",
+        "done": true
+    },
+    "KRW-XEC": {
+        "next_to": "2021-08-26T15:00:00",
+        "done": true
+    },
+    "KRW-SOL": {
+        "next_to": "2021-08-18T15:00:00",
+        "done": true
+    },
+    "KRW-EGLD": {
+        "next_to": "2022-02-09T15:00:00",
+        "done": true
+    },
+    "KRW-MASK": {
+        "next_to": "2023-07-26T15:00:00",
+        "done": true
+    },
+    "KRW-C98": {
+        "next_to": "2022-01-25T15:00:00",
+        "done": true
+    },
+    "KRW-MED": {
+        "next_to": "2022-01-12T15:00:00",
+        "done": true
+    },
+    "KRW-1INCH": {
+        "next_to": "2022-01-12T15:00:00",
+        "done": true
+    },
+    "KRW-CRV": {
+        "next_to": "2023-06-14T15:00:00",
+        "done": true
+    },
+    "KRW-BOBA": {
+        "next_to": "2021-12-29T15:00:00",
+        "done": true
+    },
+    "KRW-DYDX": {
+        "next_to": "2023-05-02T15:00:00",
+        "done": true
+    },
+    "KRW-MINA": {
+        "next_to": "2023-11-08T15:00:00",
+        "done": true
+    },
+    "KRW-FLOW": {
+        "next_to": "2023-03-20T15:00:00",
+        "done": true
+    },
+    "KRW-JOE": {
+        "next_to": "2023-08-30T15:00:00",
+        "done": true
+    },
+    "KRW-GALA": {
+        "next_to": "2021-12-29T15:00:00",
+        "done": true
+    },
+    "KRW-ENS": {
+        "next_to": "2024-05-27T15:00:00",
+        "done": true
+    },
+    "KRW-BTT": {
+        "next_to": "2022-01-04T15:00:00",
+        "done": true
+    },
+    "KRW-JASMY": {
+        "next_to": "2022-06-08T15:00:00",
+        "done": true
+    },
+    "KRW-REQ": {
+        "next_to": "2022-05-10T15:00:00",
+        "done": true
+    },
+    "KRW-CSPR": {
+        "next_to": "2022-03-17T15:00:00",
+        "done": true
+    },
+    "KRW-AVAX": {
+        "next_to": "2022-03-10T15:00:00",
+        "done": true
+    },
+    "KRW-TDROP": {
+        "next_to": "2022-02-17T15:00:00",
+        "done": true
+    },
+    "KRW-HBAR": {
+        "next_to": "2023-09-13T15:00:00",
+        "done": true
+    },
+    "KRW-FANC": {
+        "next_to": "2023-03-01T15:00:00",
+        "done": true
+    },
+    "KRW-MAY": {
+        "next_to": "2022-03-10T15:00:00",
+        "done": true
+    },
+    "KRW-REI": {
+        "next_to": "2022-03-27T15:00:00",
+        "done": true
+    },
+    "KRW-T": {
+        "next_to": "2022-03-16T15:00:00",
+        "done": true
+    },
+    "KRW-MBX": {
+        "next_to": "2022-05-05T15:00:00",
+        "done": true
+    },
+    "KRW-GMT": {
+        "next_to": "2022-05-02T15:00:00",
+        "done": true
+    },
+    "KRW-TAVA": {
+        "next_to": "2022-07-05T15:00:00",
+        "done": true
+    },
+    "KRW-D": {
+        "next_to": "2023-01-26T15:00:00",
+        "done": true
+    },
+    "KRW-APE": {
+        "next_to": "2023-07-17T15:00:00",
+        "done": true
+    },
+    "KRW-WNCG": {
+        "next_to": "2023-06-12T15:00:00",
+        "done": true
+    },
+    "KRW-AL": {
+        "next_to": "2022-11-22T15:00:00",
+        "done": true
+    },
+    "KRW-XCN": {
+        "next_to": "2022-10-19T15:00:00",
+        "done": true
+    },
+    "KRW-AZIT": {
+        "next_to": "2022-12-15T15:00:00",
+        "done": true
+    },
+    "KRW-FLR": {
+        "next_to": "2023-01-09T15:00:00",
+        "done": true
+    },
+    "KRW-SFP": {
+        "next_to": "2023-01-31T15:00:00",
+        "done": true
+    },
+    "KRW-FITFI": {
+        "next_to": "2022-12-06T15:00:00",
+        "done": true
+    },
+    "KRW-STAT": {
+        "next_to": "2022-12-28T15:00:00",
+        "done": true
+    },
+    "KRW-CRTS": {
+        "next_to": "2023-02-07T15:00:00",
+        "done": true
+    },
+    "KRW-LM": {
+        "next_to": "2023-02-22T15:00:00",
+        "done": true
+    },
+    "KRW-GRND": {
+        "next_to": "2023-06-19T15:00:00",
+        "done": true
+    },
+    "KRW-APT": {
+        "next_to": "2023-03-01T15:00:00",
+        "done": true
+    },
+    "KRW-BLUR": {
+        "next_to": "2023-02-15T15:00:00",
+        "done": true
+    },
+    "KRW-OAS": {
+        "next_to": "2023-04-19T15:00:00",
+        "done": true
+    },
+    "KRW-HOOK": {
+        "next_to": "2023-03-28T15:00:00",
+        "done": true
+    },
+    "KRW-LWA": {
+        "next_to": "2023-03-08T15:00:00",
+        "done": true
+    },
+    "KRW-OP": {
+        "next_to": "2023-04-09T15:00:00",
+        "done": true
+    },
+    "KRW-ROA": {
+        "next_to": "2023-10-05T15:00:00",
+        "done": true
+    },
+    "KRW-GMX": {
+        "next_to": "2023-04-25T15:00:00",
+        "done": true
+    },
+    "KRW-STX": {
+        "next_to": "2023-05-22T15:00:00",
+        "done": true
+    },
+    "KRW-XPLA": {
+        "next_to": "2023-03-15T15:00:00",
+        "done": true
+    },
+    "KRW-AHT": {
+        "next_to": "2025-01-09T15:00:00",
+        "done": true
+    },
+    "KRW-ARB": {
+        "next_to": "2023-03-23T15:00:00",
+        "done": true
+    },
+    "KRW-INJ": {
+        "next_to": "2023-04-03T15:00:00",
+        "done": true
+    },
+    "KRW-HFT": {
+        "next_to": "2023-08-09T15:00:00",
+        "done": true
+    },
+    "KRW-RPL": {
+        "next_to": "2023-04-17T15:00:00",
+        "done": true
+    },
+    "KRW-IMX": {
+        "next_to": "2023-06-28T15:00:00",
+        "done": true
+    },
+    "KRW-CFX": {
+        "next_to": "2023-05-15T15:00:00",
+        "done": true
+    },
+    "KRW-ACS": {
+        "next_to": "2023-06-21T15:00:00",
+        "done": true
+    },
+    "KRW-FXS": {
+        "next_to": "2023-08-23T15:00:00",
+        "done": true
+    },
+    "KRW-CELO": {
+        "next_to": "2023-08-02T15:00:00",
+        "done": true
+    },
+    "KRW-LDO": {
+        "next_to": "2023-05-08T15:00:00",
+        "done": true
+    },
+    "KRW-S": {
+        "next_to": "2023-07-17T15:00:00",
+        "done": true
+    },
+    "KRW-FET": {
+        "next_to": "2023-06-06T15:00:00",
+        "done": true
+    },
+    "KRW-SUI": {
+        "next_to": "2023-05-03T15:00:00",
+        "done": true
+    },
+    "KRW-NCT": {
+        "next_to": "2023-06-26T15:00:00",
+        "done": true
+    },
+    "KRW-FLOKI": {
+        "next_to": "2023-05-17T15:00:00",
+        "done": true
+    },
+    "KRW-ID": {
+        "next_to": "2023-09-14T15:00:00",
+        "done": true
+    },
+    "KRW-RENDER": {
+        "next_to": "2023-07-17T15:00:00",
+        "done": true
+    },
+    "KRW-STG": {
+        "next_to": "2023-07-03T15:00:00",
+        "done": true
+    },
+    "KRW-OSMO": {
+        "next_to": "2023-12-25T15:00:00",
+        "done": true
+    },
+    "KRW-FIL": {
+        "next_to": "2025-01-05T15:00:00",
+        "done": true
+    },
+    "KRW-ILV": {
+        "next_to": "2023-08-16T15:00:00",
+        "done": true
+    },
+    "KRW-MAV": {
+        "next_to": "2023-07-12T15:00:00",
+        "done": true
+    },
+    "KRW-RSS3": {
+        "next_to": "2023-08-07T15:00:00",
+        "done": true
+    },
+    "KRW-AUDIO": {
+        "next_to": "2023-12-03T15:00:00",
+        "done": true
+    },
+    "KRW-AGI": {
+        "next_to": "2023-09-04T15:00:00",
+        "done": true
+    },
+    "KRW-ASTR": {
+        "next_to": "2023-09-20T15:00:00",
+        "done": true
+    },
+    "KRW-WLD": {
+        "next_to": "2023-07-23T15:00:00",
+        "done": true
+    },
+    "KRW-FLUX": {
+        "next_to": "2023-09-06T15:00:00",
+        "done": true
+    },
+    "KRW-AGLD": {
+        "next_to": "2025-01-15T15:00:00",
+        "done": true
+    },
+    "KRW-AR": {
+        "next_to": "2024-05-27T15:00:00",
+        "done": true
+    },
+    "KRW-RVN": {
+        "next_to": "2023-11-26T15:00:00",
+        "done": true
+    },
+    "KRW-EDU": {
+        "next_to": "2023-09-25T15:00:00",
+        "done": true
+    },
+    "KRW-SEI": {
+        "next_to": "2023-08-14T15:00:00",
+        "done": true
+    },
+    "KRW-WAXL": {
+        "next_to": "2024-01-07T15:00:00",
+        "done": true
+    },
+    "KRW-MOC": {
+        "next_to": "2023-11-26T15:00:00",
+        "done": true
+    },
+    "KRW-PEPE": {
+        "next_to": "2023-05-17T15:00:00",
+        "done": true
+    },
+    "KRW-CYBER": {
+        "next_to": "2023-08-28T15:00:00",
+        "done": true
+    },
+    "KRW-ARKM": {
+        "next_to": "2023-10-04T15:00:00",
+        "done": true
+    },
+    "KRW-PYR": {
+        "next_to": "2023-10-25T15:00:00",
+        "done": true
+    },
+    "KRW-IOTX": {
+        "next_to": "2023-12-03T15:00:00",
+        "done": true
+    },
+    "KRW-HIGH": {
+        "next_to": "2023-12-07T15:00:00",
+        "done": true
+    },
+    "KRW-PENDLE": {
+        "next_to": "2023-11-16T15:00:00",
+        "done": true
+    },
+    "KRW-BICO": {
+        "next_to": "2024-11-24T15:00:00",
+        "done": true
+    },
+    "KRW-STORJ": {
+        "next_to": "2023-11-13T15:00:00",
+        "done": true
+    },
+    "KRW-API3": {
+        "next_to": "2023-11-06T15:00:00",
+        "done": true
+    },
+    "KRW-ZTX": {
+        "next_to": "2023-10-15T15:00:00",
+        "done": true
+    },
+    "KRW-MNT": {
+        "next_to": "2024-02-12T15:00:00",
+        "done": true
+    },
+    "KRW-GTC": {
+        "next_to": "2024-02-06T15:00:00",
+        "done": true
+    },
+    "KRW-METIS": {
+        "next_to": "2024-11-20T15:00:00",
+        "done": true
+    },
+    "KRW-TIA": {
+        "next_to": "2023-10-31T15:00:00",
+        "done": true
+    },
+    "KRW-ICP": {
+        "next_to": "2024-06-11T15:00:00",
+        "done": true
+    },
+    "KRW-SPURS": {
+        "next_to": "2023-11-22T15:00:00",
+        "done": true
+    },
+    "KRW-NEO": {
+        "next_to": "2024-01-30T15:00:00",
+        "done": true
+    },
+    "KRW-GAS": {
+        "next_to": "2024-01-30T15:00:00",
+        "done": true
+    },
+    "KRW-BIGTIME": {
+        "next_to": "2023-11-29T15:00:00",
+        "done": true
+    },
+    "KRW-ZETA": {
+        "next_to": "2024-05-15T15:00:00",
+        "done": true
+    },
+    "KRW-ARK": {
+        "next_to": "2024-01-24T15:00:00",
+        "done": true
+    },
+    "KRW-YGG": {
+        "next_to": "2024-01-07T15:00:00",
+        "done": true
+    },
+    "KRW-HUNT": {
+        "next_to": "2024-03-13T15:00:00",
+        "done": true
+    },
+    "KRW-KAVA": {
+        "next_to": "2024-01-22T15:00:00",
+        "done": true
+    },
+    "KRW-MAGIC": {
+        "next_to": "2024-01-14T15:00:00",
+        "done": true
+    },
+    "KRW-AUCTION": {
+        "next_to": "2024-10-23T15:00:00",
+        "done": true
+    },
+    "KRW-USDT": {
+        "next_to": "2023-12-06T15:00:00",
+        "done": true
+    },
+    "KRW-USDC": {
+        "next_to": "2023-12-08T15:00:00",
+        "done": true
+    },
+    "KRW-RAD": {
+        "next_to": "2024-01-14T15:00:00",
+        "done": true
+    },
+    "KRW-LSK": {
+        "next_to": "2024-02-05T15:00:00",
+        "done": true
+    },
+    "KRW-TT": {
+        "next_to": "2024-02-15T15:00:00",
+        "done": true
+    },
+    "KRW-ACE": {
+        "next_to": "2023-12-17T15:00:00",
+        "done": true
+    },
+    "KRW-SKL": {
+        "next_to": "2024-11-26T15:00:00",
+        "done": true
+    },
+    "KRW-IQ": {
+        "next_to": "2024-03-18T15:00:00",
+        "done": true
+    },
+    "KRW-PYTH": {
+        "next_to": "2024-02-26T15:00:00",
+        "done": true
+    },
+    "KRW-MANTA": {
+        "next_to": "2024-01-17T15:00:00",
+        "done": true
+    },
+    "KRW-AKT": {
+        "next_to": "2024-04-22T15:00:00",
+        "done": true
+    },
+    "KRW-BEAM": {
+        "next_to": "2024-10-23T15:00:00",
+        "done": true
+    },
+    "KRW-JTO": {
+        "next_to": "2024-09-04T15:00:00",
+        "done": true
+    },
+    "KRW-JUP": {
+        "next_to": "2024-01-31T15:00:00",
+        "done": true
+    },
+    "KRW-STRK": {
+        "next_to": "2024-02-19T15:00:00",
+        "done": true
+    },
+    "KRW-SC": {
+        "next_to": "2024-03-26T15:00:00",
+        "done": true
+    },
+    "KRW-TRAC": {
+        "next_to": "2025-12-02T15:00:00",
+        "done": true
+    },
+    "KRW-BONK": {
+        "next_to": "2024-05-15T15:00:00",
+        "done": true
+    },
+    "KRW-TOKAMAK": {
+        "next_to": "2024-11-11T15:00:00",
+        "done": true
+    },
+    "KRW-AIOZ": {
+        "next_to": "2024-05-06T15:00:00",
+        "done": true
+    },
+    "KRW-ZK": {
+        "next_to": "2024-06-16T15:00:00",
+        "done": true
+    },
+    "KRW-ONDO": {
+        "next_to": "2024-04-22T15:00:00",
+        "done": true
+    },
+    "KRW-ALT": {
+        "next_to": "2024-11-13T15:00:00",
+        "done": true
+    },
+    "KRW-TAO": {
+        "next_to": "2025-09-17T15:00:00",
+        "done": true
+    },
+    "KRW-NEAR": {
+        "next_to": "2024-05-06T15:00:00",
+        "done": true
+    },
+    "KRW-RON": {
+        "next_to": "2024-12-12T15:00:00",
+        "done": true
+    },
+    "KRW-FIDA": {
+        "next_to": "2024-09-23T15:00:00",
+        "done": true
+    },
+    "KRW-STRAX": {
+        "next_to": "2024-03-26T15:00:00",
+        "done": true
+    },
+    "KRW-XAI": {
+        "next_to": "2024-06-04T15:00:00",
+        "done": true
+    },
+    "KRW-W": {
+        "next_to": "2024-04-02T15:00:00",
+        "done": true
+    },
+    "KRW-POLYX": {
+        "next_to": "2024-07-10T15:00:00",
+        "done": true
+    },
+    "KRW-CORE": {
+        "next_to": "2024-06-23T15:00:00",
+        "done": true
+    },
+    "KRW-BB": {
+        "next_to": "2024-11-26T15:00:00",
+        "done": true
+    },
+    "KRW-POKT": {
+        "next_to": "2025-06-09T15:00:00",
+        "done": true
+    },
+    "KRW-REZ": {
+        "next_to": "2025-03-31T15:00:00",
+        "done": true
+    },
+    "KRW-ENA": {
+        "next_to": "2025-02-24T15:00:00",
+        "done": true
+    },
+    "KRW-MOCA": {
+        "next_to": "2024-12-15T15:00:00",
+        "done": true
+    },
+    "KRW-ETHFI": {
+        "next_to": "2024-09-04T15:00:00",
+        "done": true
+    },
+    "KRW-MEW": {
+        "next_to": "2024-06-06T15:00:00",
+        "done": true
+    },
+    "KRW-ZRO": {
+        "next_to": "2024-06-19T15:00:00",
+        "done": true
+    },
+    "KRW-IO": {
+        "next_to": "2024-08-06T15:00:00",
+        "done": true
+    },
+    "KRW-BLAST": {
+        "next_to": "2024-06-25T15:00:00",
+        "done": true
+    },
+    "KRW-TAIKO": {
+        "next_to": "2024-07-08T15:00:00",
+        "done": true
+    },
+    "KRW-BRETT": {
+        "next_to": "2024-07-08T15:00:00",
+        "done": true
+    },
+    "KRW-ATH": {
+        "next_to": "2024-08-13T15:00:00",
+        "done": true
+    },
+    "KRW-PCI": {
+        "next_to": "2024-07-14T15:00:00",
+        "done": true
+    },
+    "KRW-AVAIL": {
+        "next_to": "2024-07-22T15:00:00",
+        "done": true
+    },
+    "KRW-TON": {
+        "next_to": "2024-11-20T15:00:00",
+        "done": true
+    },
+    "KRW-G": {
+        "next_to": "2024-07-25T15:00:00",
+        "done": true
+    },
+    "KRW-LISTA": {
+        "next_to": "2025-07-23T15:00:00",
+        "done": true
+    },
+    "KRW-PEAQ": {
+        "next_to": "2025-01-01T15:00:00",
+        "done": true
+    },
+    "KRW-EIGEN": {
+        "next_to": "2024-10-01T15:00:00",
+        "done": true
+    },
+    "KRW-XION": {
+        "next_to": "2025-11-25T15:00:00",
+        "done": true
+    },
+    "KRW-ORDER": {
+        "next_to": "2024-12-02T15:00:00",
+        "done": true
+    },
+    "KRW-MERL": {
+        "next_to": "2025-07-23T15:00:00",
+        "done": true
+    },
+    "KRW-SCR": {
+        "next_to": "2024-12-12T15:00:00",
+        "done": true
+    },
+    "KRW-SWELL": {
+        "next_to": "2024-11-13T15:00:00",
+        "done": true
+    },
+    "KRW-SKY": {
+        "next_to": "2024-10-15T15:00:00",
+        "done": true
+    },
+    "KRW-PONKE": {
+        "next_to": "2024-11-18T15:00:00",
+        "done": true
+    },
+    "KRW-MVL": {
+        "next_to": "2024-11-11T15:00:00",
+        "done": true
+    },
+    "KRW-CARV": {
+        "next_to": "2024-10-28T15:00:00",
+        "done": true
+    },
+    "KRW-PUFFER": {
+        "next_to": "2024-11-24T15:00:00",
+        "done": true
+    },
+    "KRW-SUNDOG": {
+        "next_to": "2024-12-04T15:00:00",
+        "done": true
+    },
+    "KRW-TURBO": {
+        "next_to": "2024-11-11T15:00:00",
+        "done": true
+    },
+    "KRW-RAY": {
+        "next_to": "2024-11-18T15:00:00",
+        "done": true
+    },
+    "KRW-SAFE": {
+        "next_to": "2025-01-09T15:00:00",
+        "done": true
+    },
+    "KRW-VIRTUAL": {
+        "next_to": "2024-11-28T15:00:00",
+        "done": true
+    },
+    "KRW-DRIFT": {
+        "next_to": "2025-01-13T15:00:00",
+        "done": true
+    },
+    "KRW-MOVE": {
+        "next_to": "2024-12-09T15:00:00",
+        "done": true
+    },
+    "KRW-F": {
+        "next_to": "2024-12-09T15:00:00",
+        "done": true
+    },
+    "KRW-DEEP": {
+        "next_to": "2025-01-07T15:00:00",
+        "done": true
+    },
+    "KRW-MORPHO": {
+        "next_to": "2024-12-04T15:00:00",
+        "done": true
+    },
+    "KRW-NEIRO": {
+        "next_to": "2024-12-04T15:00:00",
+        "done": true
+    },
+    "KRW-MOODENG": {
+        "next_to": "2024-12-15T15:00:00",
+        "done": true
+    },
+    "KRW-DBR": {
+        "next_to": "2024-12-19T15:00:00",
+        "done": true
+    },
+    "KRW-GOAT": {
+        "next_to": "2024-12-16T15:00:00",
+        "done": true
+    },
+    "KRW-NIL": {
+        "next_to": "2025-03-24T15:00:00",
+        "done": true
+    },
+    "KRW-ME": {
+        "next_to": "2024-12-10T15:00:00",
+        "done": true
+    },
+    "KRW-INIT": {
+        "next_to": "2025-05-29T15:00:00",
+        "done": true
+    },
+    "KRW-ZRC": {
+        "next_to": "2025-01-12T15:00:00",
+        "done": true
+    },
+    "KRW-IOTA": {
+        "next_to": "2025-01-10T15:00:00",
+        "done": true
+    },
+    "KRW-PENGU": {
+        "next_to": "2024-12-23T15:00:00",
+        "done": true
+    },
+    "KRW-ACX": {
+        "next_to": "2025-03-21T15:00:00",
+        "done": true
+    },
+    "KRW-AERO": {
+        "next_to": "2025-01-23T15:00:00",
+        "done": true
+    },
+    "KRW-THE": {
+        "next_to": "2025-02-13T15:00:00",
+        "done": true
+    },
+    "KRW-AMP": {
+        "next_to": "2025-04-03T15:00:00",
+        "done": true
+    },
+    "KRW-VANA": {
+        "next_to": "2025-01-01T15:00:00",
+        "done": true
+    },
+    "KRW-XYO": {
+        "next_to": "2025-04-24T15:00:00",
+        "done": true
+    },
+    "KRW-A8": {
+        "next_to": "2025-01-13T15:00:00",
+        "done": true
+    },
+    "KRW-SONIC": {
+        "next_to": "2025-01-09T15:00:00",
+        "done": true
+    },
+    "KRW-WIF": {
+        "next_to": "2025-06-09T15:00:00",
+        "done": true
+    },
+    "KRW-CPOOL": {
+        "next_to": "2025-10-21T15:00:00",
+        "done": true
+    },
+    "KRW-IP": {
+        "next_to": "2025-02-12T15:00:00",
+        "done": true
+    },
+    "KRW-DKA": {
+        "next_to": "2025-01-16T15:00:00",
+        "done": true
+    },
+    "KRW-SOLV": {
+        "next_to": "2025-01-23T15:00:00",
+        "done": true
+    },
+    "KRW-BLUE": {
+        "next_to": "2025-05-21T15:00:00",
+        "done": true
+    },
+    "KRW-QKC": {
+        "next_to": "2025-01-22T15:00:00",
+        "done": true
+    },
+    "KRW-HP": {
+        "next_to": "2025-01-15T15:00:00",
+        "done": true
+    },
+    "KRW-GAME2": {
+        "next_to": "2025-01-14T15:00:00",
+        "done": true
+    },
+    "KRW-ERA": {
+        "next_to": "2025-07-17T15:00:00",
+        "done": true
+    },
+    "KRW-ARDR": {
+        "next_to": "2025-01-22T15:00:00",
+        "done": true
+    },
+    "KRW-BOUNTY": {
+        "next_to": "2025-01-16T15:00:00",
+        "done": true
+    },
+    "KRW-SHELL": {
+        "next_to": "2025-02-27T15:00:00",
+        "done": true
+    },
+    "KRW-BERA": {
+        "next_to": "2025-02-05T15:00:00",
+        "done": true
+    },
+    "KRW-BIO": {
+        "next_to": "2025-08-18T15:00:00",
+        "done": true
+    },
+    "KRW-PLUME": {
+        "next_to": "2025-03-04T15:00:00",
+        "done": true
+    },
+    "KRW-OBT": {
+        "next_to": "2025-03-13T15:00:00",
+        "done": true
+    },
+    "KRW-TRUMP": {
+        "next_to": "2025-01-20T15:00:00",
+        "done": true
+    },
+    "KRW-KERNEL": {
+        "next_to": "2025-04-15T15:00:00",
+        "done": true
+    },
+    "KRW-COOKIE": {
+        "next_to": "2025-02-09T15:00:00",
+        "done": true
+    },
+    "KRW-GNO": {
+        "next_to": "2025-02-18T15:00:00",
+        "done": true
+    },
+    "KRW-VTHO": {
+        "next_to": "2025-01-30T15:00:00",
+        "done": true
+    },
+    "KRW-ANIME": {
+        "next_to": "2025-01-30T15:00:00",
+        "done": true
+    },
+    "KRW-RED": {
+        "next_to": "2025-03-24T15:00:00",
+        "done": true
+    },
+    "KRW-LAYER": {
+        "next_to": "2025-02-11T15:00:00",
+        "done": true
+    },
+    "KRW-WCT": {
+        "next_to": "2025-04-15T15:00:00",
+        "done": true
+    },
+    "KRW-FLOCK": {
+        "next_to": "2025-05-29T15:00:00",
+        "done": true
+    },
+    "KRW-KAITO": {
+        "next_to": "2025-02-19T15:00:00",
+        "done": true
+    },
+    "KRW-BMT": {
+        "next_to": "2025-03-17T15:00:00",
+        "done": true
+    },
+    "KRW-C": {
+        "next_to": "2025-07-28T15:00:00",
+        "done": true
+    },
+    "KRW-SOON": {
+        "next_to": "2025-05-22T15:00:00",
+        "done": true
+    },
+    "KRW-PAXG": {
+        "next_to": "2025-03-20T15:00:00",
+        "done": true
+    },
+    "KRW-XAUT": {
+        "next_to": "2025-12-31T15:00:00",
+        "done": true
+    },
+    "KRW-AVL": {
+        "next_to": "2025-03-06T15:00:00",
+        "done": true
+    },
+    "KRW-B3": {
+        "next_to": "2025-05-27T15:00:00",
+        "done": true
+    },
+    "KRW-COW": {
+        "next_to": "2025-03-04T15:00:00",
+        "done": true
+    },
+    "KRW-WAL": {
+        "next_to": "2025-03-26T15:00:00",
+        "done": true
+    },
+    "KRW-BABY": {
+        "next_to": "2025-04-10T15:00:00",
+        "done": true
+    },
+    "KRW-ES": {
+        "next_to": "2025-07-15T15:00:00",
+        "done": true
+    },
+    "KRW-XTER": {
+        "next_to": "2025-05-28T15:00:00",
+        "done": true
+    },
+    "KRW-NXPC": {
+        "next_to": "2025-05-14T15:00:00",
+        "done": true
+    },
+    "KRW-0G": {
+        "next_to": "2025-09-21T15:00:00",
+        "done": true
+    },
+    "KRW-GRASS": {
+        "next_to": "2025-04-24T15:00:00",
+        "done": true
+    },
+    "KRW-ORCA": {
+        "next_to": "2025-03-27T15:00:00",
+        "done": true
+    },
+    "KRW-KMNO": {
+        "next_to": "2025-09-18T15:00:00",
+        "done": true
+    },
+    "KRW-PUMPBTC": {
+        "next_to": "2025-04-21T15:00:00",
+        "done": true
+    },
+    "KRW-EPT": {
+        "next_to": "2025-05-07T15:00:00",
+        "done": true
+    },
+    "KRW-HAEDAL": {
+        "next_to": "2025-05-01T15:00:00",
+        "done": true
+    },
+    "KRW-PARTI": {
+        "next_to": "2025-05-07T15:00:00",
+        "done": true
+    },
+    "KRW-SXT": {
+        "next_to": "2025-05-12T15:00:00",
+        "done": true
+    },
+    "KRW-PROMPT": {
+        "next_to": "2025-05-19T15:00:00",
+        "done": true
+    },
+    "KRW-SIGN": {
+        "next_to": "2025-04-29T15:00:00",
+        "done": true
+    },
+    "KRW-BTR": {
+        "next_to": "2025-09-24T15:00:00",
+        "done": true
+    },
+    "KRW-SAHARA": {
+        "next_to": "2025-06-25T15:00:00",
+        "done": true
+    },
+    "KRW-HEMI": {
+        "next_to": "2025-09-23T15:00:00",
+        "done": true
+    },
+    "KRW-H": {
+        "next_to": "2025-07-02T15:00:00",
+        "done": true
+    },
+    "KRW-HOME": {
+        "next_to": "2025-06-23T15:00:00",
+        "done": true
+    },
+    "KRW-OM": {
+        "next_to": "2025-07-02T15:00:00",
+        "done": true
+    },
+    "KRW-LA": {
+        "next_to": "2025-06-04T15:00:00",
+        "done": true
+    },
+    "KRW-SOPH": {
+        "next_to": "2025-06-01T15:00:00",
+        "done": true
+    },
+    "KRW-HYPER": {
+        "next_to": "2025-07-09T15:00:00",
+        "done": true
+    },
+    "KRW-PROVE": {
+        "next_to": "2025-08-05T15:00:00",
+        "done": true
+    },
+    "KRW-CUDIS": {
+        "next_to": "2025-09-25T15:00:00",
+        "done": true
+    },
+    "KRW-FORT": {
+        "next_to": "2025-06-18T15:00:00",
+        "done": true
+    },
+    "KRW-TOSHI": {
+        "next_to": "2025-09-16T15:00:00",
+        "done": true
+    },
+    "KRW-HUMA": {
+        "next_to": "2025-06-18T15:00:00",
+        "done": true
+    },
+    "KRW-SPK": {
+        "next_to": "2025-06-16T15:00:00",
+        "done": true
+    },
+    "KRW-USD1": {
+        "next_to": "2025-08-31T15:00:00",
+        "done": true
+    },
+    "KRW-BOB": {
+        "next_to": "2025-12-02T15:00:00",
+        "done": true
+    },
+    "KRW-SYRUP": {
+        "next_to": "2025-06-26T15:00:00",
+        "done": true
+    },
+    "KRW-NEWT": {
+        "next_to": "2025-06-24T15:00:00",
+        "done": true
+    },
+    "KRW-RESOLV": {
+        "next_to": "2025-07-10T15:00:00",
+        "done": true
+    },
+    "KRW-ALLO": {
+        "next_to": "2025-12-08T15:00:00",
+        "done": true
+    },
+    "KRW-DOOD": {
+        "next_to": "2025-10-16T15:00:00",
+        "done": true
+    },
+    "KRW-TREE": {
+        "next_to": "2025-08-07T15:00:00",
+        "done": true
+    },
+    "KRW-EUL": {
+        "next_to": "2025-09-04T15:00:00",
+        "done": true
+    },
+    "KRW-AVNT": {
+        "next_to": "2025-09-14T15:00:00",
+        "done": true
+    },
+    "KRW-OPEN": {
+        "next_to": "2025-09-09T15:00:00",
+        "done": true
+    },
+    "KRW-PUMP": {
+        "next_to": "2025-09-10T15:00:00",
+        "done": true
+    },
+    "KRW-IRYS": {
+        "next_to": "2025-11-26T15:00:00",
+        "done": true
+    },
+    "KRW-DEXE": {
+        "next_to": "2025-12-18T15:00:00",
+        "done": true
+    },
+    "KRW-SD": {
+        "next_to": "2025-08-25T15:00:00",
+        "done": true
+    },
+    "KRW-BARD": {
+        "next_to": "2025-09-17T15:00:00",
+        "done": true
+    },
+    "KRW-TOWNS": {
+        "next_to": "2025-08-12T15:00:00",
+        "done": true
+    },
+    "KRW-MIRA": {
+        "next_to": "2025-09-25T15:00:00",
+        "done": true
+    },
+    "KRW-CAMP": {
+        "next_to": "2025-08-28T15:00:00",
+        "done": true
+    },
+    "KRW-XAN": {
+        "next_to": "2025-10-06T15:00:00",
+        "done": true
+    },
+    "KRW-THQ": {
+        "next_to": "2025-12-22T15:00:00",
+        "done": true
+    },
+    "KRW-POPCAT": {
+        "next_to": "2025-09-24T15:00:00",
+        "done": true
+    },
+    "KRW-WLFI": {
+        "next_to": "2025-08-31T15:00:00",
+        "done": true
+    },
+    "KRW-2Z": {
+        "next_to": "2025-10-01T15:00:00",
+        "done": true
+    },
+    "KRW-LINEA": {
+        "next_to": "2025-09-10T15:00:00",
+        "done": true
+    },
+    "KRW-SAPIEN": {
+        "next_to": "2025-12-04T15:00:00",
+        "done": true
+    },
+    "KRW-HOLO": {
+        "next_to": "2025-09-16T15:00:00",
+        "done": true
+    },
+    "KRW-ZKC": {
+        "next_to": "2025-09-14T15:00:00",
+        "done": true
+    },
+    "KRW-ASTER": {
+        "next_to": "2025-10-09T15:00:00",
+        "done": true
+    },
+    "KRW-XPL": {
+        "next_to": "2025-09-28T15:00:00",
+        "done": true
+    },
+    "KRW-FF": {
+        "next_to": "2025-09-28T15:00:00",
+        "done": true
+    },
+    "KRW-SOMI": {
+        "next_to": "2025-09-30T15:00:00",
+        "done": true
+    },
+    "KRW-MON": {
+        "next_to": "2025-11-24T15:00:00",
+        "done": true
+    },
+    "KRW-FLUID": {
+        "next_to": "2025-09-25T15:00:00",
+        "done": true
+    },
+    "KRW-SUPER": {
+        "next_to": "2025-10-01T15:00:00",
+        "done": true
+    },
+    "KRW-IN": {
+        "next_to": "2025-10-16T15:00:00",
+        "done": true
+    },
+    "KRW-EDEN": {
+        "next_to": "2025-12-15T15:00:00",
+        "done": true
+    },
+    "KRW-RECALL": {
+        "next_to": "2025-10-20T15:00:00",
+        "done": true
+    },
+    "KRW-USDE": {
+        "next_to": "2026-01-13T15:00:00",
+        "done": true
+    },
+    "KRW-ENSO": {
+        "next_to": "2025-10-28T15:00:00",
+        "done": true
+    },
+    "KRW-YB": {
+        "next_to": "2025-10-16T15:00:00",
+        "done": true
+    },
+    "KRW-STABLE": {
+        "next_to": "2025-12-10T15:00:00",
+        "done": true
+    },
+    "KRW-ZBT": {
+        "next_to": "2025-10-16T15:00:00",
+        "done": true
+    },
+    "KRW-NOM": {
+        "next_to": "2025-10-20T15:00:00",
+        "done": true
+    },
+    "KRW-ZORA": {
+        "next_to": "2025-10-20T15:00:00",
+        "done": true
+    },
+    "KRW-SENT": {
+        "next_to": "2026-01-28T15:00:00",
+        "done": true
+    },
+    "KRW-MMT": {
+        "next_to": "2025-11-03T15:00:00",
+        "done": true
+    },
+    "KRW-MET": {
+        "next_to": "2025-11-17T15:00:00",
+        "done": true
+    },
+    "KRW-KITE": {
+        "next_to": "2025-11-02T15:00:00",
+        "done": true
+    },
+    "KRW-TRUST": {
+        "next_to": "2025-11-04T15:00:00",
+        "done": true
+    },
+    "KRW-PIEVERSE": {
+        "next_to": "2025-11-23T15:00:00",
+        "done": true
+    },
+    "KRW-ELIZAOS": {
+        "next_to": "2026-01-13T15:00:00",
+        "done": true
+    },
+    "KRW-WET": {
+        "next_to": "2025-12-14T15:00:00",
+        "done": true
+    },
+    "KRW-BREV": {
+        "next_to": "2026-01-06T15:00:00",
+        "done": true
+    },
+    "KRW-ZKP": {
+        "next_to": "2025-12-25T15:00:00",
+        "done": true
+    },
+    "KRW-SKR": {
+        "next_to": "2026-01-21T15:00:00",
+        "done": true
+    },
+    "KRW-ELSA": {
+        "next_to": "2026-01-28T15:00:00",
+        "done": true
+    }
+}

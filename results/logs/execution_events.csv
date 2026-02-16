@@ -1,0 +1,4 @@
+timestamp,symbol,side,price,qty,amount,fee,order_id
+2026-02-09T00:08:29.823450,KRW-BTC,buy,100000.0,0.9975,99750.0,0,buy1
+2026-02-09T00:08:29.829452,KRW-BTC,sell,100000.0,0.01,1000.0,0,sell1
+2026-02-09T18:13:40.248522,KRW-BTC,sell,99940.0,0.0076101,760.553394,0.0,mock_sell_1

@@ -1,0 +1,17 @@
+=== Precision@K Evaluation ===
+Average Precision@5: 0.1403
+Average Precision@10: 0.1123
+Average Precision@20: 0.0803
+
+=== Top 10 Features ===
+                  feature  importance
+19               corr_30d        1023
+15             btc_ret_1d        1021
+16             btc_ret_7d         932
+21                vol_30d         860
+18                  rs_7d         810
+20                 vol_7d         764
+22            vol_squeeze         752
+10     body_ratio_mean_7d         752
+14  pos_in_candle_mean_7d         741
+8           pos_in_candle         724

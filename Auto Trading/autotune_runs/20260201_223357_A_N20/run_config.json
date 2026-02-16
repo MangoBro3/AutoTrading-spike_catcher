@@ -1,0 +1,18 @@
+{
+    "group": "A",
+    "num_trials": 20,
+    "seed": 42,
+    "base_params": {
+        "enable_strategy_A": true,
+        "enable_strategy_B": true,
+        "trigger_vol_A": 2.0,
+        "breakout_days_A": 7,
+        "close_confirm_pct_A": 0.005,
+        "entry_delay_bars_A": 1,
+        "rsi_ceiling_A": 75,
+        "max_gap_pct_A": 0.15,
+        "trend_ma_fast_B": 20,
+        "trend_ma_slow_B": 60,
+        "rsi_entry_B": 45
+    }
+}
