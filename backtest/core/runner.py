@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 from backtest.config.run_matrix import get_runs
+from backtest.core.engine_interface import RunRequest, default_mock_adapter
 from backtest.core.evaluator import evaluate_go_no_go
 from backtest.core.report_writer import write_reports
 from backtest.core.splits_loader import load_splits
@@ -84,7 +85,7 @@ def simulate_run(run: dict, split: dict) -> dict:
     return payload
 
 
-def run_all(out_root: str | Path = "backtest/out") -> list[dict]:
+def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter) -> list[dict]:
     out_root = Path(out_root)
     runs = get_runs()
     splits_doc = load_splits()
@@ -99,7 +100,8 @@ def run_all(out_root: str | Path = "backtest/out") -> list[dict]:
         if split_key == "kill_zones_5m":
             split = {"timeframe": "5m", "zones": splits_doc.get("kill_zones_5m", [])}
 
-        payload = simulate_run(run, split)
+        request = RunRequest(run_id=run_id, mode=run.get("mode", "hybrid"), split=split, options=run)
+        payload = adapter(request)
         out_dir = out_root / run_id
         files = write_reports(out_dir, payload)
 
