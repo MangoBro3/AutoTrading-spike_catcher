@@ -1,0 +1,52 @@
+{
+  "version": "v1",
+  "generated_at": "2026-02-16T00:00:00Z",
+  "splits": {
+    "full_cycle_1d": {
+      "from": "2020-01-01",
+      "to": "2024-12-31",
+      "timeframe": "1d"
+    },
+    "is_1d": {
+      "from": "2020-01-01",
+      "to": "2022-12-31",
+      "timeframe": "1d"
+    },
+    "oos_1d": {
+      "from": "2023-01-01",
+      "to": "2024-12-31",
+      "timeframe": "1d"
+    },
+    "sideways_hell_1d": {
+      "from": "2023-01-01",
+      "to": "2023-12-31",
+      "timeframe": "1d"
+    }
+  },
+  "kill_zones_5m": [
+    {
+      "name": "covid_crash",
+      "from": "2020-03-12",
+      "to": "2020-03-13",
+      "timeframe": "5m"
+    },
+    {
+      "name": "may_2021_crash",
+      "from": "2021-05-19",
+      "to": "2021-05-20",
+      "timeframe": "5m"
+    },
+    {
+      "name": "luna_cascade",
+      "from": "2022-05-07",
+      "to": "2022-05-13",
+      "timeframe": "5m"
+    },
+    {
+      "name": "ftx_collapse",
+      "from": "2022-11-06",
+      "to": "2022-11-12",
+      "timeframe": "5m"
+    }
+  ]
+}
