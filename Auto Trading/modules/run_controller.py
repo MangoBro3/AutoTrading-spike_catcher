@@ -1580,8 +1580,8 @@ class RunController:
         try:
             if self.ledger:
                 ledger_state = self.ledger.get_state()
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"[IPC] ledger state read failed: {e}")
 
         # Watch Info
         regime = "N/A"
@@ -1590,15 +1590,16 @@ class RunController:
             if self.watch_engine:
                 regime = self.watch_engine.current_regime
                 btc_price = self.watch_engine.last_btc_price
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"[IPC] watch state read failed: {e}")
 
         # Optional: expose watchlist for UI/debug
         watchlist = []
         try:
             if self.watch_engine and hasattr(self.watch_engine, "watchlist"):
                 watchlist = list(self.watch_engine.watchlist)
-        except:
+        except Exception as e:
+            logger.warning(f"[IPC] watchlist read failed: {e}")
             watchlist = []
 
         last_error = str(error) if error else self.last_error
@@ -1677,8 +1678,8 @@ class RunController:
             
             try:
                 Path("results/logs/crash_log.txt").write_text(f"Timestamp: {datetime.now()}\nError: {e}\nTraceback:\n{tb}\n" + "="*50 + "\n", encoding='utf-8')
-            except:
-                pass
+            except Exception as log_e:
+                logger.error(f"[RunController] failed to write crash log: {log_e}")
                 
             self._write_runtime_status(error=str(e))
             self.running = False

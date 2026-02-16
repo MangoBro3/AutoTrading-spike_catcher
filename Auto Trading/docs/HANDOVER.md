@@ -1,6 +1,6 @@
 # DHR Launcher Handover
 
-Last updated: 2026-02-11
+Last updated: 2026-02-16
 
 ## 1) Repo Root / Entry Points
 
@@ -192,9 +192,35 @@ Windows file lock/transient access race during atomic replace.
   - inspect `models/_staging`, `models/_active`, `models/_archive`
   - restart backend once (recovery logic rechecks model dirs).
 
-## 9) Known Gaps / Next Work
+## 9) 2026-02-16 Stability Policy Update (P0/P1/P2)
+
+### Canonical production path
+- **Production order flow must go through `modules/run_controller.py`**.
+- `trader_v2.py` is now treated as legacy and blocked by default unless `ALLOW_LEGACY=1` is explicitly set.
+
+### P0 hardening applied
+- Legacy bypass risk reduced:
+  - `trader_v2.py` blocks default execution and validates signal payload schema.
+- Daily risk logic upgraded:
+  - `run_controller.py` uses persisted daily risk state (`results/daily_risk_state.json`) with daily start equity + intraday peak tracking.
+  - Daily DD breach now triggers emergency sequence: cancel open orders (best-effort), attempt flatten, downgrade to PAPER, notify.
+- Upbit live safety:
+  - `modules/adapter_upbit.py` no longer returns mock order IDs in create path.
+  - Live order path now calls real `create_order(...)` and fails hard if keys are missing.
+
+### P1 anti-overfitting controls applied
+- `tuning_delta_min` default raised (`0.0 -> 0.01`) to reduce noisy promotions.
+- Promotion cooldown introduced (`tuning_promotion_cooldown_hours`, default 24h).
+- OOS tuning gate now enforces cooldown before allowing re-promotion.
+
+### P2 visibility improvements (partial)
+- `run_controller.py` bare `except:` blocks in runtime status path replaced with typed exception handling + warning logs.
+- Crash-log write failure now logs explicit error instead of silent pass.
+
+## 10) Known Gaps / Next Work
 
 - UI currently exposes both old evolution fields and new OOS fields.
   - Recommend cleanup to reduce confusion.
 - Add dedicated API endpoint to return next scheduler due time for UI visibility.
 - Add integration test that boots web backend and validates scheduler slot behavior end-to-end.
+- Continue replacing remaining broad `except:` blocks in `app.py`, `launcher.py`, `backtester.py`, `data_loader.py` with typed exceptions + structured diagnostics.
