@@ -366,7 +366,7 @@ def evaluate_oos_gate(
     active_metrics,
     oos_start,
     min_trades=20,
-    delta_min=0.0,
+    delta_min=0.01,
     mdd_cap=-0.15,
 ):
     trades = candidate_res.get("trade_list", []) or []
@@ -439,8 +439,9 @@ def run_tuning_cycle(
     embargo_days=2,
     n_trials=30,
     oos_min_trades=20,
-    delta_min=0.0,
+    delta_min=0.01,
     mdd_cap=-0.15,
+    promotion_cooldown_hours=24,
     run_id=None,
     progress_cb=None,
 ):
@@ -514,6 +515,30 @@ def run_tuning_cycle(
         delta_min=float(delta_min),
         mdd_cap=float(mdd_cap),
     )
+
+    # Promotion cooldown to reduce noisy churn between consecutive promotions.
+    cooldown_hours = max(0, int(promotion_cooldown_hours or 0))
+    if gate.get("pass") and active_model_id and cooldown_hours > 0:
+        try:
+            active_meta_path = model_manager.active_dir / "model_meta.json"
+            if active_meta_path.exists():
+                with open(active_meta_path, "r", encoding="utf-8") as f:
+                    active_meta = json.load(f) or {}
+                created_at = active_meta.get("created_at")
+                created_ts = _to_timestamp(created_at)
+                if created_ts is not None and not pd.isna(created_ts):
+                    elapsed_h = (pd.Timestamp.now() - created_ts).total_seconds() / 3600.0
+                    if elapsed_h < cooldown_hours:
+                        gate = {
+                            **gate,
+                            "pass": False,
+                            "decision": "KEEP_ACTIVE",
+                            "reason": f"Promotion cooldown active ({elapsed_h:.1f}h < {cooldown_hours}h)",
+                            "reasons": list(dict.fromkeys((gate.get("reasons") or []) + ["promotion_cooldown_active"])),
+                        }
+        except Exception:
+            pass
+
     _emit_progress(progress_cb, 88, "gate_evaluated", "Gate decision computed")
 
     now = datetime.now()
@@ -533,6 +558,7 @@ def run_tuning_cycle(
                 "oos_min_trades": int(oos_min_trades),
                 "mdd_cap": float(mdd_cap),
                 "delta_min": float(delta_min),
+                "promotion_cooldown_hours": int(promotion_cooldown_hours),
             },
             "invariants": {
                 "signal_lag_gte_1": True,

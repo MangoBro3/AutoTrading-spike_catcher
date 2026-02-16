@@ -79,7 +79,8 @@ DEFAULT_SETTINGS = {
     "tuning_embargo_days": 2,
     "tuning_oos_min_trades": 20,
     "tuning_mdd_cap": -0.15,
-    "tuning_delta_min": 0.0,
+    "tuning_delta_min": 0.01,
+    "tuning_promotion_cooldown_hours": 24,
     "tuning_min_symbols_for_watchlist": 5,
     "tuning_watchlist_fallback_to_market": True,
     "tuning_fallback_top_n": 80,
@@ -1287,7 +1288,7 @@ INDEX_HTML = """<!doctype html>
       document.getElementById("tuning_trials").value = data.tuning_trials || 30;
       document.getElementById("tuning_oos_min_trades").value = data.tuning_oos_min_trades || 20;
       document.getElementById("tuning_mdd_cap").value = data.tuning_mdd_cap ?? -0.15;
-      document.getElementById("tuning_delta_min").value = data.tuning_delta_min || 0.0;
+      document.getElementById("tuning_delta_min").value = (data.tuning_delta_min ?? 0.01);
       document.getElementById("tuning_seed").value = data.tuning_seed || 42;
       document.getElementById("trainer_cooldown_minutes_on_boot").value = data.trainer_cooldown_minutes_on_boot || 15;
     }
@@ -1335,7 +1336,7 @@ INDEX_HTML = """<!doctype html>
         tuning_trials: parseInt(document.getElementById("tuning_trials").value || "30", 10),
         tuning_oos_min_trades: parseInt(document.getElementById("tuning_oos_min_trades").value || "20", 10),
         tuning_mdd_cap: parseFloat(document.getElementById("tuning_mdd_cap").value || "-0.15"),
-        tuning_delta_min: parseFloat(document.getElementById("tuning_delta_min").value || "0.0"),
+        tuning_delta_min: parseFloat(document.getElementById("tuning_delta_min").value || "0.01"),
         tuning_seed: parseInt(document.getElementById("tuning_seed").value || "42", 10),
         trainer_cooldown_minutes_on_boot: parseInt(document.getElementById("trainer_cooldown_minutes_on_boot").value || "15", 10)
       };
@@ -1755,7 +1756,12 @@ def save_settings(data: dict):
     if "tuning_mdd_cap" in data:
         settings["tuning_mdd_cap"] = min(0.0, float(data.get("tuning_mdd_cap", settings["tuning_mdd_cap"])))
     if "tuning_delta_min" in data:
-        settings["tuning_delta_min"] = float(data.get("tuning_delta_min", settings["tuning_delta_min"]))
+        settings["tuning_delta_min"] = max(0.0, float(data.get("tuning_delta_min", settings["tuning_delta_min"])))
+    if "tuning_promotion_cooldown_hours" in data:
+        settings["tuning_promotion_cooldown_hours"] = max(
+            0,
+            int(data.get("tuning_promotion_cooldown_hours", settings["tuning_promotion_cooldown_hours"]))
+        )
     if "tuning_min_symbols_for_watchlist" in data:
         settings["tuning_min_symbols_for_watchlist"] = max(
             1,
@@ -2394,7 +2400,8 @@ def _run_evolution_job(settings: dict, job_id: str):
             n_trials=int(settings.get("tuning_trials", 30)),
             oos_min_trades=int(settings.get("tuning_oos_min_trades", 20)),
             mdd_cap=float(settings.get("tuning_mdd_cap", -0.15)),
-            delta_min=float(settings.get("tuning_delta_min", 0.0)),
+            delta_min=float(settings.get("tuning_delta_min", 0.01)),
+            promotion_cooldown_hours=int(settings.get("tuning_promotion_cooldown_hours", 24)),
             progress_cb=_on_tuning_progress,
         )
         _set_labs_status(status, progress_pct=74, stage="tuning_done", message="Tuning done. Running auto backtest")
@@ -2464,7 +2471,8 @@ def _run_evolution_job(settings: dict, job_id: str):
                 "embargo_days": int(settings.get("tuning_embargo_days", 2)),
                 "min_trades": int(settings.get("tuning_oos_min_trades", 20)),
                 "mdd_cap": float(settings.get("tuning_mdd_cap", -0.15)),
-                "delta_min": float(settings.get("tuning_delta_min", 0.0)),
+                "delta_min": float(settings.get("tuning_delta_min", 0.01)),
+                "promotion_cooldown_hours": int(settings.get("tuning_promotion_cooldown_hours", 24)),
                 "universe_mode": universe_info.get("mode"),
                 "symbol_count": int(universe_info.get("symbol_count", 0)),
                 "watchlist_fallback": bool(universe_info.get("fallback")),

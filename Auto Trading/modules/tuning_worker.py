@@ -127,7 +127,8 @@ def run_weekly_tuning_once(
             n_trials=int(settings.get("tuning_trials", 30)),
             oos_min_trades=int(settings.get("tuning_oos_min_trades", 20)),
             mdd_cap=float(settings.get("tuning_mdd_cap", -0.15)),
-            delta_min=float(settings.get("tuning_delta_min", 0.0)),
+            delta_min=float(settings.get("tuning_delta_min", 0.01)),
+            promotion_cooldown_hours=int(settings.get("tuning_promotion_cooldown_hours", 24)),
         )
         cycle["active_model_id"] = model_manager.active_model_id()
         return cycle
