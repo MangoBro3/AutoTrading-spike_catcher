@@ -1,0 +1,67 @@
+{
+  "contract_version": "v1",
+  "contract_id": "C-20260218-0841-T001",
+  "task_id": "T-001",
+  "goal": "Implement Hybrid v1.2 core modules and integrate backtest runner under artifact-driven workflow.",
+  "scope_allow": [
+    "engine/**",
+    "alloc/**",
+    "guards/**",
+    "backtest/**",
+    "run_backtest.py"
+  ],
+  "scope_forbid": [
+    "/contracts/*",
+    "shared/*"
+  ],
+  "constraints": [
+    "No coding without active contract",
+    "Strict ownership by coder role",
+    "Single merger by Tech Lead only",
+    "Default output format is anchor_replace_block"
+  ],
+  "file_ownership": {
+    "coder_a": [
+      "engine/**",
+      "alloc/**"
+    ],
+    "coder_b": [
+      "guards/**",
+      "backtest/**",
+      "run_backtest.py"
+    ]
+  },
+  "blocking_dependency": null,
+  "acceptance_criteria": [
+    "State machine + allocation + guards paths implemented per ownership",
+    "Backtest runner integrates contract outputs with required artifacts",
+    "Checkpoint reporting follows PM firewall format"
+  ],
+  "definition_of_done": [
+    "All acceptance_criteria satisfied",
+    "test_plan passed on integrated codebase",
+    "Artifacts updated (SPEC.md/TASKS.md/CHANGELOG.md)"
+  ],
+  "test_plan": [
+    "python -m pytest -q",
+    "python run_backtest.py --adapter mock --out backtest/out_mock",
+    "python run_backtest.py --adapter auto_trading --out backtest/out_at"
+  ],
+  "output_format": "anchor_replace_block",
+  "reporting_protocol": {
+    "format": [
+      "status",
+      "blockers",
+      "next_actions",
+      "user_decision_needed",
+      "fail_count",
+      "last_failed_step"
+    ],
+    "no_long_logs": true
+  },
+  "stop_rule": {
+    "retry_limit": 3,
+    "escalate_to_pm_on": "retry_limit_reached_or_user_decision_needed",
+    "pm_questions_max": 2
+  }
+}
