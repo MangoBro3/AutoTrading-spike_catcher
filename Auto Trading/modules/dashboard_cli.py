@@ -2,7 +2,10 @@
 import os
 import sys
 import time
-import msvcrt
+try:
+    import msvcrt  # Windows only
+except ImportError:  # pragma: no cover - non-Windows fallback
+    msvcrt = None
 from datetime import datetime
 from typing import Dict, List, Any
 
@@ -112,7 +115,7 @@ class DashboardCLI:
         print("Starting Dashboard... Press 'Q' to Quit, 'R' to Refresh.")
         while self.running:
             # Input Check (Non-blocking)
-            if msvcrt.kbhit():
+            if msvcrt is not None and msvcrt.kbhit():
                 key = msvcrt.getch().decode('utf-8').upper()
                 if key == 'Q':
                     self.running = False
