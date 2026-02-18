@@ -27,7 +27,10 @@ def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter)
         request = RunRequest(run_id=run_id, mode=run.get("mode", "hybrid"), split=split, options=run)
         payload = adapter(request)
 
-        ev = evaluate_go_no_go(payload["metrics_total"], payload["metrics_by_mode"])
+        eval_scope = {
+            "kz_scope_required": (run.get("family") == "R4") or (run.get("split") == "kill_zones_5m")
+        }
+        ev = evaluate_go_no_go(payload["metrics_total"], payload["metrics_by_mode"], eval_scope=eval_scope)
         payload.setdefault("summary", {})
         payload["summary"]["go_no_go"] = ev.verdict
         payload["summary"]["checks"] = ev.checks

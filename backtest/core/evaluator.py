@@ -11,7 +11,7 @@ class EvalResult:
     checks: dict
 
 
-def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict) -> EvalResult:
+def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict, eval_scope: dict | None = None) -> EvalResult:
     """Evaluate absolute + relative criteria from SPEC_BACKTEST_v1.
 
     Expected keys (minimum):
@@ -45,6 +45,9 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict) -> EvalResult:
     kz_loss_h = float(metrics_total.get("kill_zone_loss_hybrid", 0.0))
     kz_loss_a = float(metrics_total.get("kill_zone_loss_agg", 0.0))
 
+    eval_scope = eval_scope or {}
+    kz_scope_required = bool(eval_scope.get("kz_scope_required", False))
+
     checks = {
         "abs_oos_pf": oos_pf >= 1.2,
         "abs_oos_mdd": oos_mdd <= 0.20,
@@ -52,6 +55,7 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict) -> EvalResult:
         "abs_stress_no_break": not stress_break,
         "rel_oos_cagr": oos_cagr_h >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0),
         "rel_bull_return": bull_ret_h >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0),
+        "kz_scope_required": kz_scope_required,
         "kz_guard_fired": guard_fired,
         "kz_loss_improved": kz_loss_h >= kz_loss_a,
     }
@@ -59,7 +63,7 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict) -> EvalResult:
     # kill zone loss: less negative is better, so hybrid should be > agg
     abs_ok = all(checks[k] for k in ["abs_oos_pf", "abs_oos_mdd", "abs_bull_tcr", "abs_stress_no_break"])
     rel_ok = checks["rel_oos_cagr"] and checks["rel_bull_return"]
-    kz_ok = checks["kz_guard_fired"] and checks["kz_loss_improved"]
+    kz_ok = (not kz_scope_required) or (checks["kz_guard_fired"] and checks["kz_loss_improved"])
 
     verdict = "GO" if (abs_ok and rel_ok and kz_ok) else "NO_GO"
     return EvalResult(verdict=verdict, checks=checks)
