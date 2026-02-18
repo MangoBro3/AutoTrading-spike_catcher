@@ -4,3 +4,5 @@ __pycache__/
 .venv/
 backtest/out/
 backtest/out_*/
+openclaw_audit.json
+team/usage/

@@ -84,8 +84,35 @@ function summarizeUsage(snapshots) {
   const now = Date.now();
   const dayAgo = now - 24 * 3600 * 1000;
   const weekAgo = now - 7 * 24 * 3600 * 1000;
-  const day = snapshots.filter((s) => s.ts >= dayAgo);
-  const week = snapshots.filter((s) => s.ts >= weekAgo);
+
+  // Convert absolute session-token snapshots -> delta usage snapshots
+  const ordered = [...snapshots].sort((a, b) => a.ts - b.ts);
+  const prevByAgent = {};
+  const deltas = [];
+
+  for (const s of ordered) {
+    const d = { ts: s.ts, task_id: s.task_id || 'unassigned', per_agent: {}, total: 0 };
+    for (const [agent, absRaw] of Object.entries(s.per_agent || {})) {
+      const abs = Number(absRaw || 0);
+      if (!(agent in prevByAgent)) {
+        // first observation is baseline, not usage
+        prevByAgent[agent] = abs;
+        continue;
+      }
+      const prev = Number(prevByAgent[agent] || 0);
+      // If counter drops (session reset/compaction), treat as fresh baseline (no negative usage)
+      const delta = abs >= prev ? (abs - prev) : 0;
+      prevByAgent[agent] = abs;
+      if (delta > 0) {
+        d.per_agent[agent] = delta;
+        d.total += delta;
+      }
+    }
+    deltas.push(d);
+  }
+
+  const day = deltas.filter((s) => s.ts >= dayAgo);
+  const week = deltas.filter((s) => s.ts >= weekAgo);
 
   const sumPerAgent = (arr) => {
     const out = {};
@@ -94,6 +121,7 @@ function summarizeUsage(snapshots) {
     }
     return out;
   };
+
   const dailyPerAgent = sumPerAgent(day);
   const weeklyPerAgent = sumPerAgent(week);
   const dailyTotal = Object.values(dailyPerAgent).reduce((a, b) => a + b, 0);
@@ -113,6 +141,7 @@ function summarizeUsage(snapshots) {
     byTask,
     warning,
     snapshotCount: snapshots.length,
+    deltaCount: deltas.length,
   };
 }
 
