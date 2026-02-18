@@ -19,6 +19,8 @@
     .emoji{font-size:26px;display:block}
     .name{font-weight:700;font-size:12px}
     .state{font-size:11px;color:#9aa4b2}
+    .bar{height:8px;background:#202838;border-radius:999px;overflow:hidden;margin-top:6px}
+    .fill{height:100%;background:linear-gradient(90deg,#47d16c,#ffca5f,#ff6b6b)}
   </style>
 </head>
 <body>
@@ -28,6 +30,7 @@
     <div class="card"><h3>Gateway</h3><div id="gateway"></div></div>
     <div class="card"><h3>Channels</h3><div id="channels"></div></div>
     <div class="card"><h3>Checkpoint</h3><div id="checkpoint"></div></div>
+    <div class="card"><h3>Token Usage</h3><div id="usage"></div></div>
   </div>
   <div class="card" style="margin-top:12px">
     <h3>Agent Characters</h3>
@@ -59,12 +62,25 @@ function render(data){
     <div>Fail: ${esc(ck.fail_count)}</div>
     <div>Step: ${esc(ck.last_failed_step)}</div>` : '<span class="muted">latest.json not found</span>';
 
+  const sessionsList = data.sessions?.recent || data.sessions?.list || data.sessions?.sessions || [];
+  const defaultsCtx = Number(data.sessions?.defaults?.contextTokens || 272000);
+  const mainSess = sessionsList.find(s=>String(s.key||'').startsWith('agent:main:main'));
+  if(mainSess){
+    const used = Number(mainSess.inputTokens||0) + Number(mainSess.outputTokens||0);
+    const pct = Math.max(0, Math.min(100, (used/defaultsCtx)*100));
+    const remain = Math.max(0, defaultsCtx-used);
+    $('usage').innerHTML = `<div>main: <b>${used.toLocaleString()}</b> / ${defaultsCtx.toLocaleString()} (${pct.toFixed(1)}%)</div>
+      <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="muted">remaining ctx tokens: ${remain.toLocaleString()}</div>`;
+  }else{
+    $('usage').innerHTML = '<span class="muted">main session token data unavailable</span>';
+  }
+
   const agents = data.agents||[];
   const tbody = $('agentsTbl').querySelector('tbody');
   tbody.innerHTML = agents.map(a=>`<tr><td>${esc(a.id)}</td><td>${esc(a.workspace)}</td><td>${esc(a.model)}</td><td>${esc(a.bindings)}</td></tr>`).join('');
 
   const icon = {pm:'🧭',tl:'🛠️',architect:'📐',coder_a:'🧪',coder_b:'⚙️',main:'👑',mango:'🥭'};
-  const sessionsList = data.sessions?.recent || data.sessions?.list || data.sessions?.sessions || [];
 
   const ageToText = (ms)=>{
     if(ms==null || ms==='-') return '-';
