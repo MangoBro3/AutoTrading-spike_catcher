@@ -1,11 +1,13 @@
 import http from 'node:http';
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 18890;
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
+const USAGE_DIR = '/mnt/f/SafeBot/openclaw-news-workspace/python/team/usage';
+const SNAPSHOT_FILE = `${USAGE_DIR}/token_snapshots.jsonl`;
 
 function tryExecJson(cmd) {
   const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -37,9 +39,93 @@ function readCheckpoint() {
   try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; }
 }
 
+function normalizeSessions(status) {
+  return status?.sessions?.recent || status?.sessions?.list || status?.sessions?.sessions || [];
+}
+
+function computeTokenSnapshot(status, checkpoint) {
+  const sessions = normalizeSessions(status);
+  const perAgent = {};
+  for (const s of sessions) {
+    const agentId = s.agentId || String(s.key || '').split(':')[1] || 'unknown';
+    const used = Number(s.inputTokens || 0) + Number(s.outputTokens || 0);
+    perAgent[agentId] = Math.max(perAgent[agentId] || 0, used);
+  }
+  const total = Object.values(perAgent).reduce((a, b) => a + b, 0);
+  return {
+    ts: Date.now(),
+    iso: new Date().toISOString(),
+    task_id: checkpoint?.task_id || checkpoint?.taskId || null,
+    per_agent: perAgent,
+    total,
+  };
+}
+
+function appendSnapshot(snapshot) {
+  try {
+    mkdirSync(USAGE_DIR, { recursive: true });
+    appendFileSync(SNAPSHOT_FILE, JSON.stringify(snapshot) + '\n', 'utf8');
+  } catch {
+    // ignore write errors for dashboard availability
+  }
+}
+
+function readSnapshots() {
+  if (!existsSync(SNAPSHOT_FILE)) return [];
+  try {
+    const lines = readFileSync(SNAPSHOT_FILE, 'utf8').split('\n').filter(Boolean);
+    return lines.map((l) => JSON.parse(l)).filter((x) => x && x.ts);
+  } catch {
+    return [];
+  }
+}
+
+function summarizeUsage(snapshots) {
+  const now = Date.now();
+  const dayAgo = now - 24 * 3600 * 1000;
+  const weekAgo = now - 7 * 24 * 3600 * 1000;
+  const day = snapshots.filter((s) => s.ts >= dayAgo);
+  const week = snapshots.filter((s) => s.ts >= weekAgo);
+
+  const sumPerAgent = (arr) => {
+    const out = {};
+    for (const s of arr) {
+      for (const [k, v] of Object.entries(s.per_agent || {})) out[k] = (out[k] || 0) + Number(v || 0);
+    }
+    return out;
+  };
+  const dailyPerAgent = sumPerAgent(day);
+  const weeklyPerAgent = sumPerAgent(week);
+  const dailyTotal = Object.values(dailyPerAgent).reduce((a, b) => a + b, 0);
+  const weeklyTotal = Object.values(weeklyPerAgent).reduce((a, b) => a + b, 0);
+
+  const byTask = {};
+  for (const s of week) {
+    const t = s.task_id || 'unassigned';
+    byTask[t] = (byTask[t] || 0) + Number(s.total || 0);
+  }
+
+  const warning = dailyTotal >= 2_000_000 ? 'critical' : dailyTotal >= 1_000_000 ? 'warn' : 'ok';
+
+  return {
+    daily: { total: dailyTotal, perAgent: dailyPerAgent },
+    weekly: { total: weeklyTotal, perAgent: weeklyPerAgent },
+    byTask,
+    warning,
+    snapshotCount: snapshots.length,
+  };
+}
+
 function buildOverview() {
   const status = safeRun('openclaw status --all --json', null);
   const agents = safeRun('openclaw agents list --json', null);
+  const checkpoint = readCheckpoint();
+
+  if (status) {
+    const snap = computeTokenSnapshot(status, checkpoint);
+    appendSnapshot(snap);
+  }
+  const usage = summarizeUsage(readSnapshots());
 
   return {
     now: new Date().toISOString(),
@@ -51,7 +137,8 @@ function buildOverview() {
     agents: agents || [],
     heartbeat: status?.heartbeat || null,
     securityAudit: status?.securityAudit || null,
-    checkpoint: readCheckpoint(),
+    checkpoint,
+    usage,
   };
 }
 

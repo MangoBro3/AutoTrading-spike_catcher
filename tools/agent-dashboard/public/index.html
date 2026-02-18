@@ -65,15 +65,31 @@ function render(data){
   const sessionsList = data.sessions?.recent || data.sessions?.list || data.sessions?.sessions || [];
   const defaultsCtx = Number(data.sessions?.defaults?.contextTokens || 272000);
   const mainSess = sessionsList.find(s=>String(s.key||'').startsWith('agent:main:main'));
+  const usage = data.usage || {};
+  const dailyTotal = Number(usage.daily?.total||0);
+  const weeklyTotal = Number(usage.weekly?.total||0);
+  const warning = usage.warning || 'ok';
+  const wColor = warning==='critical'?'bad':warning==='warn'?'warn':'ok';
+
   if(mainSess){
     const used = Number(mainSess.inputTokens||0) + Number(mainSess.outputTokens||0);
     const pct = Math.max(0, Math.min(100, (used/defaultsCtx)*100));
     const remain = Math.max(0, defaultsCtx-used);
-    $('usage').innerHTML = `<div>main: <b>${used.toLocaleString()}</b> / ${defaultsCtx.toLocaleString()} (${pct.toFixed(1)}%)</div>
+    const dailyRows = Object.entries(usage.daily?.perAgent||{}).sort((a,b)=>b[1]-a[1]).slice(0,6)
+      .map(([k,v])=>`${k}:${Number(v).toLocaleString()}`).join(' | ') || '-';
+    const taskRows = Object.entries(usage.byTask||{}).sort((a,b)=>b[1]-a[1]).slice(0,5)
+      .map(([k,v])=>`${k}:${Number(v).toLocaleString()}`).join(' | ') || '-';
+
+    $('usage').innerHTML = `<div>main ctx: <b>${used.toLocaleString()}</b> / ${defaultsCtx.toLocaleString()} (${pct.toFixed(1)}%)</div>
       <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
-      <div class="muted">remaining ctx tokens: ${remain.toLocaleString()}</div>`;
+      <div class="muted">remaining ctx tokens: ${remain.toLocaleString()}</div>
+      <hr style="border:0;border-top:1px solid #273043;margin:10px 0">
+      <div>daily total: <b class="${wColor}">${dailyTotal.toLocaleString()}</b> / weekly total: <b>${weeklyTotal.toLocaleString()}</b></div>
+      <div class="muted">warning line: 1M(warn), 2M(critical) | snapshots: ${usage.snapshotCount||0}</div>
+      <div class="muted">daily per-agent: ${esc(dailyRows)}</div>
+      <div class="muted">task_id usage(7d): ${esc(taskRows)}</div>`;
   }else{
-    $('usage').innerHTML = '<span class="muted">main session token data unavailable</span>';
+    $('usage').innerHTML = '<span class="muted">token data unavailable</span>';
   }
 
   const agents = data.agents||[];
