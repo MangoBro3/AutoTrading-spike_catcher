@@ -63,6 +63,11 @@ class TestStage10(unittest.TestCase):
         print("\n=== [Stage 10] Circuit Breaker Blocking Test ===")
         adapter = UpbitAdapter(use_env=False)
         adapter.status = "DEGRADED"
+
+        # Test must be key/network independent: inject dummy creds + mock exchange call
+        adapter.client.apiKey = "DUMMY"
+        adapter.client.secret = "DUMMY"
+        adapter.client.create_order = MagicMock(return_value={"id": "mock-reduce-only"})
         
         # 1. Try Normal Buy (Entry) -> Should be Blocked
         print("1. Attempting Buy in DEGRADED mode...")
@@ -75,6 +80,7 @@ class TestStage10(unittest.TestCase):
         print("2. Attempting Reduce-Only in DEGRADED mode...")
         order = adapter.create_order("KRW-BTC", "limit", "sell", 0.1, 50000, params={'reduce_only': True})
         self.assertIsNotNone(order)
+        adapter.client.create_order.assert_called_once()
         print("   Reduce-Only Order Allowed.")
 
     def test_risk_limits(self):
@@ -89,6 +95,16 @@ class TestStage10(unittest.TestCase):
             'roi_pct': -6.0
         }
         
+        # Reset daily risk baseline for deterministic test
+        self.controller.daily_risk_state = {
+            "day": self.controller._today_key_local(),
+            "daily_start_equity": 100000.0,
+            "intraday_peak_equity": 100000.0,
+            "hard_stop_triggered": False,
+            "last_trigger_reason": None,
+            "updated_at": time.time(),
+        }
+
         # Trigger Check
         print("1. Injecting -6% ROI (Limit is 5%)")
         ok = self.controller.check_risk_limits()
