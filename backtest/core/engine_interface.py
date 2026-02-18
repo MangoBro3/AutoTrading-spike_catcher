@@ -20,8 +20,7 @@ class EngineAdapter(Protocol):
 
 
 def default_mock_adapter(request: RunRequest) -> dict:
-    """Fallback adapter until real engine binding is implemented."""
-    from backtest.core.runner import simulate_run
+    """Default local simulator adapter for Hybrid v1.2 backtests."""
+    from backtest.core.hybrid_simulator import simulate_hybrid_run
 
-    run = {"run_id": request.run_id, "mode": request.mode, **request.options}
-    return simulate_run(run, request.split)
+    return simulate_hybrid_run(request)

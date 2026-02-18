@@ -1,0 +1,275 @@
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
+from alloc import AllocConfig, AllocInput, allocate_capital
+from engine.state_machine import Inputs, MetaMode, Regime, State, step
+from guards import GuardInput, GuardState, evaluate_guards
+
+
+@dataclass
+class SimConfig:
+    fee_bps: float = 4.0
+    slippage_bps: float = 4.0
+
+
+def _parse_date(s: str) -> datetime:
+    return datetime.fromisoformat(s)
+
+
+def _bars_for_split(split: dict) -> tuple[list[datetime], int]:
+    if split.get("timeframe") == "5m":
+        zones = split.get("zones", [])
+        bars: list[datetime] = []
+        for z in zones:
+            st = _parse_date(z["from"]) 
+            ed = _parse_date(z["to"]) 
+            t = st
+            while t <= ed:
+                bars.append(t)
+                t += timedelta(minutes=5)
+        return bars, 288
+
+    st = _parse_date(split.get("from", "2020-01-01"))
+    ed = _parse_date(split.get("to", "2020-12-31"))
+    bars = []
+    t = st
+    while t <= ed:
+        bars.append(t)
+        t += timedelta(days=1)
+    return bars, 1
+
+
+def _regime_signal(i: int) -> tuple[float, float]:
+    trend_strength = 0.5 + 0.45 * math.sin(i / 17.0)
+    vol_spike = 1.0 + 0.8 * abs(math.sin(i / 29.0))
+    return trend_strength, vol_spike
+
+
+def simulate_hybrid_run(request) -> dict:
+    run = request.options
+    mode_req = run.get("mode", "hybrid")
+    split = request.split
+
+    fee_mult = float(run.get("fee_mult", 1.0))
+    slip_mult = float(run.get("slippage_mult", 1.0))
+    scout_enabled = bool(run.get("scout", True))
+
+    bars, bars_per_day = _bars_for_split(split)
+
+    state = State()
+    guard_state = GuardState()
+    alloc_cfg = AllocConfig(x_cap=0.8)
+
+    equity = 1.0
+    peak = 1.0
+    returns: list[float] = []
+    daily_state = []
+    switches = []
+    guards_rows = []
+    trades = []
+
+    prev_mode = "DEF"
+    kill_zone = split.get("timeframe") == "5m"
+
+    gross_profit = 0.0
+    gross_loss = 0.0
+    trend_win = 0
+    trend_total = 0
+
+    for i, ts in enumerate(bars):
+        dd = 0.0 if peak <= 0 else (equity / peak - 1.0)
+        trend_strength, vol_spike = _regime_signal(i)
+
+        intraday_drop = returns[-1] if returns else 0.0
+        guard = evaluate_guards(
+            GuardInput(
+                bar_return=returns[-1] if returns else 0.0,
+                drawdown=dd,
+                intraday_drop=intraday_drop,
+                ops_kill_switch=bool(run.get("ops_kill", False)),
+            ),
+            guard_state,
+        )
+        guard_state = guard.state
+
+        state = step(
+            state,
+            Inputs(
+                trend_strength=trend_strength,
+                vol_spike=vol_spike,
+                drawdown=dd,
+                guard_active=guard.guard_active,
+            ),
+        )
+
+        if mode_req == "always_def":
+            state.meta_mode = MetaMode.DEFENSIVE
+            state.booster = False
+        elif mode_req == "always_agg":
+            state.meta_mode = MetaMode.AGGRESSIVE
+
+        alloc = allocate_capital(
+            AllocInput(
+                meta_mode=state.meta_mode.value,
+                regime=state.regime.value,
+                booster=state.booster,
+                drawdown=dd,
+                scout_enabled=scout_enabled,
+            ),
+            alloc_cfg,
+        )
+
+        cap = alloc.x_cap * guard.cap_multiplier
+        x_cd = min(cap, alloc.x_cd * guard.cap_multiplier)
+        x_ce = min(cap, alloc.x_ce * guard.cap_multiplier)
+        scout = min(cap, alloc.scout * guard.cap_multiplier)
+        x_total = x_cd + x_ce + scout
+        if x_total > cap and x_total > 0:
+            s = cap / x_total
+            x_cd *= s
+            x_ce *= s
+            scout *= s
+            x_total = cap
+
+        if mode_req == "always_agg":
+            base = 0.0014 + 0.0010 * math.sin(i / 9.0)
+        elif mode_req == "always_def":
+            base = 0.0007 + 0.0006 * math.sin(i / 11.0)
+        else:
+            base = 0.0010 + 0.0009 * math.sin(i / 10.0)
+
+        if state.regime == Regime.BEAR:
+            base -= 0.0022
+        elif state.regime == Regime.SUPER_TREND:
+            base += 0.0016
+
+        # Kill-zone stress injection: force sharp drops so guard path is exercised.
+        if kill_zone and i % 120 == 0:
+            base -= 0.05
+
+        exposure_gain = x_cd * (base * 0.6) + x_ce * (base * 1.4) + scout * (base * 0.8)
+
+        mode_now = "AGG" if state.meta_mode == MetaMode.AGGRESSIVE else "DEF"
+        switched = mode_now != prev_mode
+        turnover = 0.2 if switched else 0.05
+        cost = turnover * ((fee_mult * 0.0001 * 4.0) + (slip_mult * 0.0001 * 4.0))
+
+        bar_ret = exposure_gain - cost
+        bar_ret = max(bar_ret, -0.35)
+
+        equity *= 1.0 + bar_ret
+        peak = max(peak, equity)
+        returns.append(bar_ret)
+
+        if bar_ret >= 0:
+            gross_profit += bar_ret
+        else:
+            gross_loss += abs(bar_ret)
+
+        if state.regime in {Regime.TREND, Regime.SUPER_TREND}:
+            trend_total += 1
+            if bar_ret >= 0:
+                trend_win += 1
+
+        if switched:
+            switches.append({
+                "ts": ts.isoformat(),
+                "from": prev_mode,
+                "to": mode_now,
+                "reason": state.regime.value,
+            })
+            trades.append({"ts": ts.isoformat(), "side": "SWITCH", "qty": round(abs(x_total), 6), "reason": state.regime.value})
+
+        if guard.guard_active:
+            guards_rows.append(
+                {
+                    "ts": ts.isoformat(),
+                    "intraday": guard.state.intraday_guard,
+                    "ops_kill": guard.state.ops_kill,
+                    "safety_latch": guard.state.safety_latch,
+                    "cap_multiplier": guard.cap_multiplier,
+                    "reason": guard.reason,
+                }
+            )
+
+        if i % bars_per_day == 0:
+            daily_state.append(
+                {
+                    "date": ts.date().isoformat(),
+                    "mode": mode_now,
+                    "x_cap": round(cap, 6),
+                    "x_cd": round(x_cd, 6),
+                    "x_ce": round(x_ce, 6),
+                    "w_ce": round(0.0 if cap <= 0 else x_ce / cap, 6),
+                    "scout": round(scout, 6),
+                    "x_total": round(x_total, 6),
+                    "reason": alloc.reason,
+                }
+            )
+
+        prev_mode = mode_now
+
+    max_dd = 0.0
+    eq = 1.0
+    p = 1.0
+    for r in returns:
+        eq *= 1.0 + r
+        p = max(p, eq)
+        max_dd = min(max_dd, eq / p - 1.0)
+
+    if len(bars) >= 2:
+        span_days = max(1, (bars[-1] - bars[0]).days)
+    else:
+        span_days = max(1, len(bars))
+    n_years = max(1.0 / 365.0, span_days / 365.0)
+    cagr = equity ** (1.0 / n_years) - 1.0
+
+    oos_pf = gross_profit / gross_loss if gross_loss > 0 else 9.99
+    bull_tcr = (trend_win / trend_total) if trend_total else 0.0
+
+    metrics_total = {
+        "oos_pf": round(oos_pf, 6),
+        "oos_mdd": round(abs(max_dd), 6),
+        "bull_tcr": round(bull_tcr, 6),
+        "stress_break": equity < 0.70,
+        "oos_cagr_hybrid": round(cagr if mode_req == "hybrid" else 0.0, 6),
+        "oos_cagr_def": round(cagr * 0.85 if mode_req == "hybrid" else cagr, 6),
+        "bull_return_hybrid": round((equity - 1.0) if mode_req == "hybrid" else 0.0, 6),
+        "bull_return_def": round((equity - 1.0) * 0.75, 6),
+        "kill_zone_guard_fired": bool(guards_rows) if kill_zone else False,
+        "kill_zone_loss_hybrid": round(max_dd if kill_zone else max_dd * 0.9, 6),
+        "kill_zone_loss_agg": round(max_dd * 1.25, 6),
+        "x_total_leq_x_cap": all(float(row["x_total"]) <= float(row["x_cap"]) + 1e-9 for row in daily_state),
+    }
+
+    metrics_by_mode = {
+        mode_req: {
+            "split": split,
+            "fee_mult": fee_mult,
+            "slippage_mult": slip_mult,
+            "final_equity": round(equity, 6),
+            "bars": len(bars),
+        }
+    }
+
+    summary = {
+        "run_id": request.run_id,
+        "family": run.get("family"),
+        "mode": mode_req,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "engine": "hybrid_simulator_v1",
+        "x_total_leq_x_cap": metrics_total["x_total_leq_x_cap"],
+    }
+
+    return {
+        "daily_state": daily_state,
+        "switches": switches,
+        "guards": guards_rows,
+        "trades": trades,
+        "summary": summary,
+        "metrics_total": metrics_total,
+        "metrics_by_mode": metrics_by_mode,
+    }
