@@ -318,7 +318,9 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         raw = json.loads(summary_file.read_text(encoding="utf-8"))
         schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
         total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
-        win_rate_hint = _win_rate_hint((((raw.get("candidate", {}) or {}).get("oos_metrics", {}) or {}).get("win_rate"))
+        win_rate_hint = _win_rate_hint(
+            (((raw.get("candidate", {}) or {}).get("oos_metrics", {}) or {}).get("win_rate"))
+        )
 
         oos_pf = 1.0 + max(0.0, total_return_pct) / 100.0
         oos_pf_source = "pf_from_return"
@@ -425,6 +427,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "oos_mdd": oos_mdd,
             "total_return_pct": total_return_pct,
             "max_dd_pct": max_dd_pct,
+            "win_rate_hint": win_rate_hint,
             "trades_for_run": _trades_for_run,
             "guards_for_run": _guards_for_run,
         }
@@ -484,7 +487,12 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             oos_mdd = ctx["oos_mdd"]
             total_return_pct = ctx["total_return_pct"]
             max_dd_pct = ctx["max_dd_pct"]
-            bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, total_return_pct, max_dd_pct)
+            bull_tcr, bull_tcr_source = _compute_bull_tcr(
+                trades_rows,
+                total_return_pct,
+                max_dd_pct,
+                ctx.get("win_rate_hint"),
+            )
             mapped_from = str(ctx["summary_file"])
             raw_created_at = ctx["raw"].get("created_at", "")
             schema_status = ctx["schema_status"]
