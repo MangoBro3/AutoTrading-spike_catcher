@@ -60,15 +60,27 @@ class TestStage11(unittest.TestCase):
         
         # Inject Mock
         self.launcher.controller = mock_controller
-        self.launcher.worker_thread = threading.Thread(target=mock_controller.run)
+
+        thread_error = {}
+        def safe_thread_target():
+            try:
+                mock_controller.run()
+            except Exception as e:
+                # Keep crash signal observable without letting it escape the thread
+                thread_error['exc'] = e
+
+        self.launcher.worker_thread = threading.Thread(target=safe_thread_target)
         
         # Start
         self.launcher.worker_thread.start()
-        time.sleep(0.5) # Wait for crash
+        self.launcher.worker_thread.join(timeout=1.0)  # Wait for crash completion
         
         # Check if Launcher is still "running" (The app itself)
         self.assertTrue(self.launcher.running)
         print("   [Verified] Launcher survived Controller crash.")
+
+        # Ensure the simulated crash happened (captured, not leaked as thread warning)
+        self.assertIsInstance(thread_error.get('exc'), RuntimeError)
         
         # Check Status File
         if self.json_path.exists():
