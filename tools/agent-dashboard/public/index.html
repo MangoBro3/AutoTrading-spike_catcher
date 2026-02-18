@@ -160,7 +160,7 @@ function render(data){
   const start = (timelinePage - 1) * PAGE_SIZE;
   const pageRows = tl.slice(start, start + PAGE_SIZE);
   $('timeline').innerHTML = `<table><thead><tr><th>시간</th><th>업무</th><th>프로젝트</th><th>에이전트</th><th>상세 내용</th></tr></thead><tbody>`+
-    pageRows.map(r=>`<tr><td>${esc(new Date(r.ts||Date.now()).toLocaleTimeString())}</td><td>${esc(r.work||'-')}</td><td>${esc(r.project||'-')}</td><td>${esc(r.agent||'-')}</td><td>${esc(r.detail||'-')}</td></tr>`).join('')+
+    pageRows.map(r=>`<tr><td>${esc(new Date(r.ts||Date.now()).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}))}</td><td>${esc(r.work||'-')}</td><td>${esc(r.project||'-')}</td><td>${esc(r.agent||'-')}</td><td>${esc(r.detail||'-')}</td></tr>`).join('')+
     `</tbody></table>`;
   $('pageInfo').textContent = `페이지 ${timelinePage}/${totalPages} · 총 ${tl.length}건`;
   $('prevBtn').disabled = timelinePage <= 1;
