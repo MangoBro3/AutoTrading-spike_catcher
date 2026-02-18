@@ -34,6 +34,6 @@ def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter)
 
         out_dir = out_root / run_id
         files = write_reports(out_dir, payload)
-        results.append({"run_id": run_id, "verdict": ev.verdict, "checks": ev.checks, "files": files})
+        results.append({"run_id": run_id, "verdict": ev.verdict, "go_no_go": ev.verdict, "checks": ev.checks, "files": files})
 
     return results
