@@ -36,6 +36,18 @@ def _to_percent_points(v: float) -> float:
     return v
 
 
+def _win_rate_hint(v) -> float | None:
+    try:
+        x = float(v)
+    except Exception:
+        return None
+    if x < 0:
+        return None
+    if x > 1.0:
+        x = x / 100.0
+    return max(0.0, min(1.0, x))
+
+
 def _extract_return_drawdown_pct(raw: dict) -> tuple[float, float, str]:
     """Extract total return/max drawdown in percent points across known schemas."""
     metrics = raw.get("metrics", {}) or {}
@@ -149,12 +161,18 @@ def _find_fallback_trades_path(base: Path, run_id: str, summary_file: Path) -> t
     return None, "trades_csv_missing_in_run_summary"
 
 
-def _compute_bull_tcr(trades_rows: list[dict], total_return_pct: float, max_dd_pct: float) -> tuple[float, str]:
+def _compute_bull_tcr(
+    trades_rows: list[dict],
+    total_return_pct: float,
+    max_dd_pct: float,
+    win_rate_hint: float | None = None,
+) -> tuple[float, str]:
     """Map bull_tcr from run_summary/trades in a deterministic way.
 
     Priority:
       1) Realized round-trip win ratio from trades.csv (BUY->SELL FIFO matching)
-      2) Fallback proxy from return-vs-drawdown profile
+      2) win_rate_hint(raw.candidate.oos_metrics.win_rate)
+      3) Fallback proxy from return-vs-drawdown profile
     """
 
     buys: list[list[float]] = []  # [remaining_qty, buy_price]
@@ -189,6 +207,9 @@ def _compute_bull_tcr(trades_rows: list[dict], total_return_pct: float, max_dd_p
 
     if close_count > 0:
         return max(0.0, min(1.0, win_count / close_count)), "trades_roundtrip_win_ratio"
+
+    if win_rate_hint is not None:
+        return max(0.0, min(1.0, win_rate_hint)), "win_rate_hint_candidate_oos_metrics"
 
     # Fallback: positive return and shallow DD imply stronger trend-capture behavior.
     ret = max(0.0, total_return_pct)
@@ -297,6 +318,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         raw = json.loads(summary_file.read_text(encoding="utf-8"))
         schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
         total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
+        win_rate_hint = _win_rate_hint((((raw.get("candidate", {}) or {}).get("oos_metrics", {}) or {}).get("win_rate"))
 
         oos_pf = 1.0 + max(0.0, total_return_pct) / 100.0
         oos_pf_source = "pf_from_return"
