@@ -12,6 +12,10 @@ from backtest.core.engine_interface import RunRequest
 logger = logging.getLogger(__name__)
 
 
+class AdapterSchemaError(RuntimeError):
+    """Raised when run_summary schema/artifact contract is invalid for adapter consumption."""
+
+
 def _to_float(v, default=0.0):
     try:
         return float(v)
@@ -25,6 +29,35 @@ def _latest_run_summary(base_dir: Path) -> Path:
     if not files:
         raise FileNotFoundError(f"No run_summary.json found under {runs_dir}")
     return files[0]
+
+
+def _resolve_artifact_path(base: Path, artifact_rel_or_abs: str | Path) -> Path:
+    artifact_path = Path(str(artifact_rel_or_abs).replace("\\", "/"))
+    return base / "Auto Trading" / artifact_path if not artifact_path.is_absolute() else artifact_path
+
+
+def _validate_backtest_schema_or_raise(raw: dict, base: Path) -> tuple[Path, str]:
+    """Minimal strict schema guard for backtest summaries.
+
+    Contract (hard): run_type=backtest MUST provide files.guards_csv and the file must exist.
+    """
+
+    if str(raw.get("run_type", "")).lower() != "backtest":
+        return Path(), "not_backtest_mode"
+
+    files_meta = raw.get("files", {}) or {}
+    guards_rel = files_meta.get("guards_csv")
+    if not guards_rel:
+        raise AdapterSchemaError("BACKTEST_SCHEMA_INVALID: missing required files.guards_csv")
+
+    guards_path = _resolve_artifact_path(base, guards_rel)
+    if not guards_path.exists():
+        raise AdapterSchemaError(f"BACKTEST_SCHEMA_INVALID: guards_csv_path_not_found:{guards_path}")
+
+    if guards_path.stat().st_size <= 0:
+        raise AdapterSchemaError(f"BACKTEST_SCHEMA_INVALID: guards_csv_empty:{guards_path}")
+
+    return guards_path, "backtest_schema_valid"
 
 
 def _read_guards_rows(path: Path, reason: str = "mapped_from_autotrading") -> list[dict]:
@@ -127,6 +160,8 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
     raw = json.loads(summary_file.read_text(encoding="utf-8"))
     metrics = raw.get("metrics", {})
 
+    schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
+
     total_return_pct = _to_float(metrics.get("total_return", 0.0), 0.0)
     max_dd_pct = _to_float(metrics.get("max_dd", 0.0), 0.0)
 
@@ -139,8 +174,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
 
     trades_rel = files_meta.get("trades_csv")
     if trades_rel:
-        trades_csv = Path(str(trades_rel).replace("\\", "/"))
-        trades_path = base / "Auto Trading" / trades_csv if not trades_csv.is_absolute() else trades_csv
+        trades_path = _resolve_artifact_path(base, trades_rel)
         if trades_path.exists():
             with trades_path.open("r", encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
@@ -156,11 +190,17 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                         break
 
     guards_rows_default: list[dict] = []
-    guard_mapping_status_default = "unknown"
+    guard_mapping_status_default = schema_status
     guards_rel = files_meta.get("guards_csv")
-    if guards_rel:
-        guards_csv = Path(str(guards_rel).replace("\\", "/"))
-        guards_path = base / "Auto Trading" / guards_csv if not guards_csv.is_absolute() else guards_csv
+
+    # Backtest schema-valid case: required guards path already resolved/validated.
+    if schema_status == "backtest_schema_valid":
+        guards_rows_default = _read_guards_rows(schema_guards_path)
+        guard_mapping_status_default = "guards_csv_loaded" if guards_rows_default else "guards_csv_loaded_but_empty"
+
+    # Non-backtest (or legacy) permissive branch.
+    elif guards_rel:
+        guards_path = _resolve_artifact_path(base, guards_rel)
         if guards_path.exists():
             guards_rows_default = _read_guards_rows(guards_path)
             guard_mapping_status_default = "guards_csv_loaded" if guards_rows_default else "guards_csv_loaded_but_empty"
@@ -242,6 +282,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                 "mapped_from": str(summary_file),
                 "mode": mode,
                 "bull_tcr_source": bull_tcr_source,
+                "schema_guard_status": schema_status,
                 "guard_mapping_status": guard_mapping_status,
             },
             "metrics_total": metrics_total,

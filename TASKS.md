@@ -10,9 +10,9 @@
   - 추후 `task_blocked` 또는 동등 이벤트 추가 시 `[ACTIVE_BLOCKER]`로 승격
   - blocker 해소 이벤트 기록 시 Blocker 칼럼을 `None`으로 정리
 
-### Sync Checkpoint (2026-02-19 01:38 KST, Verify & Integrate)
+### Sync Checkpoint (2026-02-19 01:41 KST, Verify & Integrate)
 - 검증 경로: `/mnt/f/SafeBot/openclaw-news-workspace/python`
 - pytest: `Auto Trading/test_stage7.py`, `test_stage10.py`, `test_stage11_integration.py` → **9 passed**
 - rerun: `python run_backtest.py --adapter auto_trading --run-summary models/_archive/run_20260212_173603_42/run_summary.json --out backtest/out_at_rerun`
 - 산출물: `backtest/out_at_rerun/runner_summary.json` 재생성 확인
-- R0~R4 gate 변화: GO 건수 변화 없음(전/후 모두 0), `abs_oos_pf`만 전 run에서 `True→False`로 하락
+- R0~R4 gate 변화: GO 건수 변화 없음(전/후 모두 0), 체크 단위로는 `abs_oos_pf` 15건 `True→False`, `kz_guard_fired` 1건(`R4`) `False→True`

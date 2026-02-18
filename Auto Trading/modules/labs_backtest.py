@@ -2,6 +2,7 @@
 import sys
 import os
 import logging
+import csv
 import pandas as pd
 import numpy as np
 import json
@@ -26,6 +27,48 @@ logger = logging.getLogger("LabsBacktest")
 class LabsBacktester:
     def __init__(self, base_dir="results"):
         self.writer = ResultsWriter(base_dir=base_dir)
+
+    @staticmethod
+    def _extract_guard_events(params: dict | None, strategy_obj=None) -> list[dict]:
+        """Collect real guard events only. No synthetic rows are generated."""
+        candidates = []
+        if isinstance(params, dict):
+            for key in ("guard_events", "guards", "guard_rows"):
+                val = params.get(key)
+                if isinstance(val, list):
+                    candidates = val
+                    break
+
+        if not candidates and strategy_obj is not None:
+            for attr in ("guard_events", "guards", "guard_rows"):
+                val = getattr(strategy_obj, attr, None)
+                if isinstance(val, list):
+                    candidates = val
+                    break
+
+        rows: list[dict] = []
+        for ev in candidates:
+            if not isinstance(ev, dict):
+                continue
+            rows.append(
+                {
+                    "ts": ev.get("ts") or ev.get("dt") or ev.get("date") or "",
+                    "guard": ev.get("guard") or ev.get("name") or "",
+                    "value": ev.get("value") if ev.get("value") is not None else (ev.get("action") or ""),
+                    "reason": ev.get("reason") or "",
+                }
+            )
+        return rows
+
+    @staticmethod
+    def _write_guards_csv(path: Path, rows: list[dict]) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fieldnames = ["ts", "guard", "value", "reason"]
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in rows:
+                writer.writerow({k: row.get(k, "") for k in fieldnames})
 
     def run(self, strategy_class, universe, params: dict, tag: str = ""):
         """
@@ -61,10 +104,15 @@ class LabsBacktester:
         # 3. Save CSVs
         equity_csv = run_path / "equity.csv"
         trades_csv = run_path / "trades.csv"
-        
+        guards_csv = run_path / "guards.csv"
+
         equity_df.to_csv(equity_csv)
         trades_df.to_csv(trades_csv)
-        
+
+        # Guard artifact: write only real guard events collected from inputs.
+        guard_rows = self._extract_guard_events(params=params, strategy_obj=None)
+        self._write_guards_csv(guards_csv, guard_rows)
+
         # 4. Generate & Save Charts
         print("[Labs] Generating Charts...")
         
@@ -105,6 +153,7 @@ class LabsBacktester:
             "files": {
                 "equity_csv": str(equity_csv),
                 "trades_csv": str(trades_csv),
+                "guards_csv": str(guards_csv),
                 "charts_dir": str(charts_dir)
             },
             "metrics": {

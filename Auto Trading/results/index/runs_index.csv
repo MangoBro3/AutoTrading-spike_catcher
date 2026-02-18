@@ -1,3 +1,4 @@
 run_id,created_at,run_type,exchange,market,timeframe,tag,roi_pct,max_drawdown_pct,win_rate_pct,trades,summary_path,params_path
 20260204_140605_backtest_LABS_SIM_launcher_demo,2026-02-04T14:06:05.285816,backtest,LABS_SIM,KRW,1d,,53.95092768533124,-4.554713409516765,0,0,results\runs\20260204_140605_backtest_LABS_SIM_launcher_demo\run_summary.json,
 20260204_142438_backtest_LABS_SIM_launcher_demo,2026-02-04T14:24:38.989597,backtest,LABS_SIM,KRW,1d,,47.10536426309238,-6.398549463910065,0,0,results\runs\20260204_142438_backtest_LABS_SIM_launcher_demo\run_summary.json,
+20260219_014300_backtest_LABS_SIM_laneB_guard_patch,2026-02-19T01:43:01.328319,backtest,LABS_SIM,KRW,1d,,-23.706825208614244,-29.10386111155307,0,0,/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/results/runs/20260219_014300_backtest_LABS_SIM_laneB_guard_patch/run_summary.json,

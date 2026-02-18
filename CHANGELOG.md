@@ -29,10 +29,10 @@
 - What:
   - Verified patch on absolute path `/mnt/f/SafeBot/openclaw-news-workspace/python` with stage-specific pytest (`test_stage7.py`, `test_stage10.py`, `test_stage11_integration.py`) → **9 passed**.
   - Re-ran backtest with auto_trading adapter and regenerated `backtest/out_at_rerun/runner_summary.json`.
-  - Documented R0~R4 gate delta in `METRICS.md` and synced `TASKS.md` blocker status.
+  - Documented R0~R4 gate/check delta in `METRICS.md` and synced `TASKS.md` status.
 - Why:
-  - Validate coder_b patch outcome and keep control-plane docs aligned with rerun evidence.
+  - Validate coder_a/coder_b integration outcome and keep control-plane docs aligned with rerun evidence.
 - Risk:
   - Low. Verification/documentation-only update; no strategy logic edits.
 - Migration/Notes:
-  - Compared `backtest/out_at/runner_summary.json` vs `backtest/out_at_rerun/runner_summary.json`: GO count unchanged across R0~R4, while `abs_oos_pf` switched `True→False` on all rerun cases.
+  - Compared `backtest/out_at/runner_summary.json` vs `backtest/out_at_rerun/runner_summary.json`: GO count unchanged across R0~R4, with check-level deltas `abs_oos_pf: True→False` (15 cases) and `kz_guard_fired: False→True` (R4, 1 case).

@@ -1,0 +1,23 @@
+{
+    "run_type": "backtest",
+    "run_id": "20260219_014300_backtest_LABS_SIM_laneB_guard_patch",
+    "created_at": "2026-02-19T01:43:01.328319",
+    "exchange": "LABS_SIM",
+    "market": "KRW",
+    "contracts": {
+        "signal_lag_days": 1,
+        "turnover_lag_days": 1,
+        "execution": "t_open"
+    },
+    "files": {
+        "equity_csv": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/results/runs/20260219_014300_backtest_LABS_SIM_laneB_guard_patch/equity.csv",
+        "trades_csv": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/results/runs/20260219_014300_backtest_LABS_SIM_laneB_guard_patch/trades.csv",
+        "guards_csv": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/results/runs/20260219_014300_backtest_LABS_SIM_laneB_guard_patch/guards.csv",
+        "charts_dir": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/results/runs/20260219_014300_backtest_LABS_SIM_laneB_guard_patch/charts"
+    },
+    "metrics": {
+        "total_return": -23.706825208614244,
+        "max_dd": -29.10386111155307
+    },
+    "_schema_ver": "1.0"
+}
