@@ -190,3 +190,58 @@ TypeError: TelegramNotifier.__init__() got an unexpected keyword argument 'token
 - bull_tcr(mean): `0.2987738855897337`
 - stress_break(count): `0`
 - stress_1x(R3_BOTH_X2): `stress_break=false`
+
+
+---
+
+## out_bulltcr_hint_r2 최신 라운드 결과 (수치)
+
+- 기준 경로: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_bulltcr_hint_r2`
+- run 수: `15`
+- GO 수: `0`
+- NO_GO 수: `15`
+
+### 체크 통과 집계 (true/15)
+
+| check | true | false |
+|---|---:|---:|
+| abs_oos_pf | 15 | 0 |
+| abs_oos_mdd | 0 | 15 |
+| abs_bull_tcr | 15 | 0 |
+| abs_stress_no_break | 15 | 0 |
+| rel_oos_cagr | 2 | 13 |
+| rel_bull_return | 2 | 13 |
+| kz_scope_required | 1 | 14 |
+| kz_guard_fired | 15 | 0 |
+| kz_guard_fired_raw | 15 | 0 |
+| kz_loss_improved | 15 | 0 |
+
+### 핵심 지표 집계 (15 run)
+
+| metric | mean | min | max |
+|---|---:|---:|---:|
+| oos_pf | 500.0000000000000000 | 500.0000000000000000 | 500.0000000000000000 |
+| oos_mdd | 0.2910386111155307 | 0.2910386111155307 | 0.2910386111155307 |
+| bull_tcr | 1.0000000000000000 | 1.0000000000000000 | 1.0000000000000000 |
+| stress_break | 0 | 0 | 0 |
+
+### 그룹별 run 수 / GO 수
+
+| group | runs | GO |
+|---|---:|---:|
+| R0 | 3 | 0 |
+| R1 | 6 | 0 |
+| R2 | 2 | 0 |
+| R3 | 3 | 0 |
+| R4 | 1 | 0 |
+
+### regime_extension_report.json 수치
+
+| key | value |
+|---|---:|
+| baseline_runs_count | 2 |
+| oos_cagr_def | -0.23706825208614243 |
+| oos_cagr_hyb | -0.23706825208614243 |
+| bull_return_def | -0.23706825208614243 |
+| bull_return_hyb | -0.23706825208614243 |
+| delta_compound_return_hyb_minus_def | 0.0 |
