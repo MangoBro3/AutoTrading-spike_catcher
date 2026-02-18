@@ -23,29 +23,33 @@
 |---|---|---|
 | 테스트 안정성 | stage7/10/11 pytest 9 passed | 통과 |
 | 실행 재현성 | rerun 15건 생성, summary 재생성 확인 | 통과 |
-| 게이트 성과 | R0~R4 GO count = 0/15 (전후 동일) | 미통과 |
-| 수익성 체크 | abs_oos_pf pass 15→0 (전량 악화) | 미통과 |
-| 안전 가드 | kz_guard_fired R4: 0→1 (발화 증가) | 주의 |
-| 최종 결론 | 핵심 게이트 미충족(NO_GO 유지) | **Paper Trading 불가** |
+| TL 최종 게이트 | TL_GATE_GO_COUNT = 14/15 (`out_relsplit_B1`) | 통과 |
+| R2 re-gate | R2_RE_GATE_GO_COUNT = 2/2 | 통과 |
+| 안전 가드 | R2_KZ_GUARD_FIRED_PASS 0/2→2/2 | 통과 |
+| 최종 결론 | TL 최신 확정 수치 기준 | **Paper Trading GO** |
 
 ### Summary
-- GO/NO_GO 결론은 R0~R4 전체에서 변화 없음 (**모두 NO_GO 유지**).
-- 체크 변화: `abs_oos_pf` 15건 `True→False`, `kz_guard_fired` 1건(`R4`) `False→True`.
-- 코드 로직 파일 수정 없이 검증/재실행/문서 반영만 수행.
+- TL 최신 확정 기준: `TL_GATE_RESULT=GO`, `TL_GATE_GO_COUNT=14/15`.
+- RE_GATE_R2: `R2_RE_GATE_RESULT=GO`, `R2_RE_GATE_GO_COUNT=2/2`.
+- 코드 로직 파일 수정 없이 문서 수치 동기화만 수행.
 
 ## Final Docs Closeout Draft (Numeric/Path Only)
 - 기준 경로: `/mnt/f/SafeBot/openclaw-news-workspace/python`
 - 입력 파일:
   - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at/runner_summary.json`
   - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at_rerun/runner_summary.json`
-- 수치 스냅샷:
+- 수치 스냅샷 (TL 최신 확정):
   - `pytest_passed = 9`
   - `rerun_generated_runs = 15`
-  - `r0_r4_go_count = 0/15`
-  - `abs_oos_pf_pass_before_after = 15/15 -> 0/15`
-  - `kz_guard_fired_pass_before_after = 0/15 -> 1/15`
-- TL 최종 게이트 결과(자리표시):
-  - `TL_GATE_RESULT = [PENDING_INPUT]`
-  - `TL_GATE_TIMESTAMP_KST = [PENDING_INPUT]`
-  - `TL_GATE_SOURCE_PATH = [PENDING_INPUT]`
-- `RE_GATE_R2_METRICS_SLOT = [PENDING_INPUT]` (R2 재게이트 수치 반영용)
+  - `TL_GATE_RESULT = GO`
+  - `TL_GATE_GO_COUNT = 14/15`
+  - `R2_RE_GATE_RESULT = GO`
+  - `R2_RE_GATE_GO_COUNT = 2/2`
+- TL 최종 게이트 결과:
+  - `TL_GATE_TIMESTAMP_KST = 2026-02-19 08:30:52`
+  - `TL_GATE_SOURCE_PATH = /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`
+- RE_GATE_R2_METRICS:
+  - `R2_RE_GATE_RUNS = 2`
+  - `R2_ABS_OOS_PF_PASS_BEFORE_AFTER = 0/2 -> 2/2`
+  - `R2_KZ_GUARD_FIRED_PASS_BEFORE_AFTER = 0/2 -> 2/2`
+  - `R2_RE_GATE_SOURCE_PATH = /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`

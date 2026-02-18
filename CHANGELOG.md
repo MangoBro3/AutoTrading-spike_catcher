@@ -51,7 +51,7 @@
 ## [2026-02-19] Round 5 (Final Docs Closeout Draft)
 - What:
   - Prepared numeric/path-only draft updates for `TASKS.md`, `CHANGELOG.md`, `METRICS.md`, `evidence_report_final.md`.
-  - Added TL final gate placeholder field: `TL_GATE_RESULT = [PENDING_INPUT]`.
+  - TL final gate 반영: `TL_GATE_RESULT = GO`, `GO_COUNT = 14/15`, source=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`.
 - Why:
   - Stage final handoff input point for TL gate result injection.
 - Risk:
@@ -67,4 +67,17 @@
     - R0~R4 GO count: `0/15`
     - `abs_oos_pf`: `15→0`
     - `kz_guard_fired`: `0→1`
-  - RE_GATE_R2_CHANGELOG_SLOT: `[PENDING_INPUT]` (TL 재게이트 결과 반영 대기)
+  - RE_GATE_R2_CHANGELOG: `R2_RE_GATE_RESULT=GO`, `R2_RE_GATE_GO_COUNT=2/2`, source=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`
+
+## [2026-02-19] Round 6 (TL Final Numbers Resync)
+- What:
+  - Resynced `TASKS.md`, `METRICS.md`, `evidence_report_final.md` to TL latest fixed values.
+  - Removed NO_GO wording conflicts and unified final decision fields to TL gate basis.
+- Why:
+  - Eliminate cross-doc mismatch before final handoff.
+- Risk:
+  - Low. Documentation-only numeric sync.
+- Migration/Notes:
+  - TL: `TL_GATE_RESULT=GO`, `TL_GATE_GO_COUNT=14/15`
+  - R2 re-gate: `R2_RE_GATE_RESULT=GO`, `R2_RE_GATE_GO_COUNT=2/2`
+  - Source: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`
