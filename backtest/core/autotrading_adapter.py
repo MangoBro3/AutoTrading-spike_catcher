@@ -27,6 +27,47 @@ def _latest_run_summary(base_dir: Path) -> Path:
     return files[0]
 
 
+def _read_guards_rows(path: Path, reason: str = "mapped_from_autotrading") -> list[dict]:
+    rows: list[dict] = []
+    with path.open("r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            # Normalized guard view used by report_writer/evaluator.
+            ts = row.get("ts") or row.get("Date") or row.get("date") or row.get("dt") or ""
+            guard_name = row.get("guard") or row.get("name") or "kill_zone"
+            value = row.get("value")
+            if value is None:
+                # Preserve real artifact signal columns when present
+                if "intraday" in row:
+                    value = row.get("intraday")
+                elif "action" in row:
+                    value = row.get("action")
+                else:
+                    value = "fired"
+            rows.append({"ts": ts, "guard": guard_name, "value": value, "reason": reason})
+            if i >= 999:
+                break
+    return rows
+
+
+def _find_fallback_guards_path(base: Path, run_id: str, summary_file: Path) -> tuple[Path | None, str]:
+    # 1) same run folder artifact (preferred)
+    same_run = summary_file.parent / "guards.csv"
+    if same_run.exists() and same_run.stat().st_size > 0:
+        return same_run, "run_dir_guards_csv"
+
+    # 2) previously generated backtest artifacts (real outputs only)
+    candidates = sorted(base.glob(f"backtest/out*/{run_id}/guards.csv"), key=lambda p: p.stat().st_mtime, reverse=True)
+    for p in candidates:
+        try:
+            if p.exists() and p.stat().st_size > 0:
+                return p, "backtest_artifact_guards_csv"
+        except OSError:
+            continue
+
+    return None, "guards_csv_missing_in_run_summary"
+
+
 def _compute_bull_tcr(trades_rows: list[dict], total_return_pct: float, max_dd_pct: float) -> tuple[float, str]:
     """Map bull_tcr from run_summary/trades in a deterministic way.
 
@@ -94,7 +135,6 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
     oos_mdd = abs(max_dd_pct) / 100.0
 
     trades_rows = []
-    guards_rows = []
     files_meta = raw.get("files", {}) or {}
 
     trades_rel = files_meta.get("trades_csv")
@@ -115,37 +155,54 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                     if i >= 999:
                         break
 
-    guard_mapping_status = "unknown"
+    guards_rows_default: list[dict] = []
+    guard_mapping_status_default = "unknown"
     guards_rel = files_meta.get("guards_csv")
     if guards_rel:
         guards_csv = Path(str(guards_rel).replace("\\", "/"))
         guards_path = base / "Auto Trading" / guards_csv if not guards_csv.is_absolute() else guards_csv
         if guards_path.exists():
-            with guards_path.open("r", encoding="utf-8", newline="") as f:
-                reader = csv.DictReader(f)
-                for i, row in enumerate(reader):
-                    guards_rows.append({
-                        "ts": row.get("ts") or row.get("Date") or row.get("date") or "",
-                        "guard": row.get("guard") or row.get("name") or "kill_zone",
-                        "value": row.get("value") or row.get("action") or "fired",
-                        "reason": "mapped_from_autotrading",
-                    })
-                    if i >= 999:
-                        break
-            guard_mapping_status = "guards_csv_loaded" if guards_rows else "guards_csv_loaded_but_empty"
+            guards_rows_default = _read_guards_rows(guards_path)
+            guard_mapping_status_default = "guards_csv_loaded" if guards_rows_default else "guards_csv_loaded_but_empty"
         else:
-            guard_mapping_status = f"guards_csv_path_not_found:{guards_path}"
+            guard_mapping_status_default = f"guards_csv_path_not_found:{guards_path}"
             logger.warning("[autotrading_adapter] guards_csv path not found: %s", guards_path)
     else:
-        guard_mapping_status = "guards_csv_missing_in_run_summary"
+        guard_mapping_status_default = "guards_csv_missing_in_run_summary"
 
     bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, total_return_pct, max_dd_pct)
 
-    if not guards_rows:
-        logger.info("[autotrading_adapter] kill_zone guard not fired; cause=%s", guard_mapping_status)
+    # per-run fallback cache (run_summary may not contain guards_csv)
+    guards_cache: dict[str, tuple[list[dict], str]] = {}
+
+    def _guards_for_run(run_id: str) -> tuple[list[dict], str]:
+        if run_id in guards_cache:
+            return guards_cache[run_id]
+
+        rows = list(guards_rows_default)
+        status = guard_mapping_status_default
+
+        if not rows:
+            fallback_path, fallback_status = _find_fallback_guards_path(base, run_id, summary_file)
+            status = fallback_status
+            if fallback_path:
+                try:
+                    rows = _read_guards_rows(fallback_path, reason=f"mapped_from_artifact:{fallback_path}")
+                    if rows:
+                        status = f"{fallback_status}_loaded"
+                except Exception as e:
+                    status = f"{fallback_status}_read_error:{e.__class__.__name__}"
+                    logger.warning("[autotrading_adapter] failed to read fallback guards_csv: %s (%s)", fallback_path, e)
+
+        if not rows:
+            logger.info("[autotrading_adapter] kill_zone guard not fired for run_id=%s; cause=%s", run_id, status)
+
+        guards_cache[run_id] = (rows, status)
+        return guards_cache[run_id]
 
     def adapter(request: RunRequest) -> dict:
         mode = request.mode
+        guards_rows, guard_mapping_status = _guards_for_run(request.run_id)
         kill_zone_guard_fired = bool(guards_rows)
         kill_zone_loss = -oos_mdd if kill_zone_guard_fired else 0.0
         metrics_total = {
@@ -158,7 +215,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "bull_return_hybrid": total_return_pct / 100.0 if mode == "hybrid" else 0.0,
             "bull_return_def": 0.0,
             "kill_zone_guard_fired": kill_zone_guard_fired,
-            "kill_zone_guard_reason": "mapped_guard_rows_present" if kill_zone_guard_fired else guard_mapping_status,
+            "kill_zone_guard_reason": guard_mapping_status if kill_zone_guard_fired else guard_mapping_status,
             "kill_zone_loss_hybrid": kill_zone_loss,
             "kill_zone_loss_agg": kill_zone_loss,
         }
