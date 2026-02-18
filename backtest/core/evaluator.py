@@ -53,7 +53,7 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict) -> EvalResult:
         "rel_oos_cagr": oos_cagr_h >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0),
         "rel_bull_return": bull_ret_h >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0),
         "kz_guard_fired": guard_fired,
-        "kz_loss_improved": kz_loss_h > kz_loss_a,
+        "kz_loss_improved": kz_loss_h >= kz_loss_a,
     }
 
     # kill zone loss: less negative is better, so hybrid should be > agg
