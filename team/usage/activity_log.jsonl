@@ -96,3 +96,4 @@
 {"ts":1771402593054,"time":"2026-02-18T08:16:33.054Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:3612dd6d-9793-4574-beaf-3e4a789e0a88 updated"}
 {"ts":1771402293054,"time":"2026-02-18T08:11:33.054Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:c4f3e8de-09fa-40db-978b-1a63e78e3629 updated"}
 {"ts":1771401993055,"time":"2026-02-18T08:06:33.055Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:d5f60355-e9e3-43ff-a590-307950e18fca updated"}
+{"ts":1771405880,"time":"2026-02-18T09:11:20Z","agent":"coder_b","work":"task_sync_checkpoint","project":"openclaw-news-workspace","detail":"TASKS.md sync: DONE 후보 없음, T-001 blocker를 [REVIEW]로 표기 (blocker event 미기록)"}
