@@ -43,7 +43,10 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
     oos_mdd = abs(max_dd_pct) / 100.0
 
     trades_rows = []
-    trades_rel = (raw.get("files", {}) or {}).get("trades_csv")
+    guards_rows = []
+    files_meta = raw.get("files", {}) or {}
+
+    trades_rel = files_meta.get("trades_csv")
     if trades_rel:
         trades_csv = Path(str(trades_rel).replace("\\", "/"))
         trades_path = base / "Auto Trading" / trades_csv if not trades_csv.is_absolute() else trades_csv
@@ -60,9 +63,27 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                     if i >= 999:
                         break
 
+    guards_rel = files_meta.get("guards_csv")
+    if guards_rel:
+        guards_csv = Path(str(guards_rel).replace("\\", "/"))
+        guards_path = base / "Auto Trading" / guards_csv if not guards_csv.is_absolute() else guards_csv
+        if guards_path.exists():
+            with guards_path.open("r", encoding="utf-8", newline="") as f:
+                reader = csv.DictReader(f)
+                for i, row in enumerate(reader):
+                    guards_rows.append({
+                        "ts": row.get("ts") or row.get("Date") or row.get("date") or "",
+                        "guard": row.get("guard") or row.get("name") or "kill_zone",
+                        "value": row.get("value") or row.get("action") or "fired",
+                        "reason": "mapped_from_autotrading",
+                    })
+                    if i >= 999:
+                        break
+
     def adapter(request: RunRequest) -> dict:
         mode = request.mode
-        is_kill_zone_split = bool((request.split or {}).get("timeframe") == "5m")
+        kill_zone_guard_fired = bool(guards_rows)
+        kill_zone_loss = -oos_mdd if kill_zone_guard_fired else 0.0
         metrics_total = {
             "oos_pf": oos_pf,
             "oos_mdd": oos_mdd,
@@ -72,9 +93,9 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "oos_cagr_def": 0.0,
             "bull_return_hybrid": total_return_pct / 100.0 if mode == "hybrid" else 0.0,
             "bull_return_def": 0.0,
-            "kill_zone_guard_fired": is_kill_zone_split,
-            "kill_zone_loss_hybrid": -oos_mdd,
-            "kill_zone_loss_agg": -oos_mdd,
+            "kill_zone_guard_fired": kill_zone_guard_fired,
+            "kill_zone_loss_hybrid": kill_zone_loss,
+            "kill_zone_loss_agg": kill_zone_loss,
         }
 
         return {
@@ -91,7 +112,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                 }
             ],
             "switches": [],
-            "guards": [],
+            "guards": guards_rows,
             "trades": trades_rows,
             "summary": {
                 "run_id": request.run_id,
