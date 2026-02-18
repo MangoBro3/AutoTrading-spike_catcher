@@ -136,7 +136,15 @@ function readSnapshots() {
 
 function readActivityState() {
   if (!existsSync(ACTIVITY_STATE_FILE)) return { sessions: {}, tasks: {} };
-  try { return JSON.parse(readFileSync(ACTIVITY_STATE_FILE, 'utf8')); } catch { return { sessions: {}, tasks: {} }; }
+  try {
+    const parsed = JSON.parse(readFileSync(ACTIVITY_STATE_FILE, 'utf8'));
+    return {
+      sessions: (parsed && typeof parsed.sessions === 'object' && !Array.isArray(parsed.sessions)) ? parsed.sessions : {},
+      tasks: (parsed && typeof parsed.tasks === 'object' && !Array.isArray(parsed.tasks)) ? parsed.tasks : {},
+    };
+  } catch {
+    return { sessions: {}, tasks: {} };
+  }
 }
 
 function writeActivityState(state) {
@@ -171,6 +179,9 @@ function readActivityLog(limit = 600) {
 
 function collectActivityEvents(status, taskSignals) {
   const state = readActivityState();
+  state.sessions = state.sessions || {};
+  state.tasks = state.tasks || {};
+
   const events = [];
   const sessions = normalizeSessions(status);
 
