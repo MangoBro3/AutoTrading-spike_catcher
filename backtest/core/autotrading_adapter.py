@@ -158,6 +158,20 @@ def _find_fallback_trades_path(base: Path, run_id: str, summary_file: Path) -> t
         except OSError:
             continue
 
+    # Legacy/backtest-run summaries may not be mapped per run_id, but Auto Trading
+    # run artifacts still provide deterministic realized trades for bull_tcr mapping.
+    run_candidates = sorted(
+        (base / "Auto Trading" / "results" / "runs").glob("*/trades.csv"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    for p in run_candidates:
+        try:
+            if p.exists() and p.stat().st_size > 0:
+                return p, "autotrading_runs_trades_csv"
+        except OSError:
+            continue
+
     return None, "trades_csv_missing_in_run_summary"
 
 
