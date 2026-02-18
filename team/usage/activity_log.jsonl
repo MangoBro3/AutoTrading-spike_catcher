@@ -97,3 +97,24 @@
 {"ts":1771402293054,"time":"2026-02-18T08:11:33.054Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:c4f3e8de-09fa-40db-978b-1a63e78e3629 updated"}
 {"ts":1771401993055,"time":"2026-02-18T08:06:33.055Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:d5f60355-e9e3-43ff-a590-307950e18fca updated"}
 {"ts":1771405880,"time":"2026-02-18T09:11:20Z","agent":"coder_b","work":"task_sync_checkpoint","project":"openclaw-news-workspace","detail":"TASKS.md sync: DONE 후보 없음, T-001 blocker를 [REVIEW]로 표기 (blocker event 미기록)"}
+{"ts":1771406425433,"time":"2026-02-18T09:20:25.433Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406193052,"time":"2026-02-18T09:16:33.052Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929 updated"}
+{"ts":1771406193052,"time":"2026-02-18T09:16:33.052Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:fef662c8-57bf-417e-8e03-d027cc2f291e updated"}
+{"ts":1771405924131,"time":"2026-02-18T09:12:04.131Z","agent":"tl","work":"session_update","project":"openclaw-news-workspace","detail":"agent:tl:subagent:d0fbb5e8-31ac-40f2-b997-ce898e9076b9 updated"}
+{"ts":1771405899092,"time":"2026-02-18T09:11:39.092Z","agent":"coder_b","work":"session_update","project":"openclaw-news-workspace","detail":"agent:coder_b:subagent:2ca0911f-acc2-4b8f-a25e-4a810ce761eb updated"}
+{"ts":1771405893052,"time":"2026-02-18T09:11:33.052Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:286d52dd-921a-4306-8f12-42ba6f440d32 updated"}
+{"ts":1771405593055,"time":"2026-02-18T09:06:33.055Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:f93862cc-184d-4b6d-ac5d-f4ef3e867e4a updated"}
+{"ts":1771405293053,"time":"2026-02-18T09:01:33.053Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:367809d0-11e5-47ce-9de6-010033c3d581 updated"}
+{"ts":1771404993054,"time":"2026-02-18T08:56:33.054Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:b38496d7-d8fd-420e-9284-0b73557d0ce4 updated"}
+{"ts":1771404693053,"time":"2026-02-18T08:51:33.053Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:d4861298-e3e9-46ef-b635-8d25c96dff17 updated"}
+{"ts":1771406493052,"time":"2026-02-18T09:21:33.052Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929 updated"}
+{"ts":1771406493052,"time":"2026-02-18T09:21:33.052Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:7fea9ed2-721b-4f0f-8543-804b5fa08eb6 updated"}
+{"ts":1771406500081,"time":"2026-02-18T09:21:40.081Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406512038,"time":"2026-02-18T09:21:52.038Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406523711,"time":"2026-02-18T09:22:03.711Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406532026,"time":"2026-02-18T09:22:12.026Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406543306,"time":"2026-02-18T09:22:23.306Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406573519,"time":"2026-02-18T09:22:53.519Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406580330,"time":"2026-02-18T09:23:00.330Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406605782,"time":"2026-02-18T09:23:25.782Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
+{"ts":1771406611495,"time":"2026-02-18T09:23:31.495Z","agent":"pm","work":"session_update","project":"openclaw-news-workspace","detail":"agent:pm:main updated"}
