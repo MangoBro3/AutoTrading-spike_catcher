@@ -1,6 +1,6 @@
 | ID | Status | Owner | Description | Dependency | Ownership | Contract Ref | Blocker | Fail Count |
 |---:|:---:|:---:|:---|:---:|:---|:---|:---|:---:|
-| T-001 | IN_PROGRESS | PM | Hybrid v1.2 core + backtest runner integration (Phase 1) | None | A:engine/**,alloc/** B:guards/**,backtest/**,run_backtest.py | contracts/T-001.contract.v1.json | [REVIEW] pytest 미설치로 full test_plan 1단계 보류 (activity_log에 blocker 이벤트 미기록) | 0/3 |
+| T-001 | IN_PROGRESS | PM | Hybrid v1.2 core + backtest runner integration (Phase 1) | None | A:engine/**,alloc/** B:guards/**,backtest/**,run_backtest.py | contracts/T-001.contract.v1.json | None (2026-02-19 stage7/10/11 pytest + auto_trading rerun 검증 완료) | 0/3 |
 
 ### Sync Checkpoint (2026-02-18 18:11 KST, Lane B)
 - 기준 로그: `team/usage/activity_log.jsonl` 최신 task 관련 이벤트 확인
@@ -9,3 +9,10 @@
   - 현재 Blocker는 유지하되, 로그 미기록 상태이므로 `[REVIEW]`로 명시
   - 추후 `task_blocked` 또는 동등 이벤트 추가 시 `[ACTIVE_BLOCKER]`로 승격
   - blocker 해소 이벤트 기록 시 Blocker 칼럼을 `None`으로 정리
+
+### Sync Checkpoint (2026-02-19 01:38 KST, Verify & Integrate)
+- 검증 경로: `/mnt/f/SafeBot/openclaw-news-workspace/python`
+- pytest: `Auto Trading/test_stage7.py`, `test_stage10.py`, `test_stage11_integration.py` → **9 passed**
+- rerun: `python run_backtest.py --adapter auto_trading --run-summary models/_archive/run_20260212_173603_42/run_summary.json --out backtest/out_at_rerun`
+- 산출물: `backtest/out_at_rerun/runner_summary.json` 재생성 확인
+- R0~R4 gate 변화: GO 건수 변화 없음(전/후 모두 0), `abs_oos_pf`만 전 run에서 `True→False`로 하락

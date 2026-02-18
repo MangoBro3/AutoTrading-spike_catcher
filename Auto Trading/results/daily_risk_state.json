@@ -1,0 +1,1 @@
+{"day": "2026-02-19", "daily_start_equity": 100000.0, "intraday_peak_equity": 100000.0, "hard_stop_triggered": true, "last_trigger_reason": "[RISK] Daily DD hard limit triggered! eq=94,000, start=100,000, peak=100,000, dd_start=-6.00%, dd_peak=-6.00%", "updated_at": 1771432709.2639637}
