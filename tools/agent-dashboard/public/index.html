@@ -64,18 +64,39 @@ function render(data){
   tbody.innerHTML = agents.map(a=>`<tr><td>${esc(a.id)}</td><td>${esc(a.workspace)}</td><td>${esc(a.model)}</td><td>${esc(a.bindings)}</td></tr>`).join('');
 
   const icon = {pm:'🧭',tl:'🛠️',architect:'📐',coder_a:'🧪',coder_b:'⚙️',main:'👑',mango:'🥭'};
-  const sessionsList = data.sessions?.list || data.sessions?.sessions || [];
-  const liveKeys = new Set(sessionsList.map(s=>String(s.key||'')).filter(Boolean));
+  const sessionsList = data.sessions?.recent || data.sessions?.list || data.sessions?.sessions || [];
+
+  const ageToText = (ms)=>{
+    if(ms==null || ms==='-') return '-';
+    const n = Number(ms);
+    if(Number.isNaN(n)) return String(ms);
+    const s = Math.floor(n/1000);
+    if(s<60) return `${s}s ago`;
+    const m = Math.floor(s/60);
+    if(m<60) return `${m}m ago`;
+    const h = Math.floor(m/60);
+    return `${h}h ago`;
+  };
+
+  const byAgentMinAge = {};
+  for(const s of sessionsList){
+    const id = s.agentId || String(s.key||'').split(':')[1];
+    if(!id) continue;
+    const age = Number(s.age ?? s.ageMs ?? Number.MAX_SAFE_INTEGER);
+    byAgentMinAge[id] = Math.min(byAgentMinAge[id] ?? Number.MAX_SAFE_INTEGER, age);
+  }
+
   $('characters').innerHTML = agents.map(a=>{
-    const active = [...liveKeys].some(k=>k.startsWith(`agent:${a.id}:`));
-    const state = active ? 'working' : 'idle';
-    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state">${state}</div></div>`;
+    const minAge = byAgentMinAge[a.id];
+    const working = Number.isFinite(minAge) && minAge <= 5*60*1000;
+    const state = working ? `working · ${ageToText(minAge)}` : 'idle';
+    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state ${working?'ok':''}">${state}</div></div>`;
   }).join('');
 
   const sess = sessionsList;
   $('sessions').innerHTML = `<div class="muted">total: ${esc(data.sessions?.total ?? data.sessions?.count ?? sess.length)}</div>` +
-    `<table><thead><tr><th>key</th><th>age</th><th>tokens</th></tr></thead><tbody>`+
-    sess.slice(0,15).map(s=>`<tr><td>${esc(s.key)}</td><td>${esc(s.age||s.ageText||s.ageMs||'-')}</td><td>${esc(s.tokensText||((s.inputTokens||s.outputTokens)?`${s.inputTokens||0}/${s.outputTokens||0}`:'-'))}</td></tr>`).join('')+
+    `<table><thead><tr><th>agent</th><th>key</th><th>age</th><th>tokens(in/out)</th></tr></thead><tbody>`+
+    sess.slice(0,20).map(s=>`<tr><td>${esc(s.agentId||'-')}</td><td>${esc(s.key)}</td><td>${esc(ageToText(s.age ?? s.ageMs ?? '-'))}</td><td>${esc((s.inputTokens!=null||s.outputTokens!=null)?`${s.inputTokens||0}/${s.outputTokens||0}`:'-')}</td></tr>`).join('')+
     `</tbody></table>`;
 }
 
