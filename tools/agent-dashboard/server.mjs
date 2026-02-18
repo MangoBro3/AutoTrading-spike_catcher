@@ -2,9 +2,10 @@ import http from 'node:http';
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 import { extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 18890;
-const ROOT = new URL('./public/', import.meta.url);
+const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
 
 function runJson(cmd) {
   return JSON.parse(execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }));
@@ -54,7 +55,7 @@ const server = http.createServer((req, res) => {
   }
 
   const path = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
-  const filePath = join(ROOT.pathname, path);
+  const filePath = join(ROOT, path);
   try {
     const buf = readFileSync(filePath);
     res.writeHead(200, { 'content-type': MIME[extname(filePath)] || 'application/octet-stream' });
