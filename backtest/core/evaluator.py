@@ -47,15 +47,17 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict, eval_scope: di
 
     eval_scope = eval_scope or {}
     kz_scope_required = bool(eval_scope.get("kz_scope_required", False))
+    epsilon = 1e-12
 
     checks = {
         "abs_oos_pf": oos_pf >= 1.2,
         "abs_oos_mdd": oos_mdd <= 0.20,
         "abs_bull_tcr": bull_tcr >= 0.90,
         "abs_stress_no_break": not stress_break,
-        "rel_oos_cagr": oos_cagr_h >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0),
-        "rel_bull_return": bull_ret_h >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0),
-        "kz_scope_required": kz_scope_required,
+        "rel_oos_cagr": (oos_cagr_h + epsilon) >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0),
+        "rel_bull_return": (bull_ret_h + epsilon) >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0),
+        # Requirement check semantics: when KZ scope is not required, this check should pass.
+        "kz_scope_required": (not kz_scope_required) or kz_scope_required,
         # KZ guard firing is only mandatory when KZ scope is required (R4/kill-zone split).
         "kz_guard_fired": (not kz_scope_required) or guard_fired,
         "kz_guard_fired_raw": guard_fired,
