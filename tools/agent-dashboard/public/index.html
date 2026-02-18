@@ -118,11 +118,16 @@ function render(data){
     byAgentMinAge[id] = Math.min(byAgentMinAge[id] ?? Number.MAX_SAFE_INTEGER, age);
   }
 
+  const inProgress = new Set((data.taskSignals?.inProgressAgents||[]).map(String));
+
   $('characters').innerHTML = agents.map(a=>{
     const minAge = byAgentMinAge[a.id];
-    const working = Number.isFinite(minAge) && minAge <= 5*60*1000;
-    const state = working ? `working · ${ageToText(minAge)}` : 'idle';
-    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state ${working?'ok':''}">${state}</div></div>`;
+    const sessionWorking = Number.isFinite(minAge) && minAge <= 5*60*1000;
+    const taskWorking = inProgress.has(a.id);
+    const working = sessionWorking || taskWorking;
+    const source = taskWorking ? 'task' : (sessionWorking ? 'session' : 'none');
+    const state = working ? `working · ${taskWorking ? 'in_progress' : ageToText(minAge)}` : 'idle';
+    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state ${working?'ok':''}">${state}</div><div class="muted">src:${source}</div></div>`;
   }).join('');
 
   const sess = sessionsList;

@@ -39,6 +39,40 @@ function readCheckpoint() {
   try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; }
 }
 
+function readTaskSignals() {
+  const p = '/mnt/f/SafeBot/openclaw-news-workspace/python/TASKS.md';
+  if (!existsSync(p)) return { inProgressAgents: [], tasks: [] };
+  try {
+    const lines = readFileSync(p, 'utf8').split('\n').filter((l) => l.trim().startsWith('|'));
+    const rows = lines.slice(2); // skip header + separator
+    const tasks = [];
+    const inProgressAgents = new Set();
+
+    for (const row of rows) {
+      const cols = row.split('|').map((c) => c.trim());
+      // table columns: | ID | Status | Owner | Description | Dependency | Ownership | Contract Ref | Blocker | Fail Count |
+      if (cols.length < 10) continue;
+      const taskId = cols[1];
+      const status = (cols[2] || '').toUpperCase();
+      const owner = (cols[3] || '').toLowerCase();
+      const ownership = (cols[6] || '').toLowerCase();
+
+      tasks.push({ taskId, status, owner, ownership });
+      if (status === 'IN_PROGRESS') {
+        if (owner.includes('pm')) inProgressAgents.add('pm');
+        if (owner.includes('tl')) inProgressAgents.add('tl');
+        if (owner.includes('architect')) inProgressAgents.add('architect');
+        if (owner.includes('coder_a') || ownership.includes('a:')) inProgressAgents.add('coder_a');
+        if (owner.includes('coder_b') || ownership.includes('b:')) inProgressAgents.add('coder_b');
+      }
+    }
+
+    return { inProgressAgents: [...inProgressAgents], tasks };
+  } catch {
+    return { inProgressAgents: [], tasks: [] };
+  }
+}
+
 function normalizeSessions(status) {
   return status?.sessions?.recent || status?.sessions?.list || status?.sessions?.sessions || [];
 }
@@ -149,6 +183,7 @@ function buildOverview() {
   const status = safeRun('openclaw status --all --json', null);
   const agents = safeRun('openclaw agents list --json', null);
   const checkpoint = readCheckpoint();
+  const taskSignals = readTaskSignals();
 
   if (status) {
     const snap = computeTokenSnapshot(status, checkpoint);
@@ -168,6 +203,7 @@ function buildOverview() {
     securityAudit: status?.securityAudit || null,
     checkpoint,
     usage,
+    taskSignals,
   };
 }
 
