@@ -23,6 +23,38 @@ def _to_float(v, default=0.0):
         return default
 
 
+def _to_percent_points(v: float) -> float:
+    """Normalize decimal-ratio or already-percent values to percent points.
+
+    Examples:
+      0.152 -> 15.2
+      -0.18 -> -18.0
+      47.1 -> 47.1
+    """
+    if -1.5 <= v <= 1.5:
+        return v * 100.0
+    return v
+
+
+def _extract_return_drawdown_pct(raw: dict) -> tuple[float, float, str]:
+    """Extract total return/max drawdown in percent points across known schemas."""
+    metrics = raw.get("metrics", {}) or {}
+
+    if ("total_return" in metrics) or ("max_dd" in metrics):
+        total_return_pct = _to_float(metrics.get("total_return", 0.0), 0.0)
+        max_dd_pct = _to_float(metrics.get("max_dd", 0.0), 0.0)
+        return total_return_pct, max_dd_pct, "metrics.total_return,max_dd"
+
+    # Legacy archive schema
+    oos_metrics = ((raw.get("candidate", {}) or {}).get("oos_metrics", {}) or {})
+    if ("roi" in oos_metrics) or ("mdd" in oos_metrics):
+        total_return_pct = _to_percent_points(_to_float(oos_metrics.get("roi", 0.0), 0.0))
+        max_dd_pct = _to_percent_points(_to_float(oos_metrics.get("mdd", 0.0), 0.0))
+        return total_return_pct, max_dd_pct, "candidate.oos_metrics.roi,mdd"
+
+    return 0.0, 0.0, "missing_return_drawdown_fields"
+
+
 def _latest_run_summary(base_dir: Path) -> Path:
     runs_dir = base_dir / "Auto Trading" / "results" / "runs"
     files = sorted(runs_dir.glob("*/run_summary.json"), key=lambda p: p.stat().st_mtime, reverse=True)
@@ -158,12 +190,10 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         summary_file = _latest_run_summary(base)
 
     raw = json.loads(summary_file.read_text(encoding="utf-8"))
-    metrics = raw.get("metrics", {})
 
     schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
 
-    total_return_pct = _to_float(metrics.get("total_return", 0.0), 0.0)
-    max_dd_pct = _to_float(metrics.get("max_dd", 0.0), 0.0)
+    total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
 
     # Convert to evaluator-friendly shape (approximation until full engine integration)
     oos_pf = 1.0 + max(0.0, total_return_pct) / 100.0
@@ -282,6 +312,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                 "mapped_from": str(summary_file),
                 "mode": mode,
                 "bull_tcr_source": bull_tcr_source,
+                "returns_mapping_source": returns_mapping_source,
                 "schema_guard_status": schema_status,
                 "guard_mapping_status": guard_mapping_status,
             },
