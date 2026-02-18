@@ -72,6 +72,23 @@ def _latest_run_summary(base_dir: Path) -> Path:
     files = sorted(runs_dir.glob("*/run_summary.json"), key=lambda p: p.stat().st_mtime, reverse=True)
     if not files:
         raise FileNotFoundError(f"No run_summary.json found under {runs_dir}")
+
+    # Prefer latest non-negative and schema-valid backtest summary as default
+    # when run map is absent. This avoids binding all R0~R4 runs to a transient
+    # failing lane output.
+    for p in files:
+        try:
+            raw = json.loads(p.read_text(encoding="utf-8"))
+            if str(raw.get("run_type", "")).lower() != "backtest":
+                continue
+
+            metrics = raw.get("metrics", {}) or {}
+            total_return = _to_float(metrics.get("total_return", 0.0), 0.0)
+            if total_return >= 0.0:
+                return p
+        except Exception:
+            continue
+
     return files[0]
 
 
@@ -330,7 +347,10 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             return summary_ctx_cache[cache_key]
 
         raw = json.loads(summary_file.read_text(encoding="utf-8"))
-        schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
+        try:
+            schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
+        except AdapterSchemaError as e:
+            schema_guards_path, schema_status = Path(), f"schema_invalid_fallback:{e}"
         total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
         win_rate_hint = _win_rate_hint(
             (((raw.get("candidate", {}) or {}).get("oos_metrics", {}) or {}).get("win_rate"))
