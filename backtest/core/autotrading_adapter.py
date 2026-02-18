@@ -63,28 +63,6 @@ def _latest_run_summary(base_dir: Path) -> Path:
     return files[0]
 
 
-def _latest_backtest_summary_with_guards(base_dir: Path) -> Path | None:
-    runs_dir = base_dir / "Auto Trading" / "results" / "runs"
-    files = sorted(runs_dir.glob("*/run_summary.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-    for p in files:
-        try:
-            raw = json.loads(p.read_text(encoding="utf-8"))
-        except Exception:
-            continue
-        if str(raw.get("run_type", "")).lower() != "backtest":
-            continue
-        guards_rel = ((raw.get("files", {}) or {}).get("guards_csv"))
-        if not guards_rel:
-            continue
-        guards_path = _resolve_artifact_path(base_dir, guards_rel)
-        try:
-            if guards_path.exists() and guards_path.stat().st_size > 0:
-                return p
-        except OSError:
-            continue
-    return None
-
-
 def _resolve_artifact_path(base: Path, artifact_rel_or_abs: str | Path) -> Path:
     artifact_path = Path(str(artifact_rel_or_abs).replace("\\", "/"))
     return base / "Auto Trading" / artifact_path if not artifact_path.is_absolute() else artifact_path
