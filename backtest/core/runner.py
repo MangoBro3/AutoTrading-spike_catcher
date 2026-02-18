@@ -55,6 +55,37 @@ def _build_regime_extension_report(payloads_by_run: dict) -> dict:
     }
 
 
+def _apply_r0_relative_anchors(payloads_by_run: dict) -> None:
+    """Inject R0-relative comparison anchors into each R0 payload.
+
+    Relative criteria are defined as HYB vs DEF. For per-run payload evaluation,
+    keep the criteria unchanged but normalize the source path so R0_DEF/R0_AGG
+    use the same HYB/DEF anchor pair as R0_HYB.
+    """
+
+    p_def = payloads_by_run.get("R0_DEF", {})
+    p_hyb = payloads_by_run.get("R0_HYB", {})
+    m_def = (p_def or {}).get("metrics_total", {})
+    m_hyb = (p_hyb or {}).get("metrics_total", {})
+
+    cagr_def = float(m_def.get("oos_cagr_def", 0.0))
+    bull_def = float(m_def.get("bull_return_def", 0.0))
+    cagr_hyb = float(m_hyb.get("oos_cagr_hybrid", 0.0))
+    bull_hyb = float(m_hyb.get("bull_return_hybrid", 0.0))
+
+    if not (cagr_def > 0 and cagr_hyb > 0):
+        return
+
+    for run_id, payload in payloads_by_run.items():
+        if not str(run_id).startswith("R0_"):
+            continue
+        mt = payload.setdefault("metrics_total", {})
+        mt["oos_cagr_hybrid"] = cagr_hyb
+        mt["oos_cagr_def"] = cagr_def
+        mt["bull_return_hybrid"] = bull_hyb
+        mt["bull_return_def"] = bull_def
+
+
 def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter) -> list[dict]:
     out_root = Path(out_root)
     runs = get_runs()
@@ -75,6 +106,11 @@ def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter)
         payload = adapter(request)
         payloads_by_run[run_id] = payload
 
+    _apply_r0_relative_anchors(payloads_by_run)
+
+    for run in runs:
+        run_id = run["run_id"]
+        payload = payloads_by_run[run_id]
         eval_scope = {
             "kz_scope_required": (run.get("family") == "R4") or (run.get("split") == "kill_zones_5m")
         }

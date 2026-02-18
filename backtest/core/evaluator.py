@@ -56,7 +56,9 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict, eval_scope: di
         "rel_oos_cagr": oos_cagr_h >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0),
         "rel_bull_return": bull_ret_h >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0),
         "kz_scope_required": kz_scope_required,
-        "kz_guard_fired": guard_fired,
+        # KZ guard firing is only mandatory when KZ scope is required (R4/kill-zone split).
+        "kz_guard_fired": (not kz_scope_required) or guard_fired,
+        "kz_guard_fired_raw": guard_fired,
         "kz_loss_improved": kz_loss_h >= kz_loss_a,
     }
 

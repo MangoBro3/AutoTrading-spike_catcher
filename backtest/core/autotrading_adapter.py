@@ -377,15 +377,16 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
 
         kill_zone_guard_fired = bool(guards_rows)
         kill_zone_loss = -oos_mdd if kill_zone_guard_fired else 0.0
+        mode_return = total_return_pct / 100.0
         metrics_total = {
             "oos_pf": oos_pf,
             "oos_mdd": oos_mdd,
             "bull_tcr": bull_tcr,
             "stress_break": False,
-            "oos_cagr_hybrid": total_return_pct / 100.0 if mode == "hybrid" else 0.0,
-            "oos_cagr_def": 0.0,
-            "bull_return_hybrid": total_return_pct / 100.0 if mode == "hybrid" else 0.0,
-            "bull_return_def": 0.0,
+            "oos_cagr_hybrid": mode_return if mode == "hybrid" else 0.0,
+            "oos_cagr_def": mode_return if mode == "always_def" else 0.0,
+            "bull_return_hybrid": mode_return if mode == "hybrid" else 0.0,
+            "bull_return_def": mode_return if mode == "always_def" else 0.0,
             "kill_zone_guard_fired": kill_zone_guard_fired,
             "kill_zone_guard_reason": guard_mapping_status,
             "kill_zone_loss_hybrid": kill_zone_loss,
