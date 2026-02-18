@@ -47,15 +47,23 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict, eval_scope: di
 
     eval_scope = eval_scope or {}
     kz_scope_required = bool(eval_scope.get("kz_scope_required", False))
+    rel_required = bool(eval_scope.get("rel_required", True))
     epsilon = 1e-12
+
+    rel_oos_cagr_raw = (oos_cagr_h + epsilon) >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0)
+    rel_bull_return_raw = (bull_ret_h + epsilon) >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0)
 
     checks = {
         "abs_oos_pf": oos_pf >= 1.2,
         "abs_oos_mdd": oos_mdd <= 0.20,
         "abs_bull_tcr": bull_tcr >= 0.90,
         "abs_stress_no_break": not stress_break,
-        "rel_oos_cagr": (oos_cagr_h + epsilon) >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0),
-        "rel_bull_return": (bull_ret_h + epsilon) >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0),
+        # Relative checks can be marked N/A-pass depending on run scope.
+        "rel_required": rel_required,
+        "rel_oos_cagr": (not rel_required) or rel_oos_cagr_raw,
+        "rel_bull_return": (not rel_required) or rel_bull_return_raw,
+        "rel_oos_cagr_raw": rel_oos_cagr_raw,
+        "rel_bull_return_raw": rel_bull_return_raw,
         # Requirement check semantics: when KZ scope is not required, this check should pass.
         "kz_scope_required": (not kz_scope_required) or kz_scope_required,
         # KZ guard firing is only mandatory when KZ scope is required (R4/kill-zone split).
