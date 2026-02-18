@@ -31,11 +31,18 @@ class TestStage7(unittest.TestCase):
         # Start (Paper mode auto-confirms)
         self.controller.start()
         
-        # Check Notifier
-        self.notifier.emit_event.assert_called_with(
-            "SYSTEM", "ALL", "BOT STARTED", 
-            "🚀 **RUN START**\n- Mode: PAPER\n- Equity: 100,000 KRW\n- BTC Regime: NEUTRAL"
-        )
+        # Check Notifier (allow optional runtime metadata like PID)
+        self.notifier.emit_event.assert_called()
+        args = self.notifier.emit_event.call_args[0]
+
+        self.assertEqual(args[0], "SYSTEM")
+        self.assertEqual(args[1], "ALL")
+        self.assertEqual(args[2], "BOT STARTED")
+        self.assertIn("🚀 **RUN START**", args[3])
+        self.assertIn("- Mode: PAPER", args[3])
+        self.assertIn("- Equity: 100,000 KRW", args[3])
+        self.assertIn("- BTC Regime: NEUTRAL", args[3])
+
         print(" -> [RUN_START] event correctly emitted.")
 
     def test_degrade_logic_critical(self):
