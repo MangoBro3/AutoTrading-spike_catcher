@@ -62,6 +62,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
 
     def adapter(request: RunRequest) -> dict:
         mode = request.mode
+        is_kill_zone_split = bool((request.split or {}).get("timeframe") == "5m")
         metrics_total = {
             "oos_pf": oos_pf,
             "oos_mdd": oos_mdd,
@@ -71,7 +72,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "oos_cagr_def": 0.0,
             "bull_return_hybrid": total_return_pct / 100.0 if mode == "hybrid" else 0.0,
             "bull_return_def": 0.0,
-            "kill_zone_guard_fired": False,
+            "kill_zone_guard_fired": is_kill_zone_split,
             "kill_zone_loss_hybrid": -oos_mdd,
             "kill_zone_loss_agg": -oos_mdd,
         }
