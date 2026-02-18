@@ -67,3 +67,4 @@
     - R0~R4 GO count: `0/15`
     - `abs_oos_pf`: `15→0`
     - `kz_guard_fired`: `0→1`
+  - RE_GATE_R2_CHANGELOG_SLOT: `[PENDING_INPUT]` (TL 재게이트 결과 반영 대기)

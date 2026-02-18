@@ -22,3 +22,4 @@
   - `abs_oos_pf` pass: `15→0`
   - `kz_guard_fired` pass: `0→1` (R4 1건)
 - TL 최종 게이트 결과(자리표시): `TL_GATE_RESULT = [PENDING_INPUT]`
+- RE_GATE_R2_APPLY_SLOT: `[PENDING_INPUT]` (R2 재게이트 결과 수신 즉시 반영용)
