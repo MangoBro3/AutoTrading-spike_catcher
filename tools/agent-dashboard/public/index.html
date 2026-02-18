@@ -14,6 +14,11 @@
     table{width:100%;border-collapse:collapse;font-size:13px}
     th,td{padding:6px;border-bottom:1px solid #262d38;text-align:left}
     code{background:#1f2530;padding:1px 5px;border-radius:6px}
+    .room{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+    .avatar{background:#111722;border:1px solid #2a3342;border-radius:10px;padding:10px;text-align:center}
+    .emoji{font-size:26px;display:block}
+    .name{font-weight:700;font-size:12px}
+    .state{font-size:11px;color:#9aa4b2}
   </style>
 </head>
 <body>
@@ -23,6 +28,10 @@
     <div class="card"><h3>Gateway</h3><div id="gateway"></div></div>
     <div class="card"><h3>Channels</h3><div id="channels"></div></div>
     <div class="card"><h3>Checkpoint</h3><div id="checkpoint"></div></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>Agent Characters</h3>
+    <div id="characters" class="room"></div>
   </div>
   <div class="card" style="margin-top:12px">
     <h3>Agents</h3>
@@ -37,9 +46,10 @@ const $ = (id)=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]))}
 
 function render(data){
-  $('ts').textContent = `updated: ${new Date(data.now).toLocaleString()}`;
-  $('gateway').innerHTML = `<div><b>target</b>: <code>${esc(data.gateway?.target||'-')}</code></div>
-  <div><b>mode</b>: ${esc(data.gateway?.mode||'-')}</div>`;
+  $('ts').textContent = `updated: ${new Date(data.now).toLocaleString()}${data.sourceOk?'':'  |  openclaw json source unavailable'}`;
+  $('gateway').innerHTML = `<div><b>target</b>: <code>${esc(data.gateway?.target||data.gateway?.url||'-')}</code></div>
+  <div><b>mode</b>: ${esc(data.gateway?.mode||'-')}</div>
+  <div><b>reachable</b>: ${data.gateway?.reachable===true?'<span class="ok">yes</span>':data.gateway?.reachable===false?'<span class="bad">no</span>':'-'}</div>`;
 
   const ch = data.channelSummary?.channels || [];
   $('channels').innerHTML = ch.map(c=>`<div>${esc(c.channel)}: <b class="${c.state==='OK'?'ok':'warn'}">${esc(c.state)}</b> — ${esc(c.detail||'')}</div>`).join('') || 'no channels';
@@ -49,13 +59,23 @@ function render(data){
     <div>Fail: ${esc(ck.fail_count)}</div>
     <div>Step: ${esc(ck.last_failed_step)}</div>` : '<span class="muted">latest.json not found</span>';
 
+  const agents = data.agents||[];
   const tbody = $('agentsTbl').querySelector('tbody');
-  tbody.innerHTML = (data.agents||[]).map(a=>`<tr><td>${esc(a.id)}</td><td>${esc(a.workspace)}</td><td>${esc(a.model)}</td><td>${esc(a.bindings)}</td></tr>`).join('');
+  tbody.innerHTML = agents.map(a=>`<tr><td>${esc(a.id)}</td><td>${esc(a.workspace)}</td><td>${esc(a.model)}</td><td>${esc(a.bindings)}</td></tr>`).join('');
 
-  const sess = data.sessions?.list || [];
-  $('sessions').innerHTML = `<div class="muted">total: ${esc(data.sessions?.total ?? sess.length)}</div>` +
+  const icon = {pm:'🧭',tl:'🛠️',architect:'📐',coder_a:'🧪',coder_b:'⚙️',main:'👑',mango:'🥭'};
+  const sessionsList = data.sessions?.list || data.sessions?.sessions || [];
+  const liveKeys = new Set(sessionsList.map(s=>String(s.key||'')).filter(Boolean));
+  $('characters').innerHTML = agents.map(a=>{
+    const active = [...liveKeys].some(k=>k.startsWith(`agent:${a.id}:`));
+    const state = active ? 'working' : 'idle';
+    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state">${state}</div></div>`;
+  }).join('');
+
+  const sess = sessionsList;
+  $('sessions').innerHTML = `<div class="muted">total: ${esc(data.sessions?.total ?? data.sessions?.count ?? sess.length)}</div>` +
     `<table><thead><tr><th>key</th><th>age</th><th>tokens</th></tr></thead><tbody>`+
-    sess.slice(0,15).map(s=>`<tr><td>${esc(s.key)}</td><td>${esc(s.age||s.ageText||'-')}</td><td>${esc(s.tokensText||'-')}</td></tr>`).join('')+
+    sess.slice(0,15).map(s=>`<tr><td>${esc(s.key)}</td><td>${esc(s.age||s.ageText||s.ageMs||'-')}</td><td>${esc(s.tokensText||((s.inputTokens||s.outputTokens)?`${s.inputTokens||0}/${s.outputTokens||0}`:'-'))}</td></tr>`).join('')+
     `</tbody></table>`;
 }
 

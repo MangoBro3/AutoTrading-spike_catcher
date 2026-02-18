@@ -7,8 +7,24 @@ import { fileURLToPath } from 'node:url';
 const PORT = process.env.PORT ? Number(process.env.PORT) : 18890;
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
 
+function tryExecJson(cmd) {
+  const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  return JSON.parse(out);
+}
+
 function runJson(cmd) {
-  return JSON.parse(execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }));
+  // 1) native shell (WSL/Linux)
+  try {
+    return tryExecJson(cmd);
+  } catch {
+    // 2) Windows PowerShell -> WSL fallback
+    try {
+      const escaped = cmd.replace(/"/g, '\\"');
+      return tryExecJson(`wsl -e bash -lc "${escaped}"`);
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 function safeRun(cmd, fallback = null) {
@@ -22,18 +38,19 @@ function readCheckpoint() {
 }
 
 function buildOverview() {
-  const status = safeRun('openclaw status --all --json', {});
-  const agents = safeRun('openclaw agents list --json', []);
+  const status = safeRun('openclaw status --all --json', null);
+  const agents = safeRun('openclaw agents list --json', null);
 
   return {
     now: new Date().toISOString(),
-    gateway: status.gateway || null,
-    channelSummary: status.channelSummary || null,
-    sessions: status.sessions || null,
-    agentsMeta: status.agents || null,
-    agents,
-    heartbeat: status.heartbeat || null,
-    securityAudit: status.securityAudit || null,
+    sourceOk: Boolean(status && agents),
+    gateway: status?.gateway || null,
+    channelSummary: status?.channelSummary || null,
+    sessions: status?.sessions || null,
+    agentsMeta: status?.agents || null,
+    agents: agents || [],
+    heartbeat: status?.heartbeat || null,
+    securityAudit: status?.securityAudit || null,
     checkpoint: readCheckpoint(),
   };
 }
