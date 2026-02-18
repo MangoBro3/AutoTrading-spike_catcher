@@ -1,0 +1,16 @@
+date,mode,x_cap,x_cd,x_ce,w_ce,scout,x_total,risk_state,reason
+2020-03-12,DEF,0.03,0.03,0.0,0.0,0.0,0.03,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2020-03-13,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2021-05-19,AGG,0.68,0.4896,0.1904,0.28,0.0,0.68,neutral,mode=AGGRESSIVE;regime=TREND;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.66
+2022-05-07,AGG,0.656,0.47232,0.18368,0.28,0.0,0.656,neutral,mode=AGGRESSIVE;regime=TREND;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.66
+2022-05-08,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2022-05-09,AGG,0.656,0.47232,0.18368,0.28,0.0,0.656,neutral,mode=AGGRESSIVE;regime=TREND;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.66
+2022-05-10,AGG,0.8,0.576,0.224,0.28,0.0,0.8,risk_on,mode=AGGRESSIVE;regime=TREND;risk_state=risk_on;risk_mult=1.05;dd_scale=1.00;cap_tgt=0.80
+2022-05-11,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2022-05-12,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2022-11-06,AGG,0.8,0.44,0.36,0.45,0.0,0.8,risk_on,mode=AGGRESSIVE;regime=SUPER_TREND;risk_state=risk_on;risk_mult=1.05;dd_scale=1.00;cap_tgt=0.80
+2022-11-07,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2022-11-08,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45
+2022-11-09,AGG,0.8,0.576,0.224,0.28,0.0,0.8,risk_on,mode=AGGRESSIVE;regime=TREND;risk_state=risk_on;risk_mult=1.05;dd_scale=1.00;cap_tgt=0.80
+2022-11-10,AGG,0.571,0.41112,0.15988,0.28,0.0,0.571,neutral,mode=AGGRESSIVE;regime=TREND;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.66
+2022-11-11,DEF,0.451,0.451,0.0,0.0,0.0,0.451,neutral,mode=DEFENSIVE;regime=RANGE;risk_state=neutral;risk_mult=0.82;dd_scale=1.00;cap_tgt=0.45

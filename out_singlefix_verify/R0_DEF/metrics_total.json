@@ -1,0 +1,15 @@
+{
+  "oos_pf": 304.055666,
+  "oos_mdd": 7.7e-05,
+  "bull_tcr": 0.917937,
+  "stress_break": false,
+  "oos_cagr_hybrid": 0.234982,
+  "oos_cagr_def": 0.096057,
+  "bull_return_hybrid": 1.874452,
+  "bull_return_def": 0.436687,
+  "kill_zone_guard_fired": false,
+  "kill_zone_loss_hybrid": -6.9e-05,
+  "kill_zone_loss_agg": -9.6e-05,
+  "x_total_leq_x_cap": true,
+  "bull_segment_return": 0.367867
+}

@@ -1,0 +1,57 @@
+{
+  "baseline_runs": [
+    "R0_DEF",
+    "R0_HYB"
+  ],
+  "def_hyb": {
+    "oos_cagr_def": 0.096057,
+    "oos_cagr_hyb": 0.234982,
+    "bull_return_def": 0.436687,
+    "bull_return_hyb": 1.874452
+  },
+  "bull_segment": {
+    "def": {
+      "bars": 853,
+      "bar_share": 0.466886,
+      "sum_ret": 0.313349,
+      "compound_return": 0.367867
+    },
+    "hyb": {
+      "bars": 853,
+      "bar_share": 0.466886,
+      "sum_ret": 0.828531,
+      "compound_return": 1.288421
+    },
+    "delta_compound_return_hyb_minus_def": 0.920554
+  },
+  "regime_contribution": {
+    "BEAR": {
+      "def_sum_ret": 0.0,
+      "hyb_sum_ret": 0.0,
+      "delta_sum_ret_hyb_minus_def": 0.0,
+      "def_contribution_share": 0.0,
+      "hyb_contribution_share": 0.0
+    },
+    "RANGE": {
+      "def_sum_ret": 0.145612,
+      "hyb_sum_ret": 0.228043,
+      "delta_sum_ret_hyb_minus_def": 0.082431,
+      "def_contribution_share": 0.317264,
+      "hyb_contribution_share": 0.215832
+    },
+    "SUPER_TREND": {
+      "def_sum_ret": 0.209019,
+      "hyb_sum_ret": 0.543044,
+      "delta_sum_ret_hyb_minus_def": 0.334025,
+      "def_contribution_share": 0.455418,
+      "hyb_contribution_share": 0.513967
+    },
+    "TREND": {
+      "def_sum_ret": 0.10433,
+      "hyb_sum_ret": 0.285487,
+      "delta_sum_ret_hyb_minus_def": 0.181157,
+      "def_contribution_share": 0.227318,
+      "hyb_contribution_share": 0.270201
+    }
+  }
+}

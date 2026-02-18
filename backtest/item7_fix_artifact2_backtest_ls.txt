@@ -1,0 +1,18 @@
+HOTFIX-7 item7 artifact #2
+captured_at=2026-02-19 02:41:12 KST
+source=ls -lt backtest (top 15)
+total 56
+-rwxrwxrwx 1 mangobro3 mangobro3   95 Feb 19 02:41 item7_fix_artifact2_backtest_ls.txt
+-rwxrwxrwx 1 mangobro3 mangobro3   83 Feb 19 02:41 item7_fix_artifact1_time_capture.txt
+-rwxrwxrwx 1 mangobro3 mangobro3 8978 Feb 19 02:34 evidence_report_final.md
+-rwxrwxrwx 1 mangobro3 mangobro3 4933 Feb 19 02:27 evidence_mapping_and_failfast.md
+-rwxrwxrwx 1 mangobro3 mangobro3 3662 Feb 19 02:25 evidence_report_v1.md
+-rwxrwxrwx 1 mangobro3 mangobro3 4203 Feb 19 02:24 evidence_ops_pack.md
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:24 out_post_evidence
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:24 out_pre_evidence
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:12 out_laneA_patch
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:11 out_after_fix3
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:11 out_laneA
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:09 out_tuning_after
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:08 out_tuning_before
+drwxrwxrwx 1 mangobro3 mangobro3 4096 Feb 19 02:08 out_at_tuning_v2

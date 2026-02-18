@@ -1,0 +1,392 @@
+[
+  {
+    "run_id": "R0_DEF",
+    "verdict": "NO_GO",
+    "go_no_go": "NO_GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": false,
+      "rel_bull_return": false,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R0_DEF/daily_state.csv",
+      "out_singlefix_after/R0_DEF/switches.csv",
+      "out_singlefix_after/R0_DEF/guards.csv",
+      "out_singlefix_after/R0_DEF/trades.csv",
+      "out_singlefix_after/R0_DEF/summary.json",
+      "out_singlefix_after/R0_DEF/metrics_total.json",
+      "out_singlefix_after/R0_DEF/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R0_AGG",
+    "verdict": "NO_GO",
+    "go_no_go": "NO_GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": false,
+      "rel_bull_return": false,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R0_AGG/daily_state.csv",
+      "out_singlefix_after/R0_AGG/switches.csv",
+      "out_singlefix_after/R0_AGG/guards.csv",
+      "out_singlefix_after/R0_AGG/trades.csv",
+      "out_singlefix_after/R0_AGG/summary.json",
+      "out_singlefix_after/R0_AGG/metrics_total.json",
+      "out_singlefix_after/R0_AGG/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R0_HYB",
+    "verdict": "NO_GO",
+    "go_no_go": "NO_GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": false,
+      "rel_bull_return": false,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R0_HYB/daily_state.csv",
+      "out_singlefix_after/R0_HYB/switches.csv",
+      "out_singlefix_after/R0_HYB/guards.csv",
+      "out_singlefix_after/R0_HYB/trades.csv",
+      "out_singlefix_after/R0_HYB/summary.json",
+      "out_singlefix_after/R0_HYB/metrics_total.json",
+      "out_singlefix_after/R0_HYB/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R1_SCOUT_ON",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R1_SCOUT_ON/daily_state.csv",
+      "out_singlefix_after/R1_SCOUT_ON/switches.csv",
+      "out_singlefix_after/R1_SCOUT_ON/guards.csv",
+      "out_singlefix_after/R1_SCOUT_ON/trades.csv",
+      "out_singlefix_after/R1_SCOUT_ON/summary.json",
+      "out_singlefix_after/R1_SCOUT_ON/metrics_total.json",
+      "out_singlefix_after/R1_SCOUT_ON/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R1_SCOUT_OFF",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R1_SCOUT_OFF/daily_state.csv",
+      "out_singlefix_after/R1_SCOUT_OFF/switches.csv",
+      "out_singlefix_after/R1_SCOUT_OFF/guards.csv",
+      "out_singlefix_after/R1_SCOUT_OFF/trades.csv",
+      "out_singlefix_after/R1_SCOUT_OFF/summary.json",
+      "out_singlefix_after/R1_SCOUT_OFF/metrics_total.json",
+      "out_singlefix_after/R1_SCOUT_OFF/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R1_ATR_IGN_ON",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R1_ATR_IGN_ON/daily_state.csv",
+      "out_singlefix_after/R1_ATR_IGN_ON/switches.csv",
+      "out_singlefix_after/R1_ATR_IGN_ON/guards.csv",
+      "out_singlefix_after/R1_ATR_IGN_ON/trades.csv",
+      "out_singlefix_after/R1_ATR_IGN_ON/summary.json",
+      "out_singlefix_after/R1_ATR_IGN_ON/metrics_total.json",
+      "out_singlefix_after/R1_ATR_IGN_ON/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R1_ATR_IGN_OFF",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R1_ATR_IGN_OFF/daily_state.csv",
+      "out_singlefix_after/R1_ATR_IGN_OFF/switches.csv",
+      "out_singlefix_after/R1_ATR_IGN_OFF/guards.csv",
+      "out_singlefix_after/R1_ATR_IGN_OFF/trades.csv",
+      "out_singlefix_after/R1_ATR_IGN_OFF/summary.json",
+      "out_singlefix_after/R1_ATR_IGN_OFF/metrics_total.json",
+      "out_singlefix_after/R1_ATR_IGN_OFF/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R1_RATE_ON",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R1_RATE_ON/daily_state.csv",
+      "out_singlefix_after/R1_RATE_ON/switches.csv",
+      "out_singlefix_after/R1_RATE_ON/guards.csv",
+      "out_singlefix_after/R1_RATE_ON/trades.csv",
+      "out_singlefix_after/R1_RATE_ON/summary.json",
+      "out_singlefix_after/R1_RATE_ON/metrics_total.json",
+      "out_singlefix_after/R1_RATE_ON/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R1_RATE_OFF",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R1_RATE_OFF/daily_state.csv",
+      "out_singlefix_after/R1_RATE_OFF/switches.csv",
+      "out_singlefix_after/R1_RATE_OFF/guards.csv",
+      "out_singlefix_after/R1_RATE_OFF/trades.csv",
+      "out_singlefix_after/R1_RATE_OFF/summary.json",
+      "out_singlefix_after/R1_RATE_OFF/metrics_total.json",
+      "out_singlefix_after/R1_RATE_OFF/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R2_MULTI",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R2_MULTI/daily_state.csv",
+      "out_singlefix_after/R2_MULTI/switches.csv",
+      "out_singlefix_after/R2_MULTI/guards.csv",
+      "out_singlefix_after/R2_MULTI/trades.csv",
+      "out_singlefix_after/R2_MULTI/summary.json",
+      "out_singlefix_after/R2_MULTI/metrics_total.json",
+      "out_singlefix_after/R2_MULTI/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R2_SIMPLE",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R2_SIMPLE/daily_state.csv",
+      "out_singlefix_after/R2_SIMPLE/switches.csv",
+      "out_singlefix_after/R2_SIMPLE/guards.csv",
+      "out_singlefix_after/R2_SIMPLE/trades.csv",
+      "out_singlefix_after/R2_SIMPLE/summary.json",
+      "out_singlefix_after/R2_SIMPLE/metrics_total.json",
+      "out_singlefix_after/R2_SIMPLE/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R3_FEE_X2",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R3_FEE_X2/daily_state.csv",
+      "out_singlefix_after/R3_FEE_X2/switches.csv",
+      "out_singlefix_after/R3_FEE_X2/guards.csv",
+      "out_singlefix_after/R3_FEE_X2/trades.csv",
+      "out_singlefix_after/R3_FEE_X2/summary.json",
+      "out_singlefix_after/R3_FEE_X2/metrics_total.json",
+      "out_singlefix_after/R3_FEE_X2/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R3_SLIP_X2",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R3_SLIP_X2/daily_state.csv",
+      "out_singlefix_after/R3_SLIP_X2/switches.csv",
+      "out_singlefix_after/R3_SLIP_X2/guards.csv",
+      "out_singlefix_after/R3_SLIP_X2/trades.csv",
+      "out_singlefix_after/R3_SLIP_X2/summary.json",
+      "out_singlefix_after/R3_SLIP_X2/metrics_total.json",
+      "out_singlefix_after/R3_SLIP_X2/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R3_BOTH_X2",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": false,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R3_BOTH_X2/daily_state.csv",
+      "out_singlefix_after/R3_BOTH_X2/switches.csv",
+      "out_singlefix_after/R3_BOTH_X2/guards.csv",
+      "out_singlefix_after/R3_BOTH_X2/trades.csv",
+      "out_singlefix_after/R3_BOTH_X2/summary.json",
+      "out_singlefix_after/R3_BOTH_X2/metrics_total.json",
+      "out_singlefix_after/R3_BOTH_X2/metrics_by_mode.json"
+    ]
+  },
+  {
+    "run_id": "R4_KILL",
+    "verdict": "GO",
+    "go_no_go": "GO",
+    "checks": {
+      "abs_oos_pf": true,
+      "abs_oos_mdd": true,
+      "abs_bull_tcr": true,
+      "abs_stress_no_break": true,
+      "rel_oos_cagr": true,
+      "rel_bull_return": true,
+      "kz_scope_required": true,
+      "kz_guard_fired": true,
+      "kz_guard_fired_raw": true,
+      "kz_loss_improved": true
+    },
+    "files": [
+      "out_singlefix_after/R4_KILL/daily_state.csv",
+      "out_singlefix_after/R4_KILL/switches.csv",
+      "out_singlefix_after/R4_KILL/guards.csv",
+      "out_singlefix_after/R4_KILL/trades.csv",
+      "out_singlefix_after/R4_KILL/summary.json",
+      "out_singlefix_after/R4_KILL/metrics_total.json",
+      "out_singlefix_after/R4_KILL/metrics_by_mode.json"
+    ]
+  }
+]

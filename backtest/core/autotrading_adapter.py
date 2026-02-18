@@ -63,6 +63,28 @@ def _latest_run_summary(base_dir: Path) -> Path:
     return files[0]
 
 
+def _latest_backtest_summary_with_guards(base_dir: Path) -> Path | None:
+    runs_dir = base_dir / "Auto Trading" / "results" / "runs"
+    files = sorted(runs_dir.glob("*/run_summary.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    for p in files:
+        try:
+            raw = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if str(raw.get("run_type", "")).lower() != "backtest":
+            continue
+        guards_rel = ((raw.get("files", {}) or {}).get("guards_csv"))
+        if not guards_rel:
+            continue
+        guards_path = _resolve_artifact_path(base_dir, guards_rel)
+        try:
+            if guards_path.exists() and guards_path.stat().st_size > 0:
+                return p
+        except OSError:
+            continue
+    return None
+
+
 def _resolve_artifact_path(base: Path, artifact_rel_or_abs: str | Path) -> Path:
     artifact_path = Path(str(artifact_rel_or_abs).replace("\\", "/"))
     return base / "Auto Trading" / artifact_path if not artifact_path.is_absolute() else artifact_path
@@ -133,6 +155,22 @@ def _find_fallback_guards_path(base: Path, run_id: str, summary_file: Path) -> t
     return None, "guards_csv_missing_in_run_summary"
 
 
+def _find_fallback_trades_path(base: Path, run_id: str, summary_file: Path) -> tuple[Path | None, str]:
+    same_run = summary_file.parent / "trades.csv"
+    if same_run.exists() and same_run.stat().st_size > 0:
+        return same_run, "run_dir_trades_csv"
+
+    candidates = sorted(base.glob(f"backtest/out*/{run_id}/trades.csv"), key=lambda p: p.stat().st_mtime, reverse=True)
+    for p in candidates:
+        try:
+            if p.exists() and p.stat().st_size > 0:
+                return p, "backtest_artifact_trades_csv"
+        except OSError:
+            continue
+
+    return None, "trades_csv_missing_in_run_summary"
+
+
 def _compute_bull_tcr(trades_rows: list[dict], total_return_pct: float, max_dd_pct: float) -> tuple[float, str]:
     """Map bull_tcr from run_summary/trades in a deterministic way.
 
@@ -179,6 +217,49 @@ def _compute_bull_tcr(trades_rows: list[dict], total_return_pct: float, max_dd_p
     dd = abs(min(0.0, max_dd_pct))
     proxy = ret / (ret + (dd * 2.0) + 1e-9)
     return max(0.0, min(1.0, proxy)), "proxy_return_drawdown"
+
+
+def _compute_oos_pf_from_trades(trades_rows: list[dict]) -> tuple[float | None, str]:
+    """Compute profit factor from realized long-only round trips (BUY->SELL FIFO)."""
+    buys: list[list[float]] = []  # [remaining_qty, buy_price]
+    gross_profit = 0.0
+    gross_loss = 0.0
+    close_count = 0
+
+    for row in trades_rows:
+        side = str(row.get("side", "")).upper()
+        qty = _to_float(row.get("qty", 0.0), 0.0)
+        price = _to_float(row.get("price", 0.0), 0.0)
+        if qty <= 0 or price <= 0:
+            continue
+
+        if side in {"BUY", "B"}:
+            buys.append([qty, price])
+            continue
+
+        if side in {"SELL", "S"}:
+            remaining = qty
+            while remaining > 0 and buys:
+                open_qty, open_px = buys[0]
+                matched = min(remaining, open_qty)
+                remaining -= matched
+                open_qty -= matched
+                pnl = (price - open_px) * matched
+                close_count += 1
+                if pnl >= 0:
+                    gross_profit += pnl
+                else:
+                    gross_loss += abs(pnl)
+                if open_qty <= 1e-12:
+                    buys.pop(0)
+                else:
+                    buys[0][0] = open_qty
+
+    if close_count <= 0:
+        return None, "pf_unavailable_no_closed_trades"
+    if gross_loss <= 1e-12:
+        return max(1.0, gross_profit), "pf_from_trades_no_losses"
+    return gross_profit / gross_loss, "pf_from_trades"
 
 
 def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = None):
@@ -240,6 +321,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
 
         oos_pf = 1.0 + max(0.0, total_return_pct) / 100.0
+        oos_pf_source = "pf_from_return"
         oos_mdd = abs(max_dd_pct) / 100.0
 
         trades_rows: list[dict] = []
@@ -261,6 +343,35 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                         if i >= 999:
                             break
 
+        trades_cache: dict[str, list[dict]] = {}
+
+        def _trades_for_run(run_id: str) -> list[dict]:
+            if run_id in trades_cache:
+                return trades_cache[run_id]
+
+            rows = list(trades_rows)
+            if not rows:
+                fallback_path, _ = _find_fallback_trades_path(base, run_id, summary_file)
+                if fallback_path:
+                    try:
+                        with fallback_path.open("r", encoding="utf-8", newline="") as f:
+                            reader = csv.DictReader(f)
+                            for i, row in enumerate(reader):
+                                rows.append({
+                                    "ts": row.get("Date") or row.get("date") or row.get("dt") or "",
+                                    "side": row.get("Type") or row.get("side") or "",
+                                    "qty": row.get("Qty") or row.get("qty") or row.get("size") or "",
+                                    "price": row.get("price") or row.get("Price") or "",
+                                    "reason": f"mapped_from_artifact:{fallback_path}",
+                                })
+                                if i >= 999:
+                                    break
+                    except Exception:
+                        rows = list(trades_rows)
+
+            trades_cache[run_id] = rows
+            return trades_cache[run_id]
+
         guards_rows_default: list[dict] = []
         guard_mapping_status_default = schema_status
         guards_rel = files_meta.get("guards_csv")
@@ -278,7 +389,6 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         else:
             guard_mapping_status_default = "guards_csv_missing_in_run_summary"
 
-        bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, total_return_pct, max_dd_pct)
         guards_cache: dict[str, tuple[list[dict], str]] = {}
 
         def _guards_for_run(run_id: str) -> tuple[list[dict], str]:
@@ -311,12 +421,11 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "schema_status": schema_status,
             "returns_mapping_source": returns_mapping_source,
             "oos_pf": oos_pf,
+            "oos_pf_source": oos_pf_source,
             "oos_mdd": oos_mdd,
             "total_return_pct": total_return_pct,
             "max_dd_pct": max_dd_pct,
-            "trades_rows": trades_rows,
-            "bull_tcr": bull_tcr,
-            "bull_tcr_source": bull_tcr_source,
+            "trades_for_run": _trades_for_run,
             "guards_for_run": _guards_for_run,
         }
         summary_ctx_cache[cache_key] = ctx
@@ -339,6 +448,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         if default_summary_file is not None:
             if not default_summary_file.exists():
                 return None, f"{default_summary_status}_missing:{default_summary_file}"
+
             return _build_summary_ctx(default_summary_file), f"run_id_path_missing:{run_id}|{default_summary_status}_reused"
 
         return None, f"run_id_path_missing:{run_id}|summary_unavailable"
@@ -354,6 +464,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             oos_mdd = 0.0
             bull_tcr = 0.0
             bull_tcr_source = "unavailable_no_summary"
+            oos_pf_source = "unavailable_no_summary"
             total_return_pct = 0.0
             max_dd_pct = 0.0
             trades_rows: list[dict] = []
@@ -363,13 +474,17 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             returns_mapping_source = "summary_unavailable"
         else:
             guards_rows, guard_mapping_status = ctx["guards_for_run"](request.run_id)
+            trades_rows = ctx["trades_for_run"](request.run_id)
             oos_pf = ctx["oos_pf"]
+            oos_pf_source = ctx.get("oos_pf_source", "pf_from_return")
+            oos_pf_run, oos_pf_run_source = _compute_oos_pf_from_trades(trades_rows)
+            if oos_pf_run is not None:
+                oos_pf = oos_pf_run
+                oos_pf_source = oos_pf_run_source
             oos_mdd = ctx["oos_mdd"]
-            bull_tcr = ctx["bull_tcr"]
-            bull_tcr_source = ctx["bull_tcr_source"]
             total_return_pct = ctx["total_return_pct"]
             max_dd_pct = ctx["max_dd_pct"]
-            trades_rows = ctx["trades_rows"]
+            bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, total_return_pct, max_dd_pct)
             mapped_from = str(ctx["summary_file"])
             raw_created_at = ctx["raw"].get("created_at", "")
             schema_status = ctx["schema_status"]
@@ -415,6 +530,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                 "mapped_from": mapped_from,
                 "mode": mode,
                 "bull_tcr_source": bull_tcr_source,
+                "oos_pf_source": oos_pf_source,
                 "returns_mapping_source": returns_mapping_source,
                 "schema_guard_status": schema_status,
                 "guard_mapping_status": guard_mapping_status,

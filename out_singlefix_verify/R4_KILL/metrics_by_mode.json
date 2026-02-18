@@ -1,0 +1,87 @@
+{
+  "hybrid": {
+    "split": {
+      "timeframe": "5m",
+      "zones": [
+        {
+          "name": "covid_crash",
+          "from": "2020-03-12",
+          "to": "2020-03-13",
+          "timeframe": "5m"
+        },
+        {
+          "name": "may_2021_crash",
+          "from": "2021-05-19",
+          "to": "2021-05-20",
+          "timeframe": "5m"
+        },
+        {
+          "name": "luna_cascade",
+          "from": "2022-05-07",
+          "to": "2022-05-13",
+          "timeframe": "5m"
+        },
+        {
+          "name": "ftx_collapse",
+          "from": "2022-11-06",
+          "to": "2022-11-12",
+          "timeframe": "5m"
+        }
+      ]
+    },
+    "fee_mult": 1.0,
+    "slippage_mult": 1.0,
+    "final_equity": 4.930614,
+    "bars": 4036,
+    "def_hyb": {
+      "DEF": {
+        "bars": 2181,
+        "bar_share": 0.540387,
+        "sum_ret": 0.269241,
+        "compound_return": 0.306816
+      },
+      "HYB": {
+        "bars": 4036,
+        "bar_share": 1.0,
+        "sum_ret": 1.606563,
+        "compound_return": 3.930614
+      }
+    },
+    "bull_segment": {
+      "bars": 1886,
+      "bar_share": 0.467294,
+      "sum_ret": 1.338535,
+      "compound_return": 2.77758
+    },
+    "regime_contribution": {
+      "BEAR": {
+        "bars": 0,
+        "bar_share": 0.0,
+        "sum_ret": 0.0,
+        "compound_return": 0.0,
+        "contribution_share": 0.0
+      },
+      "RANGE": {
+        "bars": 2150,
+        "bar_share": 0.532706,
+        "sum_ret": 0.268029,
+        "compound_return": 0.305231,
+        "contribution_share": 0.166834
+      },
+      "TREND": {
+        "bars": 1237,
+        "bar_share": 0.306492,
+        "sum_ret": 0.332586,
+        "compound_return": 0.388512,
+        "contribution_share": 0.207017
+      },
+      "SUPER_TREND": {
+        "bars": 649,
+        "bar_share": 0.160803,
+        "sum_ret": 1.005949,
+        "compound_return": 1.720597,
+        "contribution_share": 0.626149
+      }
+    }
+  }
+}

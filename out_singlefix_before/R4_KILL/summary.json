@@ -1,0 +1,25 @@
+{
+  "run_id": "R4_KILL",
+  "source": "auto_trading.run_summary",
+  "mapped_from": "models/_archive/run_20260212_173603_42/run_summary.json",
+  "mode": "hybrid",
+  "bull_tcr_source": "proxy_return_drawdown",
+  "returns_mapping_source": "candidate.oos_metrics.roi,mdd",
+  "schema_guard_status": "not_backtest_mode",
+  "guard_mapping_status": "backtest_artifact_guards_csv_loaded",
+  "input_mapping_status": "run_id_path_missing:R4_KILL|default_from_cli_reused",
+  "run_summary_map_status": "run_map_not_found",
+  "go_no_go": "NO_GO",
+  "checks": {
+    "abs_oos_pf": false,
+    "abs_oos_mdd": true,
+    "abs_bull_tcr": false,
+    "abs_stress_no_break": true,
+    "rel_oos_cagr": true,
+    "rel_bull_return": true,
+    "kz_scope_required": true,
+    "kz_guard_fired": true,
+    "kz_guard_fired_raw": true,
+    "kz_loss_improved": true
+  }
+}

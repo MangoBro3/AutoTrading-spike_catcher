@@ -1,0 +1,3 @@
+ts,side,qty,price,reason
+,BUY,0.1,50000,mapped_from_artifact:backtest/out_singlefix_verify_r2/R3_FEE_X2/trades.csv
+,SELL,0.1,55000,mapped_from_artifact:backtest/out_singlefix_verify_r2/R3_FEE_X2/trades.csv

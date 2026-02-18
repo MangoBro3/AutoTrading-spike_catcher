@@ -1,0 +1,63 @@
+{
+  "always_def": {
+    "split": {
+      "from": "2020-01-01",
+      "to": "2024-12-31",
+      "timeframe": "1d"
+    },
+    "fee_mult": 1.0,
+    "slippage_mult": 1.0,
+    "final_equity": 1.582249,
+    "bars": 1827,
+    "def_hyb": {
+      "DEF": {
+        "bars": 1827,
+        "bar_share": 1.0,
+        "sum_ret": 0.45896,
+        "compound_return": 0.582249
+      },
+      "HYB": {
+        "bars": 1827,
+        "bar_share": 1.0,
+        "sum_ret": 0.45896,
+        "compound_return": 0.582249
+      }
+    },
+    "bull_segment": {
+      "bars": 853,
+      "bar_share": 0.466886,
+      "sum_ret": 0.313349,
+      "compound_return": 0.367867
+    },
+    "regime_contribution": {
+      "BEAR": {
+        "bars": 0,
+        "bar_share": 0.0,
+        "sum_ret": 0.0,
+        "compound_return": 0.0,
+        "contribution_share": 0.0
+      },
+      "RANGE": {
+        "bars": 974,
+        "bar_share": 0.533114,
+        "sum_ret": 0.145612,
+        "compound_return": 0.156727,
+        "contribution_share": 0.317264
+      },
+      "TREND": {
+        "bars": 573,
+        "bar_share": 0.313629,
+        "sum_ret": 0.10433,
+        "compound_return": 0.10995,
+        "contribution_share": 0.227318
+      },
+      "SUPER_TREND": {
+        "bars": 280,
+        "bar_share": 0.153257,
+        "sum_ret": 0.209019,
+        "compound_return": 0.232368,
+        "contribution_share": 0.455418
+      }
+    }
+  }
+}

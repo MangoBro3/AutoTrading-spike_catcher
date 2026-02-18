@@ -1,0 +1,63 @@
+{
+  "hybrid": {
+    "split": {
+      "from": "2023-01-01",
+      "to": "2024-12-31",
+      "timeframe": "1d"
+    },
+    "fee_mult": 1.0,
+    "slippage_mult": 2.0,
+    "final_equity": 1.519528,
+    "bars": 731,
+    "def_hyb": {
+      "DEF": {
+        "bars": 386,
+        "bar_share": 0.528044,
+        "sum_ret": 0.083462,
+        "compound_return": 0.087028
+      },
+      "HYB": {
+        "bars": 731,
+        "bar_share": 1.0,
+        "sum_ret": 0.41868,
+        "compound_return": 0.519528
+      }
+    },
+    "bull_segment": {
+      "bars": 348,
+      "bar_share": 0.47606,
+      "sum_ret": 0.333658,
+      "compound_return": 0.395697
+    },
+    "regime_contribution": {
+      "BEAR": {
+        "bars": 0,
+        "bar_share": 0.0,
+        "sum_ret": 0.0,
+        "compound_return": 0.0,
+        "contribution_share": 0.0
+      },
+      "RANGE": {
+        "bars": 383,
+        "bar_share": 0.52394,
+        "sum_ret": 0.085022,
+        "compound_return": 0.088723,
+        "contribution_share": 0.20307
+      },
+      "TREND": {
+        "bars": 226,
+        "bar_share": 0.309166,
+        "sum_ret": 0.106584,
+        "compound_return": 0.112426,
+        "contribution_share": 0.254572
+      },
+      "SUPER_TREND": {
+        "bars": 122,
+        "bar_share": 0.166895,
+        "sum_ret": 0.227074,
+        "compound_return": 0.254642,
+        "contribution_share": 0.542358
+      }
+    }
+  }
+}
