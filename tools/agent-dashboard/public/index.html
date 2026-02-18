@@ -19,6 +19,10 @@
     .emoji{font-size:26px;display:block}
     .name{font-weight:700;font-size:12px}
     .state{font-size:11px;color:#9aa4b2}
+    .work{font-size:11px;color:#cbd5e1;margin-top:4px;min-height:28px}
+    .pager{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .btn{background:#243047;border:1px solid #33425f;color:#e9edf1;padding:4px 8px;border-radius:6px;cursor:pointer}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
     .bar{height:8px;background:#202838;border-radius:999px;overflow:hidden;margin-top:6px}
     .fill{height:100%;background:linear-gradient(90deg,#47d16c,#ffca5f,#ff6b6b)}
   </style>
@@ -44,9 +48,20 @@
     <h3>Sessions</h3>
     <div id="sessions"></div>
   </div>
+  <div class="card" style="margin-top:12px">
+    <h3>로그 타임라인</h3>
+    <div id="timeline"></div>
+    <div class="pager">
+      <button id="prevBtn" class="btn">이전</button>
+      <span id="pageInfo" class="muted"></span>
+      <button id="nextBtn" class="btn">다음</button>
+    </div>
+  </div>
 <script>
 const $ = (id)=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]))}
+let timelinePage = 1;
+const PAGE_SIZE = 30;
 
 function render(data){
   $('ts').textContent = `updated: ${new Date(data.now).toLocaleString()}${data.sourceOk?'':'  |  openclaw json source unavailable'}`;
@@ -119,6 +134,7 @@ function render(data){
   }
 
   const inProgress = new Set((data.taskSignals?.inProgressAgents||[]).map(String));
+  const agentWork = data.taskSignals?.agentWork || {};
 
   $('characters').innerHTML = agents.map(a=>{
     const minAge = byAgentMinAge[a.id];
@@ -127,7 +143,9 @@ function render(data){
     const working = sessionWorking || taskWorking;
     const source = taskWorking ? 'task' : (sessionWorking ? 'session' : 'none');
     const state = working ? `working · ${taskWorking ? 'in_progress' : ageToText(minAge)}` : 'idle';
-    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state ${working?'ok':''}">${state}</div><div class="muted">src:${source}</div></div>`;
+    const w = agentWork[a.id];
+    const workText = w ? `${w.taskId} | ${w.description || ''}` : '-';
+    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state ${working?'ok':''}">${state}</div><div class="muted">src:${source}</div><div class="work">${esc(workText)}</div></div>`;
   }).join('');
 
   const sess = sessionsList;
@@ -135,6 +153,18 @@ function render(data){
     `<table><thead><tr><th>agent</th><th>key</th><th>age</th><th>tokens(in/out)</th></tr></thead><tbody>`+
     sess.slice(0,20).map(s=>`<tr><td>${esc(s.agentId||'-')}</td><td>${esc(s.key)}</td><td>${esc(ageToText(s.age ?? s.ageMs ?? '-'))}</td><td>${esc((s.inputTokens!=null||s.outputTokens!=null)?`${s.inputTokens||0}/${s.outputTokens||0}`:'-')}</td></tr>`).join('')+
     `</tbody></table>`;
+
+  const tl = data.timeline || [];
+  const totalPages = Math.max(1, Math.ceil(tl.length / PAGE_SIZE));
+  if (timelinePage > totalPages) timelinePage = totalPages;
+  const start = (timelinePage - 1) * PAGE_SIZE;
+  const pageRows = tl.slice(start, start + PAGE_SIZE);
+  $('timeline').innerHTML = `<table><thead><tr><th>시간</th><th>업무</th><th>프로젝트</th><th>에이전트</th><th>상세 내용</th></tr></thead><tbody>`+
+    pageRows.map(r=>`<tr><td>${esc(new Date(r.ts||Date.now()).toLocaleTimeString())}</td><td>${esc(r.work||'-')}</td><td>${esc(r.project||'-')}</td><td>${esc(r.agent||'-')}</td><td>${esc(r.detail||'-')}</td></tr>`).join('')+
+    `</tbody></table>`;
+  $('pageInfo').textContent = `페이지 ${timelinePage}/${totalPages} · 총 ${tl.length}건`;
+  $('prevBtn').disabled = timelinePage <= 1;
+  $('nextBtn').disabled = timelinePage >= totalPages;
 }
 
 async function tick(){
@@ -144,6 +174,9 @@ async function tick(){
     render(j);
   }catch(e){$('ts').textContent='fetch failed: '+e.message}
 }
+
+$('prevBtn').addEventListener('click', ()=>{ if(timelinePage>1){ timelinePage--; tick(); } });
+$('nextBtn').addEventListener('click', ()=>{ timelinePage++; tick(); });
 
 tick(); setInterval(tick, 10000);
 </script>

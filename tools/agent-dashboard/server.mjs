@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -8,6 +8,9 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 18890;
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
 const USAGE_DIR = '/mnt/f/SafeBot/openclaw-news-workspace/python/team/usage';
 const SNAPSHOT_FILE = `${USAGE_DIR}/token_snapshots.jsonl`;
+const ACTIVITY_LOG_FILE = `${USAGE_DIR}/activity_log.jsonl`;
+const ACTIVITY_STATE_FILE = `${USAGE_DIR}/activity_state.json`;
+const PROJECT_NAME = 'openclaw-news-workspace';
 
 function tryExecJson(cmd) {
   const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -41,35 +44,52 @@ function readCheckpoint() {
 
 function readTaskSignals() {
   const p = '/mnt/f/SafeBot/openclaw-news-workspace/python/TASKS.md';
-  if (!existsSync(p)) return { inProgressAgents: [], tasks: [] };
+  if (!existsSync(p)) return { inProgressAgents: [], tasks: [], agentWork: {} };
   try {
     const lines = readFileSync(p, 'utf8').split('\n').filter((l) => l.trim().startsWith('|'));
     const rows = lines.slice(2); // skip header + separator
     const tasks = [];
     const inProgressAgents = new Set();
+    const agentWork = {};
 
     for (const row of rows) {
       const cols = row.split('|').map((c) => c.trim());
-      // table columns: | ID | Status | Owner | Description | Dependency | Ownership | Contract Ref | Blocker | Fail Count |
+      // | ID | Status | Owner | Description | Dependency | Ownership | Contract Ref | Blocker | Fail Count |
       if (cols.length < 10) continue;
       const taskId = cols[1];
       const status = (cols[2] || '').toUpperCase();
       const owner = (cols[3] || '').toLowerCase();
+      const description = cols[4] || '';
       const ownership = (cols[6] || '').toLowerCase();
 
-      tasks.push({ taskId, status, owner, ownership });
+      tasks.push({ taskId, status, owner, description, ownership });
       if (status === 'IN_PROGRESS') {
-        if (owner.includes('pm')) inProgressAgents.add('pm');
-        if (owner.includes('tl')) inProgressAgents.add('tl');
-        if (owner.includes('architect')) inProgressAgents.add('architect');
-        if (owner.includes('coder_a') || ownership.includes('a:')) inProgressAgents.add('coder_a');
-        if (owner.includes('coder_b') || ownership.includes('b:')) inProgressAgents.add('coder_b');
+        if (owner.includes('pm')) {
+          inProgressAgents.add('pm');
+          agentWork.pm = { taskId, description, status };
+        }
+        if (owner.includes('tl')) {
+          inProgressAgents.add('tl');
+          agentWork.tl = { taskId, description, status };
+        }
+        if (owner.includes('architect')) {
+          inProgressAgents.add('architect');
+          agentWork.architect = { taskId, description, status };
+        }
+        if (owner.includes('coder_a') || ownership.includes('a:')) {
+          inProgressAgents.add('coder_a');
+          agentWork.coder_a = { taskId, description, status };
+        }
+        if (owner.includes('coder_b') || ownership.includes('b:')) {
+          inProgressAgents.add('coder_b');
+          agentWork.coder_b = { taskId, description, status };
+        }
       }
     }
 
-    return { inProgressAgents: [...inProgressAgents], tasks };
+    return { inProgressAgents: [...inProgressAgents], tasks, agentWork };
   } catch {
-    return { inProgressAgents: [], tasks: [] };
+    return { inProgressAgents: [], tasks: [], agentWork: {} };
   }
 }
 
@@ -112,6 +132,87 @@ function readSnapshots() {
   } catch {
     return [];
   }
+}
+
+function readActivityState() {
+  if (!existsSync(ACTIVITY_STATE_FILE)) return { sessions: {}, tasks: {} };
+  try { return JSON.parse(readFileSync(ACTIVITY_STATE_FILE, 'utf8')); } catch { return { sessions: {}, tasks: {} }; }
+}
+
+function writeActivityState(state) {
+  try {
+    mkdirSync(USAGE_DIR, { recursive: true });
+    writeFileSync(ACTIVITY_STATE_FILE, JSON.stringify(state), 'utf8');
+  } catch {
+    // ignore
+  }
+}
+
+function appendActivityEvents(events) {
+  if (!events?.length) return;
+  try {
+    mkdirSync(USAGE_DIR, { recursive: true });
+    for (const e of events) appendFileSync(ACTIVITY_LOG_FILE, JSON.stringify(e) + '\n', 'utf8');
+  } catch {
+    // ignore
+  }
+}
+
+function readActivityLog(limit = 600) {
+  if (!existsSync(ACTIVITY_LOG_FILE)) return [];
+  try {
+    const lines = readFileSync(ACTIVITY_LOG_FILE, 'utf8').split('\n').filter(Boolean);
+    const rows = lines.slice(-limit).map((l) => JSON.parse(l));
+    return rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  } catch {
+    return [];
+  }
+}
+
+function collectActivityEvents(status, taskSignals) {
+  const state = readActivityState();
+  const events = [];
+  const sessions = normalizeSessions(status);
+
+  for (const s of sessions) {
+    const key = s.key;
+    const updatedAt = Number(s.updatedAt || 0);
+    if (!key || !updatedAt) continue;
+    const prev = Number(state.sessions[key] || 0);
+    if (updatedAt > prev) {
+      const agentId = s.agentId || String(key).split(':')[1] || 'unknown';
+      events.push({
+        ts: updatedAt,
+        time: new Date(updatedAt).toISOString(),
+        agent: agentId,
+        work: 'session_update',
+        project: PROJECT_NAME,
+        detail: `${key} updated`,
+      });
+      state.sessions[key] = updatedAt;
+    }
+  }
+
+  for (const t of taskSignals.tasks || []) {
+    if (!t.taskId) continue;
+    const prev = state.tasks[t.taskId] || {};
+    if (prev.status !== t.status || prev.owner !== t.owner || prev.description !== t.description) {
+      const ts = Date.now();
+      events.push({
+        ts,
+        time: new Date(ts).toISOString(),
+        agent: t.owner || 'pm',
+        work: 'task_status',
+        project: PROJECT_NAME,
+        detail: `${t.taskId}: ${(prev.status || 'NEW')} -> ${t.status} | ${t.description || ''}`,
+      });
+      state.tasks[t.taskId] = { status: t.status, owner: t.owner, description: t.description };
+    }
+  }
+
+  appendActivityEvents(events);
+  writeActivityState(state);
+  return readActivityLog();
 }
 
 function summarizeUsage(snapshots) {
@@ -185,9 +286,13 @@ function buildOverview() {
   const checkpoint = readCheckpoint();
   const taskSignals = readTaskSignals();
 
+  let timeline = [];
   if (status) {
     const snap = computeTokenSnapshot(status, checkpoint);
     appendSnapshot(snap);
+    timeline = collectActivityEvents(status, taskSignals);
+  } else {
+    timeline = readActivityLog();
   }
   const usage = summarizeUsage(readSnapshots());
 
@@ -204,6 +309,7 @@ function buildOverview() {
     checkpoint,
     usage,
     taskSignals,
+    timeline,
   };
 }
 
