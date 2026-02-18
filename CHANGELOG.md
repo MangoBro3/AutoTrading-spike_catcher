@@ -47,3 +47,23 @@
   - Low. Documentation/metrics consolidation only (no code logic changes).
 - Migration/Notes:
   - Final decision at this checkpoint: **Paper Trading 불가 (NO_GO 유지)**.
+
+## [2026-02-19] Round 5 (Final Docs Closeout Draft)
+- What:
+  - Prepared numeric/path-only draft updates for `TASKS.md`, `CHANGELOG.md`, `METRICS.md`, `evidence_report_final.md`.
+  - Added TL final gate placeholder field: `TL_GATE_RESULT = [PENDING_INPUT]`.
+- Why:
+  - Stage final handoff input point for TL gate result injection.
+- Risk:
+  - Low. Documentation-only.
+- Migration/Notes:
+  - Reference path: `/mnt/f/SafeBot/openclaw-news-workspace/python`
+  - Reference summaries:
+    - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at/runner_summary.json`
+    - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at_rerun/runner_summary.json`
+  - Numeric snapshot:
+    - pytest: `9 passed`
+    - rerun runs: `15`
+    - R0~R4 GO count: `0/15`
+    - `abs_oos_pf`: `15→0`
+    - `kz_guard_fired`: `0→1`

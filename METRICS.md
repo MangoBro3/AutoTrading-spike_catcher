@@ -32,3 +32,19 @@
 - GO/NO_GO 결론은 R0~R4 전체에서 변화 없음 (**모두 NO_GO 유지**).
 - 체크 변화: `abs_oos_pf` 15건 `True→False`, `kz_guard_fired` 1건(`R4`) `False→True`.
 - 코드 로직 파일 수정 없이 검증/재실행/문서 반영만 수행.
+
+## Final Docs Closeout Draft (Numeric/Path Only)
+- 기준 경로: `/mnt/f/SafeBot/openclaw-news-workspace/python`
+- 입력 파일:
+  - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at/runner_summary.json`
+  - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at_rerun/runner_summary.json`
+- 수치 스냅샷:
+  - `pytest_passed = 9`
+  - `rerun_generated_runs = 15`
+  - `r0_r4_go_count = 0/15`
+  - `abs_oos_pf_pass_before_after = 15/15 -> 0/15`
+  - `kz_guard_fired_pass_before_after = 0/15 -> 1/15`
+- TL 최종 게이트 결과(자리표시):
+  - `TL_GATE_RESULT = [PENDING_INPUT]`
+  - `TL_GATE_TIMESTAMP_KST = [PENDING_INPUT]`
+  - `TL_GATE_SOURCE_PATH = [PENDING_INPUT]`
