@@ -24,8 +24,8 @@ def _bars_for_split(split: dict) -> tuple[list[datetime], int]:
         zones = split.get("zones", [])
         bars: list[datetime] = []
         for z in zones:
-            st = _parse_date(z["from"]) 
-            ed = _parse_date(z["to"]) 
+            st = _parse_date(z["from"])
+            ed = _parse_date(z["to"])
             t = st
             while t <= ed:
                 bars.append(t)
@@ -46,6 +46,10 @@ def _regime_signal(i: int) -> tuple[float, float]:
     trend_strength = 0.5 + 0.45 * math.sin(i / 17.0)
     vol_spike = 1.0 + 0.8 * abs(math.sin(i / 29.0))
     return trend_strength, vol_spike
+
+
+def _safe_div(a: float, b: float) -> float:
+    return a / b if abs(b) > 1e-12 else 0.0
 
 
 def simulate_hybrid_run(request) -> dict:
@@ -78,6 +82,16 @@ def simulate_hybrid_run(request) -> dict:
     gross_loss = 0.0
     trend_win = 0
     trend_total = 0
+
+    regime_stats = {
+        r.value: {"bars": 0, "sum_ret": 0.0, "equity": 1.0}
+        for r in (Regime.BEAR, Regime.RANGE, Regime.TREND, Regime.SUPER_TREND)
+    }
+    mode_stats = {"DEF": {"bars": 0, "sum_ret": 0.0, "equity": 1.0}, "AGG": {"bars": 0, "sum_ret": 0.0, "equity": 1.0}}
+    bull_equity = 1.0
+    bull_bars = 0
+    bull_sum_ret = 0.0
+    prev_alloc_cap = 0.0
 
     for i, ts in enumerate(bars):
         dd = 0.0 if peak <= 0 else (equity / peak - 1.0)
@@ -118,9 +132,12 @@ def simulate_hybrid_run(request) -> dict:
                 booster=state.booster,
                 drawdown=dd,
                 scout_enabled=scout_enabled,
+                risk_state=state.risk_state.value,
+                prev_x_cap=prev_alloc_cap,
             ),
             alloc_cfg,
         )
+        prev_alloc_cap = alloc.x_cap
 
         cap = alloc.x_cap * guard.cap_multiplier
         x_cd = min(cap, alloc.x_cd * guard.cap_multiplier)
@@ -173,14 +190,28 @@ def simulate_hybrid_run(request) -> dict:
             trend_total += 1
             if bar_ret >= 0:
                 trend_win += 1
+            bull_bars += 1
+            bull_equity *= 1.0 + bar_ret
+            bull_sum_ret += bar_ret
+
+        regime_key = state.regime.value
+        regime_stats[regime_key]["bars"] += 1
+        regime_stats[regime_key]["sum_ret"] += bar_ret
+        regime_stats[regime_key]["equity"] *= 1.0 + bar_ret
+
+        mode_stats[mode_now]["bars"] += 1
+        mode_stats[mode_now]["sum_ret"] += bar_ret
+        mode_stats[mode_now]["equity"] *= 1.0 + bar_ret
 
         if switched:
-            switches.append({
-                "ts": ts.isoformat(),
-                "from": prev_mode,
-                "to": mode_now,
-                "reason": state.regime.value,
-            })
+            switches.append(
+                {
+                    "ts": ts.isoformat(),
+                    "from": prev_mode,
+                    "to": mode_now,
+                    "reason": state.regime.value,
+                }
+            )
             trades.append({"ts": ts.isoformat(), "side": "SWITCH", "qty": round(abs(x_total), 6), "reason": state.regime.value})
 
         if guard.guard_active:
@@ -206,6 +237,7 @@ def simulate_hybrid_run(request) -> dict:
                     "w_ce": round(0.0 if cap <= 0 else x_ce / cap, 6),
                     "scout": round(scout, 6),
                     "x_total": round(x_total, 6),
+                    "risk_state": state.risk_state.value,
                     "reason": alloc.reason,
                 }
             )
@@ -230,6 +262,35 @@ def simulate_hybrid_run(request) -> dict:
     oos_pf = gross_profit / gross_loss if gross_loss > 0 else 9.99
     bull_tcr = (trend_win / trend_total) if trend_total else 0.0
 
+    total_sum_ret = sum(v["sum_ret"] for v in regime_stats.values())
+    regime_contribution = {
+        k: {
+            "bars": int(v["bars"]),
+            "bar_share": round(_safe_div(float(v["bars"]), float(len(bars))), 6) if bars else 0.0,
+            "sum_ret": round(v["sum_ret"], 6),
+            "compound_return": round(v["equity"] - 1.0, 6),
+            "contribution_share": round(_safe_div(v["sum_ret"], total_sum_ret), 6),
+        }
+        for k, v in regime_stats.items()
+    }
+
+    mode_breakdown = {
+        k: {
+            "bars": int(v["bars"]),
+            "bar_share": round(_safe_div(float(v["bars"]), float(len(bars))), 6) if bars else 0.0,
+            "sum_ret": round(v["sum_ret"], 6),
+            "compound_return": round(v["equity"] - 1.0, 6),
+        }
+        for k, v in mode_stats.items()
+    }
+
+    bull_segment = {
+        "bars": int(bull_bars),
+        "bar_share": round(_safe_div(float(bull_bars), float(len(bars))), 6) if bars else 0.0,
+        "sum_ret": round(bull_sum_ret, 6),
+        "compound_return": round(bull_equity - 1.0, 6),
+    }
+
     metrics_total = {
         "oos_pf": round(oos_pf, 6),
         "oos_mdd": round(abs(max_dd), 6),
@@ -243,6 +304,7 @@ def simulate_hybrid_run(request) -> dict:
         "kill_zone_loss_hybrid": round(max_dd if kill_zone else max_dd * 0.9, 6),
         "kill_zone_loss_agg": round(max_dd * 1.25, 6),
         "x_total_leq_x_cap": all(float(row["x_total"]) <= float(row["x_cap"]) + 1e-9 for row in daily_state),
+        "bull_segment_return": bull_segment["compound_return"],
     }
 
     metrics_by_mode = {
@@ -252,6 +314,17 @@ def simulate_hybrid_run(request) -> dict:
             "slippage_mult": slip_mult,
             "final_equity": round(equity, 6),
             "bars": len(bars),
+            "def_hyb": {
+                "DEF": mode_breakdown["DEF"],
+                "HYB": {
+                    "bars": len(bars),
+                    "bar_share": 1.0 if bars else 0.0,
+                    "sum_ret": round(sum(returns), 6),
+                    "compound_return": round(equity - 1.0, 6),
+                },
+            },
+            "bull_segment": bull_segment,
+            "regime_contribution": regime_contribution,
         }
     }
 
