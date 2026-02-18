@@ -182,97 +182,199 @@ def _compute_bull_tcr(trades_rows: list[dict], total_return_pct: float, max_dd_p
 
 
 def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = None):
+    """Build adapter with optional per-run run_summary mapping.
+
+    Mapping priority per run_id:
+      1) backtest/config/autotrading_run_summary_map.json (explicit)
+      2) --run-summary default path (if provided)
+      3) latest Auto Trading run_summary.json (legacy fallback)
+
+    If explicit map exists but a run_id is missing, adapter returns explicit
+    unmapped status with neutral-zero metrics instead of silently reusing
+    another run summary.
+    """
+
     base = Path(base_dir)
+    explicit_map_path = base / "backtest" / "config" / "autotrading_run_summary_map.json"
+    run_summary_map: dict[str, Path] = {}
+    run_summary_map_status = "run_map_not_found"
 
+    if explicit_map_path.exists():
+        try:
+            raw_map = json.loads(explicit_map_path.read_text(encoding="utf-8"))
+            if isinstance(raw_map, dict):
+                for k, v in raw_map.items():
+                    if not isinstance(k, str) or not v:
+                        continue
+                    resolved = _resolve_artifact_path(base, str(v))
+                    run_summary_map[k] = resolved
+                run_summary_map_status = "run_map_loaded" if run_summary_map else "run_map_loaded_empty"
+            else:
+                run_summary_map_status = "run_map_invalid_type"
+        except Exception as e:
+            run_summary_map_status = f"run_map_read_error:{e.__class__.__name__}"
+            logger.warning("[autotrading_adapter] failed to load run map: %s (%s)", explicit_map_path, e)
+
+    default_summary_file: Path | None = None
+    default_summary_status = "default_unset"
     if run_summary_path:
-        summary_file = Path(run_summary_path)
+        default_summary_file = Path(run_summary_path)
+        default_summary_status = "default_from_cli"
     else:
-        summary_file = _latest_run_summary(base)
+        try:
+            default_summary_file = _latest_run_summary(base)
+            default_summary_status = "default_latest"
+        except FileNotFoundError:
+            default_summary_status = "default_latest_missing"
 
-    raw = json.loads(summary_file.read_text(encoding="utf-8"))
+    # Cache parsed summary context by source path.
+    summary_ctx_cache: dict[str, dict] = {}
 
-    schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
+    def _build_summary_ctx(summary_file: Path) -> dict:
+        cache_key = str(summary_file)
+        if cache_key in summary_ctx_cache:
+            return summary_ctx_cache[cache_key]
 
-    total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
+        raw = json.loads(summary_file.read_text(encoding="utf-8"))
+        schema_guards_path, schema_status = _validate_backtest_schema_or_raise(raw, base)
+        total_return_pct, max_dd_pct, returns_mapping_source = _extract_return_drawdown_pct(raw)
 
-    # Convert to evaluator-friendly shape (approximation until full engine integration)
-    oos_pf = 1.0 + max(0.0, total_return_pct) / 100.0
-    oos_mdd = abs(max_dd_pct) / 100.0
+        oos_pf = 1.0 + max(0.0, total_return_pct) / 100.0
+        oos_mdd = abs(max_dd_pct) / 100.0
 
-    trades_rows = []
-    files_meta = raw.get("files", {}) or {}
+        trades_rows: list[dict] = []
+        files_meta = raw.get("files", {}) or {}
+        trades_rel = files_meta.get("trades_csv")
+        if trades_rel:
+            trades_path = _resolve_artifact_path(base, trades_rel)
+            if trades_path.exists():
+                with trades_path.open("r", encoding="utf-8", newline="") as f:
+                    reader = csv.DictReader(f)
+                    for i, row in enumerate(reader):
+                        trades_rows.append({
+                            "ts": row.get("Date") or row.get("date") or row.get("dt") or "",
+                            "side": row.get("Type") or row.get("side") or "",
+                            "qty": row.get("Qty") or row.get("qty") or row.get("size") or "",
+                            "price": row.get("price") or row.get("Price") or "",
+                            "reason": "mapped_from_autotrading",
+                        })
+                        if i >= 999:
+                            break
 
-    trades_rel = files_meta.get("trades_csv")
-    if trades_rel:
-        trades_path = _resolve_artifact_path(base, trades_rel)
-        if trades_path.exists():
-            with trades_path.open("r", encoding="utf-8", newline="") as f:
-                reader = csv.DictReader(f)
-                for i, row in enumerate(reader):
-                    trades_rows.append({
-                        "ts": row.get("Date") or row.get("date") or row.get("dt") or "",
-                        "side": row.get("Type") or row.get("side") or "",
-                        "qty": row.get("Qty") or row.get("qty") or row.get("size") or "",
-                        "price": row.get("price") or row.get("Price") or "",
-                        "reason": "mapped_from_autotrading",
-                    })
-                    if i >= 999:
-                        break
-
-    guards_rows_default: list[dict] = []
-    guard_mapping_status_default = schema_status
-    guards_rel = files_meta.get("guards_csv")
-
-    # Backtest schema-valid case: required guards path already resolved/validated.
-    if schema_status == "backtest_schema_valid":
-        guards_rows_default = _read_guards_rows(schema_guards_path)
-        guard_mapping_status_default = "guards_csv_loaded" if guards_rows_default else "guards_csv_loaded_but_empty"
-
-    # Non-backtest (or legacy) permissive branch.
-    elif guards_rel:
-        guards_path = _resolve_artifact_path(base, guards_rel)
-        if guards_path.exists():
-            guards_rows_default = _read_guards_rows(guards_path)
+        guards_rows_default: list[dict] = []
+        guard_mapping_status_default = schema_status
+        guards_rel = files_meta.get("guards_csv")
+        if schema_status == "backtest_schema_valid":
+            guards_rows_default = _read_guards_rows(schema_guards_path)
             guard_mapping_status_default = "guards_csv_loaded" if guards_rows_default else "guards_csv_loaded_but_empty"
+        elif guards_rel:
+            guards_path = _resolve_artifact_path(base, guards_rel)
+            if guards_path.exists():
+                guards_rows_default = _read_guards_rows(guards_path)
+                guard_mapping_status_default = "guards_csv_loaded" if guards_rows_default else "guards_csv_loaded_but_empty"
+            else:
+                guard_mapping_status_default = f"guards_csv_path_not_found:{guards_path}"
+                logger.warning("[autotrading_adapter] guards_csv path not found: %s", guards_path)
         else:
-            guard_mapping_status_default = f"guards_csv_path_not_found:{guards_path}"
-            logger.warning("[autotrading_adapter] guards_csv path not found: %s", guards_path)
-    else:
-        guard_mapping_status_default = "guards_csv_missing_in_run_summary"
+            guard_mapping_status_default = "guards_csv_missing_in_run_summary"
 
-    bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, total_return_pct, max_dd_pct)
+        bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, total_return_pct, max_dd_pct)
+        guards_cache: dict[str, tuple[list[dict], str]] = {}
 
-    # per-run fallback cache (run_summary may not contain guards_csv)
-    guards_cache: dict[str, tuple[list[dict], str]] = {}
+        def _guards_for_run(run_id: str) -> tuple[list[dict], str]:
+            if run_id in guards_cache:
+                return guards_cache[run_id]
 
-    def _guards_for_run(run_id: str) -> tuple[list[dict], str]:
-        if run_id in guards_cache:
+            rows = list(guards_rows_default)
+            status = guard_mapping_status_default
+            if not rows:
+                fallback_path, fallback_status = _find_fallback_guards_path(base, run_id, summary_file)
+                status = fallback_status
+                if fallback_path:
+                    try:
+                        rows = _read_guards_rows(fallback_path, reason=f"mapped_from_artifact:{fallback_path}")
+                        if rows:
+                            status = f"{fallback_status}_loaded"
+                    except Exception as e:
+                        status = f"{fallback_status}_read_error:{e.__class__.__name__}"
+                        logger.warning("[autotrading_adapter] failed to read fallback guards_csv: %s (%s)", fallback_path, e)
+
+            if not rows:
+                logger.info("[autotrading_adapter] kill_zone guard not fired for run_id=%s; cause=%s", run_id, status)
+
+            guards_cache[run_id] = (rows, status)
             return guards_cache[run_id]
 
-        rows = list(guards_rows_default)
-        status = guard_mapping_status_default
+        ctx = {
+            "summary_file": summary_file,
+            "raw": raw,
+            "schema_status": schema_status,
+            "returns_mapping_source": returns_mapping_source,
+            "oos_pf": oos_pf,
+            "oos_mdd": oos_mdd,
+            "total_return_pct": total_return_pct,
+            "max_dd_pct": max_dd_pct,
+            "trades_rows": trades_rows,
+            "bull_tcr": bull_tcr,
+            "bull_tcr_source": bull_tcr_source,
+            "guards_for_run": _guards_for_run,
+        }
+        summary_ctx_cache[cache_key] = ctx
+        return ctx
 
-        if not rows:
-            fallback_path, fallback_status = _find_fallback_guards_path(base, run_id, summary_file)
-            status = fallback_status
-            if fallback_path:
-                try:
-                    rows = _read_guards_rows(fallback_path, reason=f"mapped_from_artifact:{fallback_path}")
-                    if rows:
-                        status = f"{fallback_status}_loaded"
-                except Exception as e:
-                    status = f"{fallback_status}_read_error:{e.__class__.__name__}"
-                    logger.warning("[autotrading_adapter] failed to read fallback guards_csv: %s (%s)", fallback_path, e)
+    def _resolve_summary_for_run(run_id: str) -> tuple[dict | None, str]:
+        if run_summary_map:
+            mapped = run_summary_map.get(run_id)
+            if not mapped:
+                return None, f"run_id_unmapped:{run_id}|{run_summary_map_status}"
+            if not mapped.exists():
+                return None, f"mapped_summary_missing:{mapped}"
+            return _build_summary_ctx(mapped), f"mapped_by_run_id:{run_id}"
 
-        if not rows:
-            logger.info("[autotrading_adapter] kill_zone guard not fired for run_id=%s; cause=%s", run_id, status)
+        # Conventional per-run path (opt-in without extra config)
+        conventional = base / "Auto Trading" / "results" / "runs" / run_id / "run_summary.json"
+        if conventional.exists():
+            return _build_summary_ctx(conventional), f"mapped_by_convention:{run_id}"
 
-        guards_cache[run_id] = (rows, status)
-        return guards_cache[run_id]
+        if default_summary_file is not None:
+            if not default_summary_file.exists():
+                return None, f"{default_summary_status}_missing:{default_summary_file}"
+            return _build_summary_ctx(default_summary_file), f"run_id_path_missing:{run_id}|{default_summary_status}_reused"
+
+        return None, f"run_id_path_missing:{run_id}|summary_unavailable"
 
     def adapter(request: RunRequest) -> dict:
         mode = request.mode
-        guards_rows, guard_mapping_status = _guards_for_run(request.run_id)
+        ctx, input_mapping_status = _resolve_summary_for_run(request.run_id)
+
+        if ctx is None:
+            guards_rows: list[dict] = []
+            guard_mapping_status = "guards_unavailable_no_summary"
+            oos_pf = 0.0
+            oos_mdd = 0.0
+            bull_tcr = 0.0
+            bull_tcr_source = "unavailable_no_summary"
+            total_return_pct = 0.0
+            max_dd_pct = 0.0
+            trades_rows: list[dict] = []
+            mapped_from = None
+            raw_created_at = ""
+            schema_status = "summary_unavailable"
+            returns_mapping_source = "summary_unavailable"
+        else:
+            guards_rows, guard_mapping_status = ctx["guards_for_run"](request.run_id)
+            oos_pf = ctx["oos_pf"]
+            oos_mdd = ctx["oos_mdd"]
+            bull_tcr = ctx["bull_tcr"]
+            bull_tcr_source = ctx["bull_tcr_source"]
+            total_return_pct = ctx["total_return_pct"]
+            max_dd_pct = ctx["max_dd_pct"]
+            trades_rows = ctx["trades_rows"]
+            mapped_from = str(ctx["summary_file"])
+            raw_created_at = ctx["raw"].get("created_at", "")
+            schema_status = ctx["schema_status"]
+            returns_mapping_source = ctx["returns_mapping_source"]
+
         kill_zone_guard_fired = bool(guards_rows)
         kill_zone_loss = -oos_mdd if kill_zone_guard_fired else 0.0
         metrics_total = {
@@ -285,7 +387,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "bull_return_hybrid": total_return_pct / 100.0 if mode == "hybrid" else 0.0,
             "bull_return_def": 0.0,
             "kill_zone_guard_fired": kill_zone_guard_fired,
-            "kill_zone_guard_reason": guard_mapping_status if kill_zone_guard_fired else guard_mapping_status,
+            "kill_zone_guard_reason": guard_mapping_status,
             "kill_zone_loss_hybrid": kill_zone_loss,
             "kill_zone_loss_agg": kill_zone_loss,
         }
@@ -293,14 +395,14 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         return {
             "daily_state": [
                 {
-                    "date": raw.get("created_at", ""),
+                    "date": raw_created_at,
                     "mode": mode,
                     "x_cap": "",
                     "x_cd": "",
                     "x_ce": "",
                     "w_ce": "",
                     "scout": "",
-                    "reason": "mapped_from_run_summary",
+                    "reason": "mapped_from_run_summary" if ctx is not None else "summary_unavailable",
                 }
             ],
             "switches": [],
@@ -308,13 +410,15 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "trades": trades_rows,
             "summary": {
                 "run_id": request.run_id,
-                "source": "auto_trading.run_summary",
-                "mapped_from": str(summary_file),
+                "source": "auto_trading.run_summary" if ctx is not None else "auto_trading.run_summary.unavailable",
+                "mapped_from": mapped_from,
                 "mode": mode,
                 "bull_tcr_source": bull_tcr_source,
                 "returns_mapping_source": returns_mapping_source,
                 "schema_guard_status": schema_status,
                 "guard_mapping_status": guard_mapping_status,
+                "input_mapping_status": input_mapping_status,
+                "run_summary_map_status": run_summary_map_status,
             },
             "metrics_total": metrics_total,
             "metrics_by_mode": {mode: {"total_return_pct": total_return_pct, "max_dd_pct": max_dd_pct}},

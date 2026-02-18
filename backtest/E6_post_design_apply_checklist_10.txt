@@ -1,0 +1,10 @@
+1) 설계안 반영 브랜치/커밋 확인 후 워크트리 clean 상태 점검(git status).
+2) 입력 run_summary 경로 유효성 확인(파일 존재/읽기 가능/최근 수정시각).
+3) out_at_fix/out_at_final/out_at_continuous 3개 출력 디렉터리 제거 후 클린 재생성.
+4) 템플릿 스크립트로 3세트 연속 실행(동일 파라미터, 동일 순서) 및 종료코드 0 확인.
+5) 각 출력의 파일 수·경로 집합 동일성 확인(누락/초과 0).
+6) runner_summary.json 생성 여부 및 run 개수(15) 일치 확인.
+7) final vs continuous 해시 비교 수행, 차이 파일이 summary.json 계열/runner_summary 범위인지 확인.
+8) fix vs final, fix vs continuous 해시 비교 수행 후 차이 분포가 기준 패턴(76)에서 급증하지 않는지 확인.
+9) summary.json 샘플 1~2개 수동 diff로 신규 필드/게이트 값 변화가 설계 의도와 부합하는지 확인.
+10) 결과를 E6 리포트로 기록(명령, 시각, diff 통계, 이상 유무)하고 아키텍트 검토 요청.
