@@ -18,6 +18,16 @@
 | R3 | 3 | 0→0 | 3→0 | 3→3 | 0→0 | 3→3 | 3→3 | 3→3 | 0→0 | 3→3 |
 | R4 | 1 | 0→0 | 1→0 | 1→1 | 0→0 | 1→1 | 1→1 | 1→1 | 0→1 | 1→1 |
 
+### Paper Trading 판단 근거표 (12줄 이내)
+| 항목 | 근거 | 판정 |
+|---|---|---|
+| 테스트 안정성 | stage7/10/11 pytest 9 passed | 통과 |
+| 실행 재현성 | rerun 15건 생성, summary 재생성 확인 | 통과 |
+| 게이트 성과 | R0~R4 GO count = 0/15 (전후 동일) | 미통과 |
+| 수익성 체크 | abs_oos_pf pass 15→0 (전량 악화) | 미통과 |
+| 안전 가드 | kz_guard_fired R4: 0→1 (발화 증가) | 주의 |
+| 최종 결론 | 핵심 게이트 미충족(NO_GO 유지) | **Paper Trading 불가** |
+
 ### Summary
 - GO/NO_GO 결론은 R0~R4 전체에서 변화 없음 (**모두 NO_GO 유지**).
 - 체크 변화: `abs_oos_pf` 15건 `True→False`, `kz_guard_fired` 1건(`R4`) `False→True`.

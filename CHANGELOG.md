@@ -36,3 +36,14 @@
   - Low. Verification/documentation-only update; no strategy logic edits.
 - Migration/Notes:
   - Compared `backtest/out_at/runner_summary.json` vs `backtest/out_at_rerun/runner_summary.json`: GO count unchanged across R0~R4, with check-level deltas `abs_oos_pf: True→False` (15 cases) and `kz_guard_fired: False→True` (R4, 1 case).
+
+## [2026-02-19] Round 4 (Final Closing Package)
+- What:
+  - Finalized closing docs package across `TASKS.md`, `CHANGELOG.md`, `METRICS.md` with one consistent status line.
+  - Added explicit paper-trading decision evidence table (<=12 lines) in `METRICS.md`.
+- Why:
+  - Provide auditable, single-source decision basis for Go/No-Go at handoff.
+- Risk:
+  - Low. Documentation/metrics consolidation only (no code logic changes).
+- Migration/Notes:
+  - Final decision at this checkpoint: **Paper Trading 불가 (NO_GO 유지)**.
