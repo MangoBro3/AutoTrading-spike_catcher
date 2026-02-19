@@ -95,6 +95,8 @@ def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter)
     results = []
     payloads_by_run = {}
 
+    is_candidate_ptp_once = "candidate_ptp_once_per_position" in str(out_root).lower()
+
     for run in runs:
         run_id = run["run_id"]
         split_key = run["split"]
@@ -102,7 +104,13 @@ def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter)
         if split_key == "kill_zones_5m":
             split = {"timeframe": "5m", "zones": splits_doc.get("kill_zones_5m", [])}
 
-        request = RunRequest(run_id=run_id, mode=run.get("mode", "hybrid"), split=split, options=run)
+        run_opts = dict(run)
+        # Contract ablation knob:
+        # - baseline: allow up to 3 Partial_TP marks per position
+        # - candidate_ptp_once_per_position: cap to 1 per position
+        run_opts["max_partial_tp_per_position"] = 1 if is_candidate_ptp_once else 3
+
+        request = RunRequest(run_id=run_id, mode=run_opts.get("mode", "hybrid"), split=split, options=run_opts)
         payload = adapter(request)
         payloads_by_run[run_id] = payload
 

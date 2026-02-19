@@ -98,6 +98,8 @@ def simulate_hybrid_run(request) -> dict:
     fee_bps_base = 0.0001 * 4.0
     slip_bps_base = 0.0001 * 4.0
     position_id_seq = 1
+    max_partial_tp_per_position = max(0, int(run.get("max_partial_tp_per_position", 2)))
+
     current_position = {
         "position_id": position_id_seq,
         "entry_ts": bars[0].isoformat() if bars else None,
@@ -107,6 +109,7 @@ def simulate_hybrid_run(request) -> dict:
         "fee": 0.0,
         "slippage": 0.0,
         "fills": 1,
+        "partial_tp_count": 0,
     }
     if bars:
         events.append({
@@ -180,6 +183,7 @@ def simulate_hybrid_run(request) -> dict:
             "fee": 0.0,
             "slippage": 0.0,
             "fills": 1,
+            "partial_tp_count": 0,
         }
         events.append(
             {
@@ -300,6 +304,32 @@ def simulate_hybrid_run(request) -> dict:
             current_position["fee"] += fee_cost
             current_position["slippage"] += slippage_cost
             current_position["fills"] += 1
+
+            # Synthetic Partial_TP marker events for contract AC comparison.
+            # Baseline emits up to 2 per position; candidate caps to 1.
+            ptp_done = int(current_position.get("partial_tp_count", 0))
+            next_trigger = 0.01 * float(ptp_done + 1)
+            if (
+                ptp_done < max_partial_tp_per_position
+                and float(current_position["realized"]) >= next_trigger
+            ):
+                current_position["partial_tp_count"] = ptp_done + 1
+                events.append(
+                    {
+                        "ts": ts.isoformat(),
+                        "event": "Partial_TP",
+                        "event_type": "Partial_TP",
+                        "position_id": int(current_position["position_id"]),
+                        "symbol": str(run.get("symbol", "ALL")),
+                        "fills": int(current_position["fills"]),
+                        "fills_count": int(current_position["fills"]),
+                        "fee": round(float(current_position["fee"]), 6),
+                        "total_fee": round(float(current_position["fee"]), 6),
+                        "slippage": round(float(current_position["slippage"]), 6),
+                        "slippage_estimate_pct": round(float(current_position["slippage"]) * 100.0, 6),
+                        "reason": f"PTP{ptp_done + 1}",
+                    }
+                )
 
         if state.regime in {Regime.TREND, Regime.SUPER_TREND}:
             trend_total += 1
