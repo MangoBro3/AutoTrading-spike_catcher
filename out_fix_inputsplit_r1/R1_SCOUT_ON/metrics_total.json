@@ -1,0 +1,14 @@
+{
+  "oos_pf": 500.0,
+  "oos_mdd": 0.06398549463910065,
+  "bull_tcr": 1.0,
+  "stress_break": false,
+  "oos_cagr_hybrid": 0.4710536426309238,
+  "oos_cagr_def": 0.0,
+  "bull_return_hybrid": 0.4710536426309238,
+  "bull_return_def": 0.0,
+  "kill_zone_guard_fired": true,
+  "kill_zone_guard_reason": "backtest_artifact_guards_csv_loaded",
+  "kill_zone_loss_hybrid": -0.06398549463910065,
+  "kill_zone_loss_agg": -0.06398549463910065
+}

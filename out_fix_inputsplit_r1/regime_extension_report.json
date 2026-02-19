@@ -1,0 +1,18 @@
+{
+  "baseline_runs": [
+    "R0_DEF",
+    "R0_HYB"
+  ],
+  "def_hyb": {
+    "oos_cagr_def": 0.4710536426309238,
+    "oos_cagr_hyb": 0.4710536426309238,
+    "bull_return_def": 0.4710536426309238,
+    "bull_return_hyb": 0.4710536426309238
+  },
+  "bull_segment": {
+    "def": {},
+    "hyb": {},
+    "delta_compound_return_hyb_minus_def": 0.0
+  },
+  "regime_contribution": {}
+}

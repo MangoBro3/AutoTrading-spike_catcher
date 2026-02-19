@@ -1,0 +1,3 @@
+ts,side,qty,price,reason
+2025-01-11,BUY,0.1,50000,mapped_from_autotrading
+2025-01-21,SELL,0.1,55000,mapped_from_autotrading

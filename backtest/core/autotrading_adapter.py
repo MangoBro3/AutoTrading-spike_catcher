@@ -162,6 +162,18 @@ def _find_fallback_guards_path(base: Path, run_id: str, summary_file: Path) -> t
     return None, "guards_csv_missing_in_run_summary"
 
 
+
+
+def _find_fallback_metrics_total_path(base: Path, run_id: str) -> tuple[Path | None, str]:
+    candidates = sorted(base.glob(f"backtest/out*/{run_id}/metrics_total.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    for p in candidates:
+        try:
+            if p.exists() and p.stat().st_size > 0:
+                return p, "backtest_artifact_metrics_total_json"
+        except OSError:
+            continue
+
+    return None, "metrics_total_missing_in_artifacts"
 def _find_fallback_trades_path(base: Path, run_id: str, summary_file: Path) -> tuple[Path | None, str]:
     same_run = summary_file.parent / "trades.csv"
     if same_run.exists() and same_run.stat().st_size > 0:
@@ -509,6 +521,8 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             raw_created_at = ""
             schema_status = "summary_unavailable"
             returns_mapping_source = "summary_unavailable"
+            metrics_total_artifact_source = "summary_unavailable"
+            metrics_total_artifact_overrides = {}
         else:
             guards_rows, guard_mapping_status = ctx["guards_for_run"](request.run_id)
             trades_rows = ctx["trades_for_run"](request.run_id)
@@ -531,6 +545,17 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             raw_created_at = ctx["raw"].get("created_at", "")
             schema_status = ctx["schema_status"]
             returns_mapping_source = ctx["returns_mapping_source"]
+            metrics_total_artifact_path, metrics_total_artifact_source = _find_fallback_metrics_total_path(base, request.run_id)
+            metrics_total_artifact_overrides = {}
+            if metrics_total_artifact_path is not None:
+                try:
+                    metrics_total_artifact = json.loads(metrics_total_artifact_path.read_text(encoding="utf-8"))
+                    if isinstance(metrics_total_artifact, dict):
+                        for k in ("oos_cagr_hybrid", "oos_cagr_def", "bull_return_hybrid", "bull_return_def"):
+                            if k in metrics_total_artifact:
+                                metrics_total_artifact_overrides[k] = _to_float(metrics_total_artifact.get(k), 0.0)
+                except Exception as e:
+                    metrics_total_artifact_source = f"{metrics_total_artifact_source}_read_error:{e.__class__.__name__}"
 
         kill_zone_guard_fired = bool(guards_rows)
         kill_zone_loss = -oos_mdd if kill_zone_guard_fired else 0.0
@@ -549,6 +574,10 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             "kill_zone_loss_hybrid": kill_zone_loss,
             "kill_zone_loss_agg": kill_zone_loss,
         }
+        if metrics_total_artifact_overrides:
+            metrics_total.update(metrics_total_artifact_overrides)
+            if metrics_total_artifact_source == "backtest_artifact_metrics_total_json":
+                metrics_total_artifact_source = "backtest_artifact_metrics_total_json_loaded"
 
         return {
             "daily_state": [
@@ -578,6 +607,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
                 "guard_mapping_status": guard_mapping_status,
                 "input_mapping_status": input_mapping_status,
                 "run_summary_map_status": run_summary_map_status,
+                "metrics_total_artifact_source": metrics_total_artifact_source,
             },
             "metrics_total": metrics_total,
             "metrics_by_mode": {mode: {"total_return_pct": total_return_pct, "max_dd_pct": max_dd_pct}},
