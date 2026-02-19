@@ -101,3 +101,12 @@
 - Sync timestamp: 2026-02-19 14:37 KST
 - Backend Sprint1 evidence keys: `smoke=3/3`, `lock=3/3`, `safestart=4/4`, `tests=19/19`.
 - Evidence aggregate path: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
+
+## [2026-02-19] UI Sprint1 Pass Sync (Numeric/Path)
+- `worker_polling`: `1,000 ms` (`setInterval(refresh, 1000)`) in `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`
+- `traffic`: `3` polling routes per cycle (`/api/status`, `/api/models`, `/api/orders`) in `refresh()`.
+- `safety_overlay`: `1` overlay target `liveConfirmBackdrop`, `1` 2차 confirm path in `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`
+- `panic_safety`: `Panic slider ready = 80`, `Panic hold = 3,000 ms` in `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`
+- `order_cancel`: `2` UI handlers (`cancelOrder`, `cancelAllOrders`) + backend `/api/orders/cancel` endpoint in `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`
+- `debounce`: `2` timer guards (`clearTimeout`, `clearInterval`) + `isPanicReady()` gate in `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`
+- 테스트 PASS: `2/2` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_ui_sprint1_smoke.py`)

@@ -72,3 +72,13 @@
 - `sync_file`=`/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
 - `TL_GATE_RESULT`=`GO`, `TL_GATE_GO_COUNT`=`15/15`
 - `TL_GATE_PATH`=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
+
+## UI Sprint1 PASS Evidence (Numeric/Path)
+- `worker_polling_interval_ms`=`1000` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `worker_polling_routes_per_cycle`=`3` (`/api/status`,`/api/models`,`/api/orders`) (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `worker_threads`=`4` (`heartbeat_loop`, `watchlist_scheduler`, `evolution_scheduler`, `data_update_scheduler`) (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `safety_overlay_exists`=`1` (`liveConfirmBackdrop`) (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `panic_ready_percent`=`80` (`PANIC_READY_PERCENT`) + `panic_hold_ms`=`3000` (`PANIC_HOLD_MS`) (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `order_cancel_endpoints`=`1` (`/api/orders/cancel`) + `order_cancel_handlers`=`2` (`cancelOrder`, `cancelAllOrders`) (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `panic_input_debounce`=`80 ms` progress timer interval + `clear` guards on pointer up/leave (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`)
+- `ui_sprint1_smoke`=`2/2` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_ui_sprint1_smoke.py`)

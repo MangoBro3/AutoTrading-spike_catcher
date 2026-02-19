@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: DISCONNECTED when not connected
+ok 1 - DISCONNECTED when not connected
+  ---
+  duration_ms: 0.801203
+  type: 'test'
+  ...
+# Subtest: RED when emergency stop
+ok 2 - RED when emergency stop
+  ---
+  duration_ms: 0.139946
+  type: 'test'
+  ...
+# Subtest: Worker disconnect is debounced
+ok 3 - Worker disconnect is debounced
+  ---
+  duration_ms: 0.357663
+  type: 'test'
+  ...
+# Subtest: YELLOW when pending queue high
+ok 4 - YELLOW when pending queue high
+  ---
+  duration_ms: 0.143743
+  type: 'test'
+  ...
+# Subtest: GREEN when healthy + normal
+ok 5 - GREEN when healthy + normal
+  ---
+  duration_ms: 0.232697
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 71.573114

@@ -63,3 +63,17 @@
 - `tests`=`19/19` → `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage1.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage2.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py`
 - sync: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
 - TL: `GO`, `15/15` → `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
+
+## UI Sprint1 PASS 증빙 (수치/경로)
+- `worker_polling_interval_ms`=`1000`
+- `worker_polling_routes_per_cycle`=`3`
+- `poll_routes`=`/api/status,/api/models,/api/orders`
+- `workers`=`4` (`heartbeat_loop`,`watchlist_scheduler`,`evolution_scheduler`,`data_update_scheduler`)
+- `safety_overlay_count`=`1` (`liveConfirmBackdrop`)
+- `panic_ready_percent`=`80`
+- `panic_hold_ms`=`3000`
+- `order_cancel_api`=`/api/orders/cancel`
+- `order_cancel_handlers`=`2`
+- `panic_debounce_guard`=`clearTimeout+clearInterval+isPanicReady`
+- `ui_sprint1_smoke`=`2/2`
+- `paths`=`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/web_backend.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_ui_sprint1_smoke.py`
