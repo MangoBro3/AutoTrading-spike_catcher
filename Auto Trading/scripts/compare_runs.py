@@ -61,6 +61,14 @@ def detect_columns(rows: List[Dict[str, str]]) -> set:
     return set(rows[0].keys()) if rows else set()
 
 
+def _first_nonempty(record: Dict[str, str], keys: List[str], default="") -> str:
+    for k in keys:
+        v = record.get(k, "")
+        if v not in ("", None):
+            return v
+    return default
+
+
 def materialize_schema(run_dir: Path) -> Tuple[Dict[str, object], List[str]]:
     fails: List[str] = []
     events_p = run_dir / "events.csv"
@@ -86,38 +94,117 @@ def materialize_schema(run_dir: Path) -> Tuple[Dict[str, object], List[str]]:
         fails.append("events.csv missing required column: type/event_type")
     if "date" not in ev_cols and "ts" not in ev_cols:
         fails.append("events.csv missing required column: date/ts")
+    if "fee" not in ev_cols:
+        fails.append("events.csv missing required column: fee")
 
-    for c in ["position_id", "entry_date", "exit_date", "return"]:
+    required_tr_trade_cols = [
+        "trade_id",
+        "position_id",
+    ]
+    for c in required_tr_trade_cols:
         if c not in tr_cols:
             fails.append(f"final_trades.csv missing required column: {c}")
+    if "entry_ts" not in tr_cols and "entry_date" not in tr_cols:
+        fails.append("final_trades.csv missing required column: entry_ts/entry_date")
+    if "exit_ts" not in tr_cols and "exit_date" not in tr_cols:
+        fails.append("final_trades.csv missing required column: exit_ts/exit_date")
+    if (
+        "Realized_pct" not in tr_cols
+        and "realized_pct" not in tr_cols
+        and "Realized" not in tr_cols
+        and "realized" not in tr_cols
+        and "return" not in tr_cols
+    ):
+        fails.append("final_trades.csv missing required column: realized_pct")
+    if "MFE" not in tr_cols and "MFE_pct" not in tr_cols:
+        fails.append("final_trades.csv missing required column: MFE/MFE_pct")
+    if "MAE" not in tr_cols and "MAE_pct" not in tr_cols:
+        fails.append("final_trades.csv missing required column: MAE/MAE_pct")
+    if "Giveback" not in tr_cols and "Giveback_pct" not in tr_cols:
+        fails.append("final_trades.csv missing required column: Giveback/Giveback_pct")
 
     trade_metrics_rows: List[Dict[str, object]] = []
+    realized_missing = 0
+    mfe_missing = 0
+    mae_missing = 0
+    giveback_missing = 0
+    fee_missing = 0
+
     for i, r in enumerate(trades, start=1):
-        realized = r.get("realized_pct", r.get("return", ""))
-        mfe = r.get("MFE_pct", r.get("mfe_pct", ""))
-        mae = r.get("MAE_pct", r.get("mae_pct", ""))
-        giveback = r.get("Giveback_pct", r.get("giveback_pct", ""))
-        if giveback in ("", None) and mfe not in ("", None) and realized not in ("", None):
-            giveback = _f(mfe) - _f(realized)
+        trade_id = _first_nonempty(r, ["trade_id", "id"], str(i))
+        position_id = _first_nonempty(r, ["position_id"])
+        entry_ts = _first_nonempty(r, ["entry_ts", "entry_date"])
+        exit_ts = _first_nonempty(r, ["exit_ts", "exit_date"])
+
+        realized = _first_nonempty(r, ["Realized_pct", "realized_pct", "return", "Realized", "realized"])
+        if realized == "":
+            realized_missing += 1
+        mfe = _first_nonempty(r, ["MFE", "MFE_pct", "mfe", "mfe_pct"])
+        if mfe == "":
+            mfe_missing += 1
+        mae = _first_nonempty(r, ["MAE", "MAE_pct", "mae", "mae_pct"])
+        if mae == "":
+            mae_missing += 1
+        giveback = _first_nonempty(r, ["Giveback", "Giveback_pct", "giveback", "giveback_pct"])
+        if giveback == "":
+            if mfe != "" and realized != "":
+                try:
+                    giveback = str(_f(mfe) - _f(realized))
+                except Exception:
+                    giveback = ""
+            if giveback == "":
+                giveback_missing += 1
+
+        fee = _first_nonempty(r, ["fee", "total_fee"])
+        if fee == "":
+            fee_missing += 1
 
         trade_metrics_rows.append(
             {
-                "trade_id": r.get("trade_id", str(i)),
-                "position_id": r.get("position_id", ""),
-                "entry_ts": r.get("entry_ts", r.get("entry_date", "")),
-                "exit_ts": r.get("exit_ts", r.get("exit_date", "")),
+                "trade_id": trade_id,
+                "position_id": position_id,
+                "entry_ts": entry_ts,
+                "exit_ts": exit_ts,
                 "realized_pct": realized,
-                "mfe_pct": mfe,
-                "mae_pct": mae,
-                "giveback_pct": giveback,
+                "MFE": mfe,
+                "MAE": mae,
+                "Giveback": giveback,
+                "mfe_pct": _first_nonempty(r, ["MFE_pct", "mfe_pct", mfe], ""),
+                "mae_pct": _first_nonempty(r, ["MAE_pct", "mae_pct", mae], ""),
+                "giveback_pct": _first_nonempty(r, ["Giveback_pct", "giveback_pct", giveback], ""),
+                "fee": fee,
             }
         )
+
+    if realized_missing > 0:
+        fails.append(f"final_trades.csv missing realized_pct coverage in {realized_missing} row(s)")
+    if mfe_missing > 0:
+        fails.append(f"final_trades.csv missing MFE coverage in {mfe_missing} row(s)")
+    if mae_missing > 0:
+        fails.append(f"final_trades.csv missing MAE coverage in {mae_missing} row(s)")
+    if giveback_missing > 0:
+        fails.append(f"final_trades.csv missing Giveback coverage in {giveback_missing} row(s)")
+    if fee_missing > 0:
+        fails.append(f"final_trades.csv missing fee coverage in {fee_missing} row(s)")
 
     trade_metrics_p = run_dir / "trade_metrics.csv"
     write_csv(
         trade_metrics_p,
         trade_metrics_rows,
-        ["trade_id", "position_id", "entry_ts", "exit_ts", "realized_pct", "mfe_pct", "mae_pct", "giveback_pct"],
+        [
+            "trade_id",
+            "position_id",
+            "entry_ts",
+            "exit_ts",
+            "realized_pct",
+            "MFE",
+            "MAE",
+            "Giveback",
+            "mfe_pct",
+            "mae_pct",
+            "giveback_pct",
+            "fee",
+        ],
     )
 
     if not any((r.get("mfe_pct") not in ("", None)) for r in trade_metrics_rows):
@@ -143,19 +230,26 @@ def materialize_schema(run_dir: Path) -> Tuple[Dict[str, object], List[str]]:
             slip_vals.append(abs(_f(r.get("pnl_leg"))))
             slip_source = "pnl_leg(abs_proxy)"
 
+    fee_total = sum(fee_vals) if fee_vals else ""
     cost_rows = [
         {
             "fills_count": len(events),
-            "total_fee": sum(fee_vals) if fee_vals else "",
+            "fee": fee_total,
+            "total_fee": fee_total,
             "slippage_estimate_pct": (sum(slip_vals) / len(slip_vals)) if slip_vals else "",
             "slippage_source": slip_source,
         }
     ]
     cost_metrics_p = run_dir / "cost_metrics.csv"
-    write_csv(cost_metrics_p, cost_rows, ["fills_count", "total_fee", "slippage_estimate_pct", "slippage_source"])
+    write_csv(
+        cost_metrics_p,
+        cost_rows,
+        ["fills_count", "fee", "total_fee", "slippage_estimate_pct", "slippage_source"],
+    )
 
-    if cost_rows[0]["total_fee"] == "":
-        fails.append("cost_metrics.csv total_fee not derivable from current logs")
+    if fee_total == "":
+        fails.append("cost_metrics.csv fee/total_fee not derivable from current logs")
+
     if cost_rows[0]["slippage_estimate_pct"] == "":
         fails.append("cost_metrics.csv slippage_estimate_pct not derivable from current logs")
 
@@ -225,7 +319,7 @@ def main() -> int:
         if _f(c_sum.get("slippage_estimate_pct", 0)) < _f(b_sum.get("slippage_estimate_pct", 0)) - COST_EPS:
             cost_axes += 1
 
-    min_top_winners_observed = int(min(_f(b_sum.get("top10_winner_count", 0)), _f(c_sum.get("top10_winner_count", 0))))
+    min_top_winners_observed = int(min(_f(b_sum.get("top10_winner_count", 0), 0), _f(c_sum.get("top10_winner_count", 0), 0)))
     winner_sample_shortage = max(0, args.min_top_winners - min_top_winners_observed)
     winner_sample_ok = winner_sample_shortage == 0
 
