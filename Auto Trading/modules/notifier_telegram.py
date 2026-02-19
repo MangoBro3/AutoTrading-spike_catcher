@@ -1,9 +1,8 @@
-import json
 import logging
 import os
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -18,8 +17,10 @@ class TelegramNotifier:
     STATUS_ACCEPTED = "accepted"
     STATUS_FILLED = "filled"
     STATUS_CANCELED = "canceled"
-    STATUS_SUCCESS = {"filled", "SENT"}
+    STATUS_SUCCESS = {"filled", "SENT", "filled_ok"}
     CURRENT_SCHEMA_VERSION = 2
+    # Keep dedupe timestamps only for a short retention window to avoid unbounded cache growth.
+    DEDUPE_CACHE_TTL_SECONDS = int(timedelta(days=7).total_seconds())
 
     def __init__(
         self,
@@ -44,6 +45,32 @@ class TelegramNotifier:
         self.dedupe_cache: Dict[str, float] = {}
 
         self.load_outbox()
+
+    @classmethod
+    def _coerce_ts(cls, ts_value) -> float:
+        """Convert mixed ts payloads to epoch seconds."""
+        if ts_value is None:
+            return 0.0
+        if isinstance(ts_value, (int, float)):
+            return float(ts_value)
+        if isinstance(ts_value, str):
+            # Accept both iso and numeric text.
+            try:
+                if "." in ts_value or ts_value.endswith("Z") or "+" in ts_value or "T" in ts_value:
+                    return datetime.fromisoformat(ts_value.replace("Z", "+00:00")).timestamp()
+                return float(ts_value)
+            except Exception:
+                return 0.0
+        return 0.0
+
+    def _trim_dedupe_cache(self) -> None:
+        """Drop stale entries from the dedupe cache."""
+        cutoff = time.time() - self.DEDUPE_CACHE_TTL_SECONDS
+        if not self.dedupe_cache:
+            return
+        stale = [k for k, v in self.dedupe_cache.items() if self._coerce_ts(v) < cutoff]
+        for k in stale:
+            self.dedupe_cache.pop(k, None)
 
     @classmethod
     def _normalize_status(cls, status: str) -> str:
@@ -128,14 +155,16 @@ class TelegramNotifier:
 
             self.outbox.append(evt)
 
-            if evt.get("status") in self.STATUS_SUCCESS and evt.get("dedupe_key"):
-                # Keep only latest sent timestamp by dedupe key
-                try:
-                    ts = datetime.fromisoformat(evt["ts"]).timestamp() if evt.get("ts") else now
-                except Exception:
-                    ts = now
-                prev_ts = self.dedupe_cache.get(evt["dedupe_key"])
-                self.dedupe_cache[evt["dedupe_key"]] = max(prev_ts or 0.0, ts)
+            dedupe_key = evt.get("dedupe_key")
+            if dedupe_key:
+                ts = self._coerce_ts(evt.get("ts")) or now
+                # 1st-pass behavior: dedupe applies to any in-flight or sent event.
+                # This suppresses duplicate emit during restart windows.
+                if evt["status"] in {self.STATUS_REQUESTED, self.STATUS_ACCEPTED, *self.STATUS_SUCCESS, self.STATUS_CANCELED}:
+                    prev_ts = self.dedupe_cache.get(dedupe_key)
+                    self.dedupe_cache[dedupe_key] = max(prev_ts or 0.0, ts)
+
+        self._trim_dedupe_cache()
 
         # Persist repaired/migrated structure only when legacy shape was detected.
         if data.get(SCHEMA_VERSION_FIELD, 1) != self.CURRENT_SCHEMA_VERSION:
@@ -172,15 +201,20 @@ class TelegramNotifier:
         Types: SYSTEM, WATCH, TRADE, RISK, SUMMARY
         """
         now_ts = time.time()
+        self._trim_dedupe_cache()
         if dedupe_key and cooldown_min > 0:
             last_ts = self.dedupe_cache.get(dedupe_key)
             if last_ts:
-                elapsed_min = (now_ts - last_ts) / 60.0
+                elapsed_min = (now_ts - self._coerce_ts(last_ts)) / 60.0
                 if elapsed_min < cooldown_min:
                     logger.info(
                         f"Outbox dedupe skip: {dedupe_key} (Elapsed: {elapsed_min:.1f}m < {cooldown_min}m)"
                     )
                     return
+
+        # Reserve dedupe slot immediately to avoid duplicate emits under concurrent calls/restarts.
+        if dedupe_key and cooldown_min > 0:
+            self.dedupe_cache[dedupe_key] = now_ts
 
         event = {
             "id": f"{int(now_ts * 1000)}_{exchange}_{event_type}",

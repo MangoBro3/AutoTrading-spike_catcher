@@ -12,7 +12,7 @@ import os
 # Ensure modules are importable
 sys.path.append(r"c:\Users\nak\Desktop\DHR 런처\python\Auto Trading")
 
-from modules.utils_json import CustomJSONEncoder, safe_json_dump
+from modules.utils_json import CustomJSONEncoder, safe_json_dump, safe_json_load
 from modules.results_writer import ResultsWriter
 
 class TestStage1(unittest.TestCase):
@@ -91,6 +91,23 @@ class TestStage1(unittest.TestCase):
             self.assertEqual(row['run_id'], run_id)
             self.assertEqual(row['roi_pct'], "15.5")
             print(f"[Index Check] CSV Row: {row}")
+
+    def test_schema_checked_load_repair(self):
+        """Verify schema_version write/load and legacy repair behavior."""
+        payload_path = self.test_dir / "schema_payload.json"
+
+        # Write with schema version and recover through load
+        safe_json_dump({"x": 1}, payload_path, schema_version=2)
+        data = safe_json_load(payload_path, schema_version=2)
+        self.assertIsInstance(data, dict)
+        self.assertEqual(data.get("_schema_version"), 2)
+        self.assertEqual(data.get("x"), 1)
+
+        # Corrupt file -> recover to default with repair on
+        payload_path.write_text("{bad json", encoding="utf-8")
+        repaired = safe_json_load(payload_path, default={"_schema_version": 2, "value": 0}, schema_version=2, repair=True)
+        self.assertEqual(repaired.get("_schema_version"), 2)
+        self.assertEqual(repaired.get("value"), 0)
 
 if __name__ == '__main__':
     unittest.main()
