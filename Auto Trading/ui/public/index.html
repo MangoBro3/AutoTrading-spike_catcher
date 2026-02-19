@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Team Dashboard</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1115;color:#e9edf1;margin:0;padding:16px}
+    h1{margin:0 0 12px;font-size:20px}
+    .muted{color:#9aa4b2;font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+    .card{background:#161a22;border:1px solid #252b36;border-radius:10px;padding:12px}
+    .ok{color:#47d16c}.warn{color:#ffca5f}.bad{color:#ff6b6b}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:6px;border-bottom:1px solid #262d38;text-align:left}
+    code{background:#1f2530;padding:1px 5px;border-radius:6px}
+    .room{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+    .avatar{background:#111722;border:1px solid #2a3342;border-radius:10px;padding:10px;text-align:center}
+    .emoji{font-size:26px;display:block}
+    .name{font-weight:700;font-size:12px}
+    .state{font-size:11px;color:#9aa4b2}
+    .work{font-size:11px;color:#cbd5e1;margin-top:4px;min-height:28px}
+    .pager{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .btn{background:#243047;border:1px solid #33425f;color:#e9edf1;padding:4px 8px;border-radius:6px;cursor:pointer}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .bar{height:8px;background:#202838;border-radius:999px;overflow:hidden;margin-top:6px}
+    .fill{height:100%;background:linear-gradient(90deg,#47d16c,#ffca5f,#ff6b6b)}
+    .banner{display:none;margin:10px 0;padding:10px 12px;border-radius:8px;font-weight:700}
+    .banner.show{display:block}
+    .banner.danger{background:#4a1318;border:1px solid #a8323d;color:#ffd7dc}
+  </style>
+</head>
+<body>
+  <h1>Agent Team Dashboard</h1>
+  <div class="muted" id="ts">loading...</div>
+  <div id="stopBanner" class="banner danger"></div>
+  <div class="grid" style="margin-top:12px">
+    <div class="card"><h3>Worker Safety</h3><div id="worker"></div></div>
+    <div class="card"><h3>Gateway</h3><div id="gateway"></div></div>
+    <div class="card"><h3>Channels</h3><div id="channels"></div></div>
+    <div class="card"><h3>Checkpoint</h3><div id="checkpoint"></div></div>
+    <div class="card"><h3>Token Usage</h3><div id="usage"></div></div>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="card">
+      <h3>Panic 안전장치</h3>
+      <div class="muted">1) 슬라이더 100으로 이동 2) HOLD 2초 유지</div>
+      <div style="margin-top:8px">
+        <input id="panicSlider" type="range" min="0" max="100" step="1" value="0" style="width:100%" />
+        <div class="muted">value: <span id="panicValue">0</span></div>
+      </div>
+      <button id="panicHoldBtn" class="btn" style="margin-top:8px">HOLD TO PANIC</button>
+      <div id="panicStatus" class="muted" style="margin-top:8px">대기중</div>
+    </div>
+    <div class="card">
+      <h3>Orders 취소</h3>
+      <div class="muted">주문 ID 입력 후 Cancel 클릭</div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <input id="orderIdInput" type="text" placeholder="ORD-001" style="flex:1;background:#111722;border:1px solid #2a3342;color:#e9edf1;border-radius:6px;padding:6px" />
+        <button id="orderCancelBtn" class="btn">Cancel Order</button>
+      </div>
+      <div id="orderStatus" class="muted" style="margin-top:8px">대기중</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>Agent Characters</h3>
+    <div id="characters" class="room"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>Agents</h3>
+    <table id="agentsTbl"><thead><tr><th>ID</th><th>Workspace</th><th>Model</th><th>Bindings</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>Sessions</h3>
+    <div id="sessions"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>로그 타임라인</h3>
+    <div id="timeline"></div>
+    <div class="pager">
+      <button id="prevBtn" class="btn">이전</button>
+      <span id="pageInfo" class="muted"></span>
+      <button id="nextBtn" class="btn">다음</button>
+    </div>
+  </div>
+<script>
+const $ = (id)=>document.getElementById(id);
+function esc(s){return String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]))}
+let timelinePage = 1;
+const PAGE_SIZE = 30;
+
+function render(data){
+  $('ts').textContent = `updated: ${new Date(data.now).toLocaleString()}${data.sourceOk?'':'  |  openclaw json source unavailable'}`;
+  const worker = data.worker || {};
+  const light = String(worker.trafficLight || 'DISCONNECTED').toUpperCase();
+  const lightClass = light === 'GREEN' ? 'ok' : (light === 'YELLOW' ? 'warn' : 'bad');
+  $('worker').innerHTML = `<div><b>api</b>: <code>${esc('1s poll')}</code></div>
+  <div><b>traffic light</b>: <b class="${lightClass}">${esc(light)}</b></div>
+  <div><b>connected</b>: ${worker.connected===true?'<span class="ok">yes</span>':'<span class="bad">no</span>'}</div>
+  <div><b>updated</b>: ${worker.ts?esc(new Date(worker.ts).toLocaleTimeString()):'-'}</div>`;
+
+  const banner = $('stopBanner');
+  if (worker.stopAll) {
+    banner.className = 'banner danger show';
+    banner.textContent = worker.banner || `${light}: 전체 중단`;
+  } else {
+    banner.className = 'banner danger';
+    banner.textContent = '';
+  }
+
+  $('gateway').innerHTML = `<div><b>target</b>: <code>${esc(data.gateway?.target||data.gateway?.url||'-')}</code></div>
+  <div><b>mode</b>: ${esc(data.gateway?.mode||'-')}</div>
+  <div><b>reachable</b>: ${data.gateway?.reachable===true?'<span class="ok">yes</span>':data.gateway?.reachable===false?'<span class="bad">no</span>':'-'}</div>`;
+
+  const ch = data.channelSummary?.channels || [];
+  $('channels').innerHTML = ch.map(c=>`<div>${esc(c.channel)}: <b class="${c.state==='OK'?'ok':'warn'}">${esc(c.state)}</b> — ${esc(c.detail||'')}</div>`).join('') || 'no channels';
+
+  const ck = data.checkpoint;
+  $('checkpoint').innerHTML = ck ? `<div>Status: <b>${esc(ck.status)}</b></div>
+    <div>Fail: ${esc(ck.fail_count)}</div>
+    <div>Step: ${esc(ck.last_failed_step)}</div>` : '<span class="muted">latest.json not found</span>';
+
+  const sessionsList = data.sessions?.recent || data.sessions?.list || data.sessions?.sessions || [];
+  const defaultsCtx = Number(data.sessions?.defaults?.contextTokens || 272000);
+  const mainSess = sessionsList.find(s=>String(s.key||'').startsWith('agent:main:main'));
+  const usage = data.usage || {};
+  const dailyTotal = Number(usage.daily?.total||0);
+  const weeklyTotal = Number(usage.weekly?.total||0);
+  const warning = usage.warning || 'ok';
+  const wColor = warning==='critical'?'bad':warning==='warn'?'warn':'ok';
+
+  if(mainSess){
+    const used = Number(mainSess.inputTokens||0) + Number(mainSess.outputTokens||0);
+    const pct = Math.max(0, Math.min(100, (used/defaultsCtx)*100));
+    const remain = Math.max(0, defaultsCtx-used);
+    const dailyRows = Object.entries(usage.daily?.perAgent||{}).sort((a,b)=>b[1]-a[1]).slice(0,6)
+      .map(([k,v])=>`${k}:${Number(v).toLocaleString()}`).join(' | ') || '-';
+    const taskRows = Object.entries(usage.byTask||{}).sort((a,b)=>b[1]-a[1]).slice(0,5)
+      .map(([k,v])=>`${k}:${Number(v).toLocaleString()}`).join(' | ') || '-';
+
+    $('usage').innerHTML = `<div>main ctx: <b>${used.toLocaleString()}</b> / ${defaultsCtx.toLocaleString()} (${pct.toFixed(1)}%)</div>
+      <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="muted">remaining ctx tokens: ${remain.toLocaleString()}</div>
+      <hr style="border:0;border-top:1px solid #273043;margin:10px 0">
+      <div>daily total: <b class="${wColor}">${dailyTotal.toLocaleString()}</b> / weekly total: <b>${weeklyTotal.toLocaleString()}</b></div>
+      <div class="muted">warning line: 1M(warn), 2M(critical) | snapshots: ${usage.snapshotCount||0}</div>
+      <div class="muted">daily per-agent: ${esc(dailyRows)}</div>
+      <div class="muted">task_id usage(7d): ${esc(taskRows)}</div>`;
+  }else{
+    $('usage').innerHTML = '<span class="muted">token data unavailable</span>';
+  }
+
+  const agents = data.agents||[];
+  const tbody = $('agentsTbl').querySelector('tbody');
+  tbody.innerHTML = agents.map(a=>`<tr><td>${esc(a.id)}</td><td>${esc(a.workspace)}</td><td>${esc(a.model)}</td><td>${esc(a.bindings)}</td></tr>`).join('');
+
+  const icon = {pm:'🧭',tl:'🛠️',architect:'📐',coder_a:'🧪',coder_b:'⚙️',main:'👑',mango:'🥭'};
+
+  const ageToText = (ms)=>{
+    if(ms==null || ms==='-') return '-';
+    const n = Number(ms);
+    if(Number.isNaN(n)) return String(ms);
+    const s = Math.floor(n/1000);
+    if(s<60) return `${s}s ago`;
+    const m = Math.floor(s/60);
+    if(m<60) return `${m}m ago`;
+    const h = Math.floor(m/60);
+    return `${h}h ago`;
+  };
+
+  const byAgentMinAge = {};
+  for(const s of sessionsList){
+    const id = s.agentId || String(s.key||'').split(':')[1];
+    if(!id) continue;
+    const age = Number(s.age ?? s.ageMs ?? Number.MAX_SAFE_INTEGER);
+    byAgentMinAge[id] = Math.min(byAgentMinAge[id] ?? Number.MAX_SAFE_INTEGER, age);
+  }
+
+  const inProgress = new Set((data.taskSignals?.inProgressAgents||[]).map(String));
+  const agentWork = data.taskSignals?.agentWork || {};
+
+  $('characters').innerHTML = agents.map(a=>{
+    const minAge = byAgentMinAge[a.id];
+    const sessionWorking = Number.isFinite(minAge) && minAge <= 5*60*1000;
+    const taskWorking = inProgress.has(a.id);
+    const working = sessionWorking || taskWorking;
+    const source = taskWorking ? 'task' : (sessionWorking ? 'session' : 'none');
+    const state = working ? `working · ${taskWorking ? 'in_progress' : ageToText(minAge)}` : 'idle';
+    const w = agentWork[a.id];
+    const workText = w ? `${w.taskId} | ${w.description || ''}` : '-';
+    return `<div class="avatar"><span class="emoji">${icon[a.id]||'🤖'}</span><div class="name">${esc(a.id)}</div><div class="state ${working?'ok':''}">${state}</div><div class="muted">src:${source}</div><div class="work">${esc(workText)}</div></div>`;
+  }).join('');
+
+  const sess = sessionsList;
+  $('sessions').innerHTML = `<div class="muted">total: ${esc(data.sessions?.total ?? data.sessions?.count ?? sess.length)}</div>` +
+    `<table><thead><tr><th>agent</th><th>key</th><th>age</th><th>tokens(in/out)</th></tr></thead><tbody>`+
+    sess.slice(0,20).map(s=>`<tr><td>${esc(s.agentId||'-')}</td><td>${esc(s.key)}</td><td>${esc(ageToText(s.age ?? s.ageMs ?? '-'))}</td><td>${esc((s.inputTokens!=null||s.outputTokens!=null)?`${s.inputTokens||0}/${s.outputTokens||0}`:'-')}</td></tr>`).join('')+
+    `</tbody></table>`;
+
+  const tl = data.timeline || [];
+  const totalPages = Math.max(1, Math.ceil(tl.length / PAGE_SIZE));
+  if (timelinePage > totalPages) timelinePage = totalPages;
+  const start = (timelinePage - 1) * PAGE_SIZE;
+  const pageRows = tl.slice(start, start + PAGE_SIZE);
+  $('timeline').innerHTML = `<table><thead><tr><th>시간</th><th>업무</th><th>프로젝트</th><th>에이전트</th><th>상세 내용</th></tr></thead><tbody>`+
+    pageRows.map(r=>`<tr><td>${esc(new Date(r.ts||Date.now()).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}))}</td><td>${esc(r.work||'-')}</td><td>${esc(r.project||'-')}</td><td>${esc(r.agent||'-')}</td><td>${esc(r.detail||'-')}</td></tr>`).join('')+
+    `</tbody></table>`;
+  $('pageInfo').textContent = `페이지 ${timelinePage}/${totalPages} · 총 ${tl.length}건`;
+  $('prevBtn').disabled = timelinePage <= 1;
+  $('nextBtn').disabled = timelinePage >= totalPages;
+}
+
+async function postControl(action, body){
+  const r = await fetch(`/api/worker/control/${action}`, {
+    method: 'POST',
+    headers: {'content-type':'application/json'},
+    body: JSON.stringify(body || {}),
+  });
+  const j = await r.json();
+  if(!r.ok || j.ok===false) throw new Error(j.error || `control_failed:${action}`);
+  return j;
+}
+
+const panicSlider = $('panicSlider');
+const panicValue = $('panicValue');
+const panicStatus = $('panicStatus');
+const panicHoldBtn = $('panicHoldBtn');
+let holdTimer = null;
+let holdStart = 0;
+
+panicSlider.addEventListener('input', ()=>{ panicValue.textContent = panicSlider.value; });
+
+panicHoldBtn.addEventListener('mousedown', ()=>{
+  if (Number(panicSlider.value) < 100) {
+    panicStatus.textContent = '실패: 슬라이더를 100으로 올리세요';
+    return;
+  }
+  holdStart = Date.now();
+  panicStatus.textContent = '홀드 중...';
+  holdTimer = setTimeout(async ()=>{
+    try {
+      const out = await postControl('panic', { armed: true, holdMs: Date.now()-holdStart, slider: Number(panicSlider.value) });
+      panicStatus.textContent = `PANIC 실행됨 (${out?.result?.status || 'ok'})`;
+      await tick();
+    } catch (e) {
+      panicStatus.textContent = `실패: ${e.message}`;
+    }
+  }, 2000);
+});
+
+['mouseup','mouseleave'].forEach((ev)=> panicHoldBtn.addEventListener(ev, ()=>{
+  if (holdTimer) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    if (Date.now() - holdStart < 2000) panicStatus.textContent = '취소됨: 2초 이상 홀드 필요';
+  }
+}));
+
+$('orderCancelBtn').addEventListener('click', async ()=>{
+  const orderId = String($('orderIdInput').value || '').trim();
+  if (!orderId) {
+    $('orderStatus').textContent = '실패: orderId 입력 필요';
+    return;
+  }
+  try {
+    const out = await postControl('cancel-order', { orderId });
+    $('orderStatus').textContent = `취소 요청 성공: ${out?.result?.orderId || orderId} (${out?.result?.status || 'ok'})`;
+    await tick();
+  } catch (e) {
+    $('orderStatus').textContent = `실패: ${e.message}`;
+  }
+});
+
+async function tick(){
+  try{
+    const r=await fetch('/api/overview');
+    const j=await r.json();
+    render(j);
+  }catch(e){$('ts').textContent='fetch failed: '+e.message}
+}
+
+$('prevBtn').addEventListener('click', ()=>{ if(timelinePage>1){ timelinePage--; tick(); } });
+$('nextBtn').addEventListener('click', ()=>{ timelinePage++; tick(); });
+
+tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>

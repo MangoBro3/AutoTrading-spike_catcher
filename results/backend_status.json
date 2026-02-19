@@ -1,1 +1,1 @@
-{"ts": 1771232409.2905056, "pid": 19578, "uptime_sec": 436.7285187244415, "controller_state": "RUNNING", "controller_owner": "none", "controller_mode": null, "lock": {"exists": false, "pid": null, "mode": null}}
+{"ts": 1771500605.5142903, "pid": 50508, "uptime_sec": 62.69090509414673, "controller_state": "ERROR", "controller_owner": "none", "controller_mode": null, "lock": {"exists": false, "pid": null, "mode": null}}
