@@ -100,9 +100,10 @@ export function toBannerText(trafficLight) {
 }
 
 export class WorkerMonitor {
-  constructor({ client, pollMs = 1000 }) {
+  constructor({ client, pollMs = 1000, downDebounceMs = 1500 }) {
     this.client = client;
     this.pollMs = pollMs;
+    this.downDebounceMs = Math.max(0, Number(downDebounceMs) || 1500);
     this.last = {
       ts: 0,
       connected: false,
@@ -115,22 +116,69 @@ export class WorkerMonitor {
       banner: toBannerText('DISCONNECTED'),
     };
     this.timer = null;
+    this._workerDownSince = null;
+    this._stableSnap = null;
+  }
+
+  _applyWorkerDownDebounce(rawSnap) {
+    const now = Date.now();
+    if (rawSnap && rawSnap.connected === true) {
+      this._workerDownSince = null;
+      this._stableSnap = { ...rawSnap };
+      return rawSnap;
+    }
+
+    if (this._workerDownSince == null) {
+      this._workerDownSince = now;
+    }
+
+    if (!this._workerDownSince || now - this._workerDownSince < this.downDebounceMs) {
+      const base = this._stableSnap || this.last;
+      return {
+        ...base,
+        ts: rawSnap.ts,
+        connected: base.connected,
+        trafficLight: base.trafficLight || 'GREEN',
+        stopAll: base.stopAll,
+        banner: base.banner || toBannerText(base.trafficLight),
+        errors: {
+          ...(base.errors || {}),
+          poll: `debouncing_worker_down:${Math.max(0, now - this._workerDownSince)}ms`,
+        },
+      };
+    }
+
+    return rawSnap;
   }
 
   async tick() {
     try {
       const snap = await this.client.pollOnce();
-      this.last = { ...snap, banner: toBannerText(snap.trafficLight) };
+      const debounced = this._applyWorkerDownDebounce(snap);
+      this.last = { ...debounced, banner: toBannerText(debounced.trafficLight) };
     } catch (e) {
-      this.last = {
-        ...this.last,
-        ts: Date.now(),
-        connected: false,
-        trafficLight: 'DISCONNECTED',
-        stopAll: true,
-        banner: toBannerText('DISCONNECTED'),
-        errors: { ...this.last.errors, poll: String(e?.message || e) },
-      };
+      const now = Date.now();
+      if (this._workerDownSince == null) this._workerDownSince = now;
+      const base = this._stableSnap || this.last;
+      let next;
+      if (this._workerDownSince && now - this._workerDownSince < this.downDebounceMs) {
+        next = {
+          ...base,
+          ts: now,
+          errors: { ...(base.errors || {}), poll: String(e?.message || e) },
+        };
+      } else {
+        next = {
+          ...base,
+          ts: now,
+          connected: false,
+          trafficLight: 'DISCONNECTED',
+          stopAll: true,
+          errors: { ...(base.errors || {}), poll: String(e?.message || e) },
+        };
+        next.banner = toBannerText(next.trafficLight);
+      }
+      this.last = next;
     }
     return this.last;
   }

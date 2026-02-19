@@ -523,7 +523,7 @@ INDEX_HTML = """<!doctype html>
         </div>
         <div class="muted" id="panicStatus">Hold to panic: move slider to READY and press 3 seconds.</div>
         <div class="muted" style="margin-top: 6px;">Panic slider</div>
-        <input id="panicSlider" type="range" min="0" max="100" value="0" style="width: 100%;" oninput="updatePanicSliderLabel()" />
+        <input id="panicSlider" type="range" min="0" max="100" value="0" style="width: 100%;" oninput="handlePanicSliderInput()" />
         <div class="muted" id="panicSliderValue">Panic slider: 0%</div>
         <div class="muted" id="actionMsg">-</div>
         <div class="muted">Backend shutdown requires manual restart.</div>
@@ -1452,8 +1452,12 @@ INDEX_HTML = """<!doctype html>
     }
 
     const PANIC_HOLD_MS = 3000;
+    const PANIC_READY_PERCENT = 80;
     let panicHoldTimer = null;
     let panicHoldProgressTimer = null;
+    let panicHoldStartTs = null;
+    let panicHoldActive = false;
+    let panicHoldArmed = false;
     let pendingLiveAction = "start";
 
     function buildLiveConfirmPhrase(settings = null) {
@@ -1534,13 +1538,40 @@ INDEX_HTML = """<!doctype html>
       await refresh();
     }
 
-    function updatePanicSliderLabel() {
+    function getPanicReadyThreshold() {
+      return PANIC_READY_PERCENT;
+    }
+
+    function getPanicPercent() {
       const slider = document.getElementById("panicSlider");
-      const pct = slider ? Number(slider.value || 0) : 0;
+      return Number(slider ? slider.value || 0 : 0);
+    }
+
+    function isPanicReady() {
+      return getPanicPercent() >= getPanicReadyThreshold();
+    }
+
+    function updatePanicSliderLabel() {
+      const pct = getPanicPercent();
       document.getElementById("panicSliderValue").textContent = `Panic slider: ${pct}%`;
       const msg = document.getElementById("panicStatus");
       if (!msg) return;
-      msg.textContent = pct >= 80 ? "READY: hold 3 seconds to trigger panic." : "Move slider to READY first (80~100).";
+      if (panicHoldArmed) {
+        if (!isPanicReady()) {
+          msg.textContent = "Panic slider dropped below READY. Retry when ready.";
+          return;
+        }
+        msg.textContent = "READY: hold 3 seconds to trigger panic.";
+        return;
+      }
+      msg.textContent = isPanicReady() ? "READY: hold 3 seconds to trigger panic." : "Move slider to READY first (80~100).";
+    }
+
+    function handlePanicSliderInput() {
+      updatePanicSliderLabel();
+      if (panicHoldArmed && !isPanicReady()) {
+        cancelPanicHold();
+      }
     }
 
     function clearPanicHold() {
@@ -1552,34 +1583,50 @@ INDEX_HTML = """<!doctype html>
         clearInterval(panicHoldProgressTimer);
         panicHoldProgressTimer = null;
       }
+      panicHoldArmed = false;
+      panicHoldStartTs = null;
       const btn = document.getElementById("panicBtn");
+      if (btn) {
+        btn.textContent = "Panic Exit";
+        btn.disabled = false;
+      }
       const status = document.getElementById("panicStatus");
-      if (btn) btn.textContent = "Panic Exit";
       if (status) status.textContent = "Hold to panic: move slider to READY and press 3 seconds.";
       updatePanicSliderLabel();
     }
 
     function startPanicHold() {
-      const slider = document.getElementById("panicSlider");
-      const current = Number(slider ? slider.value : 0);
-      if (current < 80) {
+      if (!isPanicReady()) {
         const status = document.getElementById("panicStatus");
         if (status) status.textContent = "Panic slider not ready.";
         return;
       }
-      clearPanicHold();
       const btn = document.getElementById("panicBtn");
       if (btn) btn.disabled = true;
       const startedAt = Date.now();
       const finishAt = startedAt + PANIC_HOLD_MS;
+      panicHoldArmed = true;
+      panicHoldStartTs = startedAt;
       const update = () => {
-        const remain = Math.max(0, finishAt - Date.now());
+        const now = Date.now();
+        const remain = Math.max(0, finishAt - now);
         const status = document.getElementById("panicStatus");
-        if (status) status.textContent = `Panic trigger: ${(remain / 1000).toFixed(1)}s`; 
+        if (!isPanicReady()) {
+          cancelPanicHold();
+          if (status) status.textContent = "Panic slider dropped below READY. Retry.";
+          return;
+        }
+        if (status) status.textContent = `Panic trigger: ${(remain / 1000).toFixed(1)}s`;
       };
       update();
       panicHoldProgressTimer = setInterval(update, 80);
       panicHoldTimer = setTimeout(async () => {
+        const btnLocal = document.getElementById("panicBtn");
+        if (!isPanicReady()) {
+          cancelPanicHold();
+          if (btnLocal) btnLocal.disabled = false;
+          return;
+        }
         clearPanicHold();
         await triggerPanic();
       }, PANIC_HOLD_MS);
@@ -3562,6 +3609,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send_json({"ok": False, "message": "Controller is not running."}, status=400)
             controller = self.service.controller
             settings = load_settings()
+            slider = float(data.get("slider", 0))
+            if slider < 80:
+                return self._send_json({"ok": False, "message": "Panic slider is below READY level."}, status=400)
             symbol = str(data.get("symbol") or controller._get_runtime_state().get("symbol") or "")
             hard_loss_cap = float(data.get("hard_loss_cap", -0.05)) if data.get("hard_loss_cap") is not None else -0.05
 
@@ -3810,7 +3860,7 @@ def build_data_payload():
     return _safe_read_json(DATA_STATUS_PATH, default={})
 
 
-def _to_float(value, default=0.0):
+def _to_ccxt_float(value, default=0.0):
     try:
         return float(value)
     except Exception:
@@ -3860,7 +3910,7 @@ def _build_model_history_row(run_id, bucket, mtime_iso, summary=None, meta=None)
     delta = gate.get("delta")
     if delta is None:
         delta = score - active_score
-    delta = _to_float(delta, 0.0)
+    delta = _to_ccxt_float(delta, 0.0)
 
     positive_weeks = candidate.get("positive_weeks", None)
     if positive_weeks is None:
@@ -3881,7 +3931,7 @@ def _build_model_history_row(run_id, bucket, mtime_iso, summary=None, meta=None)
         "mdd": _metric_val(candidate, "mdd", 0.0),
         "trades": int(_metric_val(candidate, "trades", 0)),
         "cost_drop": _metric_val(candidate, "cost_drop", 0.0),
-        "positive_weeks": int(_to_float(positive_weeks, 0)),
+        "positive_weeks": int(_to_ccxt_float(positive_weeks, 0)),
         "negative_weeks": int(_metric_val(candidate, "negative_weeks", 0)),
         "worst_week": _metric_val(candidate, "worst_week", 0.0),
         "reason": reason,
@@ -4287,6 +4337,69 @@ def watchlist_scheduler():
         except Exception:
             pass
         time.sleep(2)
+
+
+def _to_order_float(v, default=0.0):
+    try:
+        if v is None:
+            return float(default)
+        n = float(v)
+        if n != n:
+            return float(default)
+        return n
+    except Exception:
+        return float(default)
+
+
+def _to_ccxt_symbol(adapter, symbol):
+    if not symbol:
+        return symbol
+    s = str(symbol).strip().upper()
+    if "/" in s:
+        return s
+    if "-" in s:
+        return s.replace("-", "/")
+    return s
+
+
+def _normalize_order_row(row: dict) -> dict:
+    if row is None:
+        return {}
+    raw_symbol = row.get("symbol") or row.get("code") or row.get("market") or row.get("symbol_name")
+    info = row.get("info") if isinstance(row.get("info"), dict) else {}
+
+    created_at = row.get("datetime") or row.get("timestamp") or row.get("created_at") or row.get("created")
+    if isinstance(created_at, (int, float)):
+        try:
+            created_at = datetime.fromtimestamp(created_at / 1000).isoformat()
+        except Exception:
+            pass
+
+    return {
+        "order_id": str(row.get("id") or row.get("orderId") or row.get("order_id") or ""),
+        "symbol": str(raw_symbol or "").replace("/", "-"),
+        "side": str(row.get("side") or info.get("side") or ""),
+        "type": str(row.get("type") or row.get("orderType") or ""),
+        "qty": _to_order_float(row.get("amount") or row.get("amount_orig") or row.get("origQty") or row.get("quantity"), 0.0),
+        "price": _to_order_float(row.get("price") or row.get("avgPrice") or row.get("price_avg"), 0.0),
+        "remaining": _to_order_float(row.get("remaining") or row.get("remaining_amount") or row.get("remainingQty") or row.get("left") or row.get("amount"), 0.0),
+        "status": str(row.get("status") or info.get("status") or "").lower(),
+        "created_at": created_at,
+    }
+
+
+
+# Endpoint markers for tests/smoke checks: "_notify_openclaw_emergency", "_cancel_open_orders"
+def _notify_openclaw_emergency(message: str, exchange: str = "SYSTEM"):
+    try:
+        notifier = TelegramNotifier()
+        if notifier and notifier.bot_token and notifier.chat_id:
+            notifier.emit_event("RISK", exchange, "PANIC TRIGGER", message, severity="CRITICAL")
+            return True
+    except Exception:
+        return False
+    return False
+
 
 
 def _build_orders_payload(controller) -> dict:

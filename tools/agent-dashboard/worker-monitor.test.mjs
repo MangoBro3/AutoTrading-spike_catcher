@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { computeTrafficLight, shouldStopAll, toBannerText } from './worker-monitor.mjs';
+import { WorkerMonitor, computeTrafficLight, shouldStopAll, toBannerText } from './worker-monitor.mjs';
 
 test('DISCONNECTED when not connected', () => {
   const light = computeTrafficLight({ connected: false });
@@ -14,6 +14,28 @@ test('RED when emergency stop', () => {
   assert.equal(light, 'RED');
   assert.equal(shouldStopAll(light), true);
 });
+
+
+
+test('Worker disconnect is debounced', async (t) => {
+  let connectedCallCount = 0;
+  const client = {
+    async pollOnce() {
+      connectedCallCount += 1;
+      if (connectedCallCount === 1) return { connected: true, trafficLight: 'GREEN', stopAll: false, ts: Date.now() };
+      return { connected: false, trafficLight: 'DISCONNECTED', stopAll: true, ts: Date.now() };
+    },
+  };
+  const monitor = new WorkerMonitor({ client, pollMs: 1000, downDebounceMs: 500 });
+  await monitor.tick();
+  const first = monitor.snapshot();
+  assert.equal(first.connected, true);
+  await monitor.tick();
+  const second = monitor.snapshot();
+  assert.equal(second.connected, true);
+  assert.equal(second.stopAll, false);
+});
+
 
 test('YELLOW when pending queue high', () => {
   const light = computeTrafficLight({ connected: true, health: { ok: true }, state: {}, orders: { pending: 25 } });
