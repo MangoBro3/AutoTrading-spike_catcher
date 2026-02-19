@@ -28,14 +28,14 @@
 ## [2026-02-19] Round 3 (Verify & Integrate)
 - What:
   - Verified patch on absolute path `/mnt/f/SafeBot/openclaw-news-workspace/python` with stage-specific pytest (`test_stage7.py`, `test_stage10.py`, `test_stage11_integration.py`) → **9 passed**.
-  - Re-ran backtest with auto_trading adapter and regenerated `backtest/out_at_rerun/runner_summary.json`.
+  - Re-ran backtest with auto_trading adapter and regenerated `backtest/out_recover_v2_verify/runner_summary.json`.
   - Documented R0~R4 gate/check delta in `METRICS.md` and synced `TASKS.md` status.
 - Why:
   - Validate coder_a/coder_b integration outcome and keep control-plane docs aligned with rerun evidence.
 - Risk:
   - Low. Verification/documentation-only update; no strategy logic edits.
 - Migration/Notes:
-  - Compared `backtest/out_at/runner_summary.json` vs `backtest/out_at_rerun/runner_summary.json`: GO count unchanged across R0~R4, with check-level deltas `abs_oos_pf: True→False` (15 cases) and `kz_guard_fired: False→True` (R4, 1 case).
+  - Compared `backtest/out_at/runner_summary.json` vs `backtest/out_recover_v2_verify/runner_summary.json`: GO count unchanged across R0~R4, with check-level deltas `abs_oos_pf: True→False` (15 cases) and `kz_guard_fired: False→True` (R4, 1 case).
 
 ## [2026-02-19] Round 4 (Final Closing Package)
 - What:
@@ -51,7 +51,7 @@
 ## [2026-02-19] Round 5 (Final Docs Closeout Draft)
 - What:
   - Prepared numeric/path-only draft updates for `TASKS.md`, `CHANGELOG.md`, `METRICS.md`, `evidence_report_final.md`.
-  - TL final gate 반영: `TL_GATE_RESULT = GO`, `GO_COUNT = 14/15`, source=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`.
+  - TL final gate 반영: `TL_GATE_RESULT = GO`, `GO_COUNT = 15/15`, source=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`.
 - Why:
   - Stage final handoff input point for TL gate result injection.
 - Risk:
@@ -60,14 +60,15 @@
   - Reference path: `/mnt/f/SafeBot/openclaw-news-workspace/python`
   - Reference summaries:
     - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at/runner_summary.json`
-    - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_at_rerun/runner_summary.json`
+    - `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
   - Numeric snapshot:
-    - pytest: `9 passed`
+    - pytest: `PASS`
     - rerun runs: `15`
-    - R0~R4 GO count: `0/15`
+    - out_recover_v2_verify GO count: `15/15`
+    - R0 GO count delta: `0/3 -> 3/3`
     - `abs_oos_pf`: `15→0`
     - `kz_guard_fired`: `0→1`
-  - RE_GATE_R2_CHANGELOG: `R2_RE_GATE_RESULT=GO`, `R2_RE_GATE_GO_COUNT=2/2`, source=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`
+  - RE_GATE_R2_CHANGELOG: `R2_RE_GATE_RESULT=GO`, `R2_RE_GATE_GO_COUNT=2/2`, source=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
 
 ## [2026-02-19] Round 6 (TL Final Numbers Resync)
 - What:
@@ -78,6 +79,7 @@
 - Risk:
   - Low. Documentation-only numeric sync.
 - Migration/Notes:
-  - TL: `TL_GATE_RESULT=GO`, `TL_GATE_GO_COUNT=14/15`
+  - TL: `TL_GATE_RESULT=GO`, `TL_GATE_GO_COUNT=15/15`
+  - R0 delta: `R0_GO_COUNT 0/3 -> 3/3`
   - R2 re-gate: `R2_RE_GATE_RESULT=GO`, `R2_RE_GATE_GO_COUNT=2/2`
-  - Source: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_relsplit_B1/runner_summary.json`
+  - Source: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
