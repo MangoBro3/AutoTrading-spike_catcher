@@ -1,0 +1,16 @@
+[2026-02-19 14:49:37 +09:00] UI DoD Snapshot
+HTML files: 1
+UI-like dirs: 3
+Pytest ui-collect output lines: 2
+---
+Artifacts:
+/mnt/f/SafeBot/openclaw-news-workspace/python/tools/agent-dashboard/public/index.html
+---
+[2026-02-19 14:49:58 +09:00] UI DoD Snapshot
+HTML files: 1
+UI-like dirs: 3
+Pytest ui-collect output lines: 2
+---
+Artifacts:
+/mnt/f/SafeBot/openclaw-news-workspace/python/tools/agent-dashboard/public/index.html
+---

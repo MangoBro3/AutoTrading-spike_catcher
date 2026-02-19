@@ -3,6 +3,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { WorkerApiClient, WorkerMonitor } from './worker-monitor.mjs';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 18890;
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
@@ -11,6 +12,8 @@ const SNAPSHOT_FILE = `${USAGE_DIR}/token_snapshots.jsonl`;
 const ACTIVITY_LOG_FILE = `${USAGE_DIR}/activity_log.jsonl`;
 const ACTIVITY_STATE_FILE = `${USAGE_DIR}/activity_state.json`;
 const PROJECT_NAME = 'openclaw-news-workspace';
+const WORKER_API_BASE_URL = process.env.WORKER_API_BASE_URL || 'http://127.0.0.1:18080';
+const WORKER_POLL_MS = process.env.WORKER_POLL_MS ? Number(process.env.WORKER_POLL_MS) : 1000;
 
 function tryExecJson(cmd) {
   const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -291,6 +294,10 @@ function summarizeUsage(snapshots) {
   };
 }
 
+const workerClient = new WorkerApiClient(WORKER_API_BASE_URL);
+const workerMonitor = new WorkerMonitor({ client: workerClient, pollMs: WORKER_POLL_MS });
+workerMonitor.start();
+
 function buildOverview() {
   const status = safeRun('openclaw status --all --json', null);
   const agents = safeRun('openclaw agents list --json', null);
@@ -310,6 +317,7 @@ function buildOverview() {
   return {
     now: new Date().toISOString(),
     sourceOk: Boolean(status && agents),
+    worker: workerMonitor.snapshot(),
     gateway: status?.gateway || null,
     channelSummary: status?.channelSummary || null,
     sessions: status?.sessions || null,
@@ -338,6 +346,34 @@ const server = http.createServer((req, res) => {
     const payload = buildOverview();
     res.writeHead(200, { 'content-type': MIME['.json'] });
     return res.end(JSON.stringify(payload, null, 2));
+  }
+
+  if (url.pathname === '/api/worker') {
+    res.writeHead(200, { 'content-type': MIME['.json'] });
+    return res.end(JSON.stringify(workerMonitor.snapshot(), null, 2));
+  }
+
+  if (url.pathname.startsWith('/api/worker/control/')) {
+    if ((req.method || 'GET').toUpperCase() !== 'POST') {
+      res.writeHead(405, { 'content-type': MIME['.json'] });
+      return res.end(JSON.stringify({ ok: false, error: 'method_not_allowed' }));
+    }
+    const action = url.pathname.replace('/api/worker/control/', '').trim();
+    let body = '';
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const parsed = body ? JSON.parse(body) : {};
+        const out = await workerClient.control(action, parsed);
+        await workerMonitor.tick();
+        res.writeHead(200, { 'content-type': MIME['.json'] });
+        return res.end(JSON.stringify({ ok: true, action, result: out, worker: workerMonitor.snapshot() }, null, 2));
+      } catch (e) {
+        res.writeHead(500, { 'content-type': MIME['.json'] });
+        return res.end(JSON.stringify({ ok: false, action, error: String(e?.message || e) }, null, 2));
+      }
+    });
+    return;
   }
 
   const path = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
