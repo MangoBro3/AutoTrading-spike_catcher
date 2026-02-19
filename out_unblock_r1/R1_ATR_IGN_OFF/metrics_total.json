@@ -1,0 +1,14 @@
+{
+  "oos_pf": 0.0,
+  "oos_mdd": 0.0,
+  "bull_tcr": 0.0,
+  "stress_break": false,
+  "oos_cagr_hybrid": 0.0,
+  "oos_cagr_def": 0.0,
+  "bull_return_hybrid": 0.0,
+  "bull_return_def": 0.0,
+  "kill_zone_guard_fired": false,
+  "kill_zone_guard_reason": "guards_unavailable_no_summary",
+  "kill_zone_loss_hybrid": 0.0,
+  "kill_zone_loss_agg": 0.0
+}

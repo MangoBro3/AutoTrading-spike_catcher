@@ -1,0 +1,29 @@
+{
+  "run_id": "R0_HYB",
+  "source": "auto_trading.run_summary.unavailable",
+  "mapped_from": null,
+  "mode": "hybrid",
+  "bull_tcr_source": "unavailable_no_summary",
+  "oos_pf_source": "unavailable_no_summary",
+  "returns_mapping_source": "summary_unavailable",
+  "schema_guard_status": "summary_unavailable",
+  "guard_mapping_status": "guards_unavailable_no_summary",
+  "input_mapping_status": "run_id_path_missing:R0_HYB|default_latest_reused_blocked_fail_fast",
+  "run_summary_map_status": "run_map_not_found",
+  "metrics_total_artifact_source": "summary_unavailable",
+  "go_no_go": "NO_GO",
+  "checks": {
+    "abs_oos_pf": false,
+    "abs_oos_mdd": true,
+    "abs_bull_tcr": false,
+    "abs_stress_no_break": true,
+    "rel_oos_cagr": true,
+    "rel_bull_return": true,
+    "rel_oos_cagr_raw": true,
+    "rel_bull_return_raw": true,
+    "kz_scope_required": true,
+    "kz_guard_fired": true,
+    "kz_guard_fired_raw": false,
+    "kz_loss_improved": true
+  }
+}

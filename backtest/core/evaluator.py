@@ -47,29 +47,20 @@ def evaluate_go_no_go(metrics_total: dict, metrics_by_mode: dict, eval_scope: di
 
     eval_scope = eval_scope or {}
     kz_scope_required = bool(eval_scope.get("kz_scope_required", False))
-    rel_deadband_enabled = bool(eval_scope.get("rel_deadband_enabled", False))
-    rel_deadband_eps = float(eval_scope.get("rel_deadband_eps", 1e-9))
     epsilon = 1e-12
 
     rel_oos_cagr_raw = (oos_cagr_h + epsilon) >= (1.15 * oos_cagr_d if oos_cagr_d > 0 else 0)
     rel_bull_return_raw = (bull_ret_h + epsilon) >= (1.30 * bull_ret_d if bull_ret_d > 0 else 0)
-
-    oos_baseline_near_zero = abs(oos_cagr_d) <= rel_deadband_eps
-    bull_baseline_near_zero = abs(bull_ret_d) <= rel_deadband_eps
 
     checks = {
         "abs_oos_pf": oos_pf >= 1.2,
         "abs_oos_mdd": oos_mdd <= 0.20,
         "abs_bull_tcr": bull_tcr >= 0.90,
         "abs_stress_no_break": not stress_break,
-        "rel_oos_cagr": rel_oos_cagr_raw or (rel_deadband_enabled and oos_baseline_near_zero),
-        "rel_bull_return": rel_bull_return_raw or (rel_deadband_enabled and bull_baseline_near_zero),
+        "rel_oos_cagr": rel_oos_cagr_raw,
+        "rel_bull_return": rel_bull_return_raw,
         "rel_oos_cagr_raw": rel_oos_cagr_raw,
         "rel_bull_return_raw": rel_bull_return_raw,
-        "rel_deadband_enabled": rel_deadband_enabled,
-        "rel_deadband_eps": rel_deadband_eps,
-        "oos_baseline_near_zero": oos_baseline_near_zero,
-        "bull_baseline_near_zero": bull_baseline_near_zero,
         # Requirement check semantics: when KZ scope is not required, this check should pass.
         "kz_scope_required": (not kz_scope_required) or kz_scope_required,
         # KZ guard firing is only mandatory when KZ scope is required (R4/kill-zone split).

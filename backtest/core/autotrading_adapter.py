@@ -498,7 +498,7 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
             if not default_summary_file.exists():
                 return None, f"{default_summary_status}_missing:{default_summary_file}"
 
-            return _build_summary_ctx(default_summary_file), f"run_id_path_missing:{run_id}|{default_summary_status}_reused"
+            return None, f"run_id_path_missing:{run_id}|{default_summary_status}_reused_blocked_fail_fast"
 
         return None, f"run_id_path_missing:{run_id}|summary_unavailable"
 

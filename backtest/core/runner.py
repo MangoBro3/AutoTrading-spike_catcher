@@ -113,9 +113,6 @@ def run_all(out_root: str | Path = "backtest/out", adapter=default_mock_adapter)
         payload = payloads_by_run[run_id]
         eval_scope = {
             "kz_scope_required": (run.get("family") == "R4") or (run.get("split") == "kill_zones_5m"),
-            # Architect proposal A (scoped): near-zero DEF baseline deadband only for R0_HYB.
-            "rel_deadband_enabled": (run.get("run_id") == "R0_HYB"),
-            "rel_deadband_eps": 1e-9,
         }
         ev = evaluate_go_no_go(payload["metrics_total"], payload["metrics_by_mode"], eval_scope=eval_scope)
         payload.setdefault("summary", {})
