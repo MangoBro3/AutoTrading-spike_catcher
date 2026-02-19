@@ -8,6 +8,8 @@ import pandas as pd
 from datetime import datetime
 from pathlib import Path
 
+from .utils_json import safe_json_dump, safe_json_load, SCHEMA_VERSION_FIELD
+
 logger = logging.getLogger("RunController")
 
 class RunController:
@@ -23,6 +25,9 @@ class RunController:
     STATE_IN_POSITION = "IN_POSITION"
     STATE_EXIT_PENDING = "EXIT_PENDING"
     STATE_SAFE_COOLDOWN = "SAFE_COOLDOWN"
+
+    RUNTIME_STATE_SCHEMA_VERSION = 2
+    DAILY_RISK_STATE_SCHEMA_VERSION = 2
 
     def __init__(self, adapter, ledger, watch_engine, notifier, mode=MODE_PAPER, disable_strategy: bool = False, execution_engine=None):
         self.adapter = adapter
@@ -143,6 +148,7 @@ class RunController:
 
     def _load_daily_risk_state(self):
         default = {
+            SCHEMA_VERSION_FIELD: self.DAILY_RISK_STATE_SCHEMA_VERSION,
             "day": self._today_key_local(),
             "daily_start_equity": None,
             "intraday_peak_equity": None,
@@ -150,25 +156,36 @@ class RunController:
             "last_trigger_reason": None,
             "updated_at": time.time(),
         }
-        try:
-            if self.daily_state_path.exists():
-                raw = self.daily_state_path.read_text(encoding="utf-8")
-                data = json.loads(raw) if raw else {}
-                if isinstance(data, dict):
-                    default.update(data)
-        except Exception as e:
-            logger.error(f"[RISK] Failed to load daily risk state: {e}")
-        return default
+
+        data = safe_json_load(
+            self.daily_state_path,
+            default=default,
+            schema_version=self.DAILY_RISK_STATE_SCHEMA_VERSION,
+            repair=True,
+        )
+
+        if not isinstance(data, dict):
+            data = default
+
+        if data.get(SCHEMA_VERSION_FIELD) != self.DAILY_RISK_STATE_SCHEMA_VERSION:
+            # Mark for repair-on-save while preserving known fields.
+            data[SCHEMA_VERSION_FIELD] = self.DAILY_RISK_STATE_SCHEMA_VERSION
+
+        for key, val in default.items():
+            if key in data:
+                continue
+            data[key] = val
+
+        return data
 
     def _save_daily_risk_state(self):
         try:
-            self.daily_state_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = self.daily_state_path.with_suffix(".tmp")
             self.daily_risk_state["updated_at"] = time.time()
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(self.daily_risk_state, f)
-            import os
-            os.replace(tmp, self.daily_state_path)
+            safe_json_dump(
+                self.daily_risk_state,
+                self.daily_state_path,
+                schema_version=self.DAILY_RISK_STATE_SCHEMA_VERSION,
+            )
         except Exception as e:
             logger.error(f"[RISK] Failed to save daily risk state: {e}")
 
@@ -435,6 +452,7 @@ class RunController:
     # ===== P0: Persistent State Machine =====
     def _default_runtime_state(self):
         return {
+            SCHEMA_VERSION_FIELD: self.RUNTIME_STATE_SCHEMA_VERSION,
             "state": self.STATE_FLAT,
             "symbol": None,
             "position_qty": 0.0,
@@ -453,32 +471,33 @@ class RunController:
             "active_keys": {},
             "position_id": None,
             "position_seq": 0,
-            "partial_tp_done_position_id": None
+            "partial_tp_done_position_id": None,
         }
 
     def _load_runtime_state(self):
         default = self._default_runtime_state()
-        data = {}
-        try:
-            if self.runtime_state_path.exists():
-                raw = self.runtime_state_path.read_text()
-                data = json.loads(raw) if raw else {}
-        except Exception as e:
-            logger.error(f"[STATE] Failed to read runtime_state: {e}")
-            data = {}
+        data = safe_json_load(
+            self.runtime_state_path,
+            default=default,
+            schema_version=self.RUNTIME_STATE_SCHEMA_VERSION,
+            repair=True,
+        )
 
         if not isinstance(data, dict):
-            data = {}
+            data = default
 
         for key, val in default.items():
             data.setdefault(key, val)
+
+        if data.get(SCHEMA_VERSION_FIELD) != self.RUNTIME_STATE_SCHEMA_VERSION:
+            data[SCHEMA_VERSION_FIELD] = self.RUNTIME_STATE_SCHEMA_VERSION
 
         if data.get("state") not in {
             self.STATE_FLAT,
             self.STATE_ENTRY_PENDING,
             self.STATE_IN_POSITION,
             self.STATE_EXIT_PENDING,
-            self.STATE_SAFE_COOLDOWN
+            self.STATE_SAFE_COOLDOWN,
         }:
             data["state"] = self.STATE_FLAT
 
@@ -505,7 +524,7 @@ class RunController:
 
         if data.get("cooldown_prev_state") not in {
             self.STATE_FLAT,
-            self.STATE_IN_POSITION
+            self.STATE_IN_POSITION,
         }:
             data["cooldown_prev_state"] = self.STATE_FLAT
 
@@ -562,12 +581,11 @@ class RunController:
 
     def _save_runtime_state(self):
         try:
-            self.runtime_state_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp_path = self.runtime_state_path.with_suffix(".tmp")
-            with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(self.runtime_state, f)
-            import os
-            os.replace(tmp_path, self.runtime_state_path)
+            safe_json_dump(
+                self.runtime_state,
+                self.runtime_state_path,
+                schema_version=self.RUNTIME_STATE_SCHEMA_VERSION,
+            )
         except Exception as e:
             logger.error(f"[STATE] Failed to write runtime_state: {e}")
 
