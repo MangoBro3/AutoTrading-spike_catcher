@@ -1,0 +1,4 @@
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/fastapi_backend.py", line 300
+    f" ACCOUNT        : equity={equity if equity is not None else '-'} KRW | PnL={((float(pnl_pct)*100):.2f)+'%' if pnl_pct is not None else '-'}",
+                                                                                  ^
+SyntaxError: f-string: expecting a valid expression after '{'

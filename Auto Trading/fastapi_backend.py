@@ -1,6 +1,10 @@
+import argparse
+import json
 import os
 import sys
 import threading
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -21,8 +25,10 @@ from modules.run_controller import RunController
 from modules.notifier_telegram import TelegramNotifier
 from modules.safe_start import (
     SafeStartManager,
+    PHASE_BOOTING_DEGRADED,
     PHASE_RUNNING,
     PHASE_WAITING_OPERATOR,
+    PHASE_WAITING_SYNC,
 )
 from modules.single_instance_lock import SingleInstanceLock
 
@@ -189,6 +195,128 @@ class BackendService:
             return {"ok": True}
 
 
+class BackendStatusTUI:
+    def __init__(self, backend_service: BackendService, interval_sec: float = 1.5):
+        self.backend_service = backend_service
+        self.interval_sec = max(1.0, float(interval_sec))
+        self._stop_evt = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+
+    def start(self):
+        if self._thread and self._thread.is_alive():
+            return
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+        self._thread.start()
+
+    def stop(self):
+        self._stop_evt.set()
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=1.0)
+
+    def _safe_json_read(self, path: Path):
+        if not path.exists():
+            return {}
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+
+    def _fmt_ts(self, ts):
+        try:
+            if ts is None:
+                return "-"
+            return datetime.fromtimestamp(float(ts)).strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            return "-"
+
+    def _fetch_open_orders_count(self):
+        c = self.backend_service.controller
+        if c is None or not getattr(c, "running", False):
+            return 0, "-"
+        try:
+            adapter = getattr(c, "adapter", None)
+            if adapter and hasattr(adapter, "get_open_orders"):
+                orders = adapter.get_open_orders() or []
+                return len(orders), "OK"
+            return 0, "N/A"
+        except Exception as e:
+            return 0, f"ERR:{e.__class__.__name__}"
+
+    def _loop(self):
+        while not self._stop_evt.is_set():
+            try:
+                self._render_once()
+            except Exception:
+                pass
+            self._stop_evt.wait(self.interval_sec)
+
+    def _render_once(self):
+        backend = self._safe_json_read(RESULTS_DIR / "backend_status.json")
+        runtime = self._safe_json_read(RUNTIME_STATUS_PATH)
+        state = self._safe_json_read(RUNTIME_STATE_PATH)
+        safe = self.backend_service.safe_start.read_state()
+
+        mode = str((backend.get("controller_mode") or runtime.get("mode") or "PAPER")).upper()
+        is_live = mode == "LIVE"
+        mode_badge = f"{mode} {'⚠️ LIVE REAL MONEY' if is_live else '🧪 PAPER'}"
+
+        running = bool(self.backend_service._is_running())
+        phase = safe.get("phase", "STOPPED")
+        lock_exists = bool((backend.get("lock") or {}).get("exists"))
+        conn = "CONNECTED" if running else ("WAITING" if phase in {PHASE_BOOTING_DEGRADED, PHASE_WAITING_OPERATOR, PHASE_WAITING_SYNC} else "DISCONNECTED")
+
+        equity = runtime.get("equity")
+        pnl_pct = runtime.get("pnl_pct")
+        pos_state = state.get("state", "-")
+        pos_qty = state.get("position_qty", 0.0)
+        pos_symbol = state.get("symbol") or "-"
+
+        open_orders, open_orders_state = self._fetch_open_orders_count()
+
+        last_tick_ts = runtime.get("last_tick_ts")
+        age_sec = None
+        try:
+            if last_tick_ts is not None:
+                age_sec = max(0.0, time.time() - float(last_tick_ts))
+        except Exception:
+            age_sec = None
+
+        last_err = runtime.get("last_error") or self.backend_service.last_error
+        if conn == "DISCONNECTED":
+            traffic = "🔴 RED"
+        elif last_err:
+            traffic = "🟡 YELLOW"
+        elif age_sec is not None and age_sec > 10:
+            traffic = "🟡 YELLOW"
+        else:
+            traffic = "🟢 GREEN"
+
+        pnl_txt = "-"
+        if pnl_pct is not None:
+            try:
+                pnl_txt = f"{float(pnl_pct) * 100:.2f}%"
+            except Exception:
+                pnl_txt = "-"
+
+        lines = [
+            "\n" + "=" * 78,
+            " SafeBot Backend Status TUI (--tui)",
+            "=" * 78,
+            f" MODE           : {mode_badge}",
+            f" PHASE/CONN     : {phase} / {conn} (lock={'ON' if lock_exists else 'OFF'})",
+            f" ACCOUNT        : equity={equity if equity is not None else '-'} KRW | PnL={pnl_txt}",
+            f" POSITION       : {pos_state} | {pos_symbol} qty={pos_qty}",
+            f" OPEN ORDERS    : {open_orders} ({open_orders_state})",
+            f" TRAFFIC LIGHT  : {traffic}",
+            f" LAST UPDATE    : runtime={self._fmt_ts(last_tick_ts)} | tui={datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        ]
+        if last_err:
+            lines.append(f" LAST ERROR     : {last_err}")
+        lines.append("=" * 78)
+
+        print("\n".join(lines), flush=True)
+
+
 service = BackendService()
 app = FastAPI(title="SafeBot Backend API", version="0.1.0")
 
@@ -221,6 +349,22 @@ def control_stop():
 if __name__ == "__main__":
     import uvicorn
 
+    parser = argparse.ArgumentParser(description="SafeBot FastAPI backend")
+    parser.add_argument("--tui", dest="tui", action="store_true", default=True, help="Enable periodic status panel")
+    parser.add_argument("--no-tui", dest="tui", action="store_false", help="Disable periodic status panel")
+    parser.add_argument("--tui-interval", type=float, default=1.5, help="TUI refresh interval seconds (default: 1.5)")
+    args = parser.parse_args()
+
     host = os.getenv("BACKEND_HOST", "127.0.0.1")
     port = int(os.getenv("BACKEND_PORT", "8765"))
-    uvicorn.run(app, host=host, port=port)
+
+    tui = None
+    if args.tui:
+        tui = BackendStatusTUI(service, interval_sec=args.tui_interval)
+        tui.start()
+
+    try:
+        uvicorn.run(app, host=host, port=port)
+    finally:
+        if tui:
+            tui.stop()

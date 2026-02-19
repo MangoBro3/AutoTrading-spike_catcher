@@ -23,7 +23,7 @@ ls -l 'Auto Trading/ui/public/index.html'
 
 # 2) UI 관련 산출물 스캔(근거 로그 재생성)
 find . -maxdepth 4 -iname '*ui*' > results/ui_sprint1_pmo/01_ui_artifact_scan.log
-find tools -maxdepth 4 -type d > results/ui_sprint1_pmo/02_ui_dir_scan.log
+find 'Auto Trading/ui' -maxdepth 4 -type d > results/ui_sprint1_pmo/02_ui_dir_scan.log
 
 # 3) UI DoD 스냅샷 1회 갱신
 bash results/ui_sprint1_pmo/ui_dod_snapshot.sh
