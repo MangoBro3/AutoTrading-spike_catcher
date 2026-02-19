@@ -16,9 +16,9 @@
 
 | 구분 | 상태 | 근거(명령/근거파일) | 증적 경로 |
 |---|:---:|---|---|
-| Build A: Worker API 연동(대시보드) | 완료 | Sprint1 API 연동 엔트리(`GET /health`, `/state`, `/orders`, `/api/worker`, `/api/worker/control/:action`) 확인 | `/mnt/f/SafeBot/openclaw-news-workspace/python/tools/agent-dashboard/README.md`
-`/mnt/f/SafeBot/openclaw-news-workspace/python/tools/agent-dashboard/server.mjs`
-`/mnt/f/SafeBot/openclaw-news-workspace/python/tools/agent-dashboard/worker-monitor.mjs` |
+| Build A: Worker API 연동(대시보드) | 완료 | Sprint1 API 연동 엔트리(`GET /health`, `/state`, `/orders`, `/api/worker`, `/api/worker/control/:action`) 확인 | `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/README.md`
+`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/server.mjs`
+`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/worker-monitor.mjs` |
 | Build B: UI Smoke(기능/엔드포인트 문자열 기반) | 완료 | `TestUIBuildBSmoke` 2건 모두 통과 | `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_ui_sprint1_smoke.py`
 `/mnt/f/SafeBot/openclaw-news-workspace/python/results/ui_sprint1_pmo/04_ui_build_smoke.log` |
 | Backend 스모크 | 완료 | `test_smoke.py` 3/3 통과 | `/mnt/f/SafeBot/openclaw-news-workspace/python/results/ui_sprint1_pmo/06_smoke_backend.log` |
@@ -30,7 +30,7 @@
 |---|:---:|---|---|
 | 1) UI 경로 탐색(기본 산출물 존재 확인) | 완료 | `find` 기반 스캔 로그 | `/mnt/f/SafeBot/openclaw-news-workspace/python/results/ui_sprint1_pmo/01_ui_artifact_scan.log`
 `/mnt/f/SafeBot/openclaw-news-workspace/python/results/ui_sprint1_pmo/02_ui_dir_scan.log` |
-| 2) UI 화면 정적 자산 존재 (`index.html`) | 완료 | `tools/agent-dashboard/public/index.html` 존재 확인 | `/mnt/f/SafeBot/openclaw-news-workspace/python/tools/agent-dashboard/public/index.html` |
+| 2) UI 화면 정적 자산 존재 (`index.html`) | 완료 | `Auto Trading/ui/public/index.html` 존재 확인 | `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/public/index.html` |
 | 3) UI 실행/동작 테스트(프레임워크 기준) | 진행 | 이전 `pytest -k ui` 수집 결과로 한계가 있었으나 Build B 스모크 추가 통과 | `/mnt/f/SafeBot/openclaw-news-workspace/python/results/ui_sprint1_pmo/03_ui_pytest_collect.log`
 `/mnt/f/SafeBot/openclaw-news-workspace/python/results/ui_sprint1_pmo/04_ui_build_smoke.log` |
 | 4) UI-Sprint 증적 저장 경로 정비 | 완료 | 증적 스냅샷 스크립트 작성/로그 누적

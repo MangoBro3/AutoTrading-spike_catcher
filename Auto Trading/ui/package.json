@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "e2e:evidence": "node e2e-ui-evidence.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0"
   }
 }

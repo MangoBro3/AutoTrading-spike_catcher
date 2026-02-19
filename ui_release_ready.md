@@ -5,7 +5,7 @@
 
 ## 1) 완료 기능 (UI Core)
 1. **UI 산출물 경로/기본 자산 확인 완료**
-   - 정적 화면 자산 확인: `tools/agent-dashboard/public/index.html`
+   - 정적 화면 자산 확인: `Auto Trading/ui/public/index.html`
    - 스캔 근거 로그:
      - `results/ui_sprint1_pmo/01_ui_artifact_scan.log`
      - `results/ui_sprint1_pmo/02_ui_dir_scan.log`
@@ -19,7 +19,7 @@
 ## 2) 검증 커맨드 (재현용)
 ```bash
 # 1) UI 자산 존재 확인
-ls -l 'tools/agent-dashboard/public/index.html'
+ls -l 'Auto Trading/ui/public/index.html'
 
 # 2) UI 관련 산출물 스캔(근거 로그 재생성)
 find . -maxdepth 4 -iname '*ui*' > results/ui_sprint1_pmo/01_ui_artifact_scan.log
