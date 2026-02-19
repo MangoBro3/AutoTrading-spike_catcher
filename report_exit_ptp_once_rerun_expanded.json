@@ -1,0 +1,51 @@
+{
+  "run_summary_source_hash": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "code_commit_hash": "7d7b6fa8c745706aab920cc0647452058e9e5599",
+  "config_hash": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "baseline_run_id": "baseline",
+  "candidate_run_id": "candidate_ptp_once_per_position",
+  "metrics_summary": {
+    "baseline": {
+      "run_id": "baseline"
+    },
+    "candidate": {
+      "run_id": "candidate_ptp_once_per_position"
+    },
+    "min_top_winners": 20,
+    "derived": {
+      "partial_tp_reduction_ratio": 0.0,
+      "winner_sample_ok": false,
+      "winner_sample_shortage": 20,
+      "top10_realized_median_delta_pctp": 0.0,
+      "cost_reduction_axes": 0
+    }
+  },
+  "cost_summary": {
+    "baseline_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/baseline/cost_metrics.csv",
+    "candidate_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/candidate_ptp_once_per_position/cost_metrics.csv"
+  },
+  "gate_summary": {
+    "status": "FAIL",
+    "baseline_fail_reasons": [
+      "missing file: /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/baseline/events.csv",
+      "missing file: /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/baseline/final_trades.csv"
+    ],
+    "candidate_fail_reasons": [
+      "missing file: /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/candidate_ptp_once_per_position/events.csv",
+      "missing file: /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/candidate_ptp_once_per_position/final_trades.csv"
+    ],
+    "derived_fail_reasons": [
+      "partial_tp_reduction_below_50pct",
+      "top10_winner_sample_lt_min(0<20)",
+      "cost_reduction_axes_lt_2",
+      "run_summary_source_hash_empty",
+      "config_hash_empty"
+    ]
+  }
+}

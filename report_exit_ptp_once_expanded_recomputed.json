@@ -41,5 +41,14 @@
     "stress": "유지 (둘 다 false)",
     "GO": "유지 (둘 다 1.0)",
     "PF": "유지 (delta=0.0)"
+  },
+  "run_summary_source_hash": {
+    "baseline": "d7a6a41e9f49bda86c444693822e1519d4dce3ea58fbf1cb68b8e0cb89f2eda7",
+    "candidate": "8b13504f8edf3f4ec186ffa83e19f8e63fa6ea6a5d59ad8287da25d972f6bb89"
+  },
+  "code_commit_hash": "7d7b6fa8c745706aab920cc0647452058e9e5599",
+  "config_hash": {
+    "baseline": "6c40c156594d60150ef8631a748a59fb01e81e7bb1b397dce46ed55145900615",
+    "candidate": "62f4d1201e00d79dd5b5fa441b7146cda047b9913d6b5f813a748292b006ad77"
   }
 }

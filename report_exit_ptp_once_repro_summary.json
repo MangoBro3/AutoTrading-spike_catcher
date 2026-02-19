@@ -1,0 +1,64 @@
+{
+  "ac_status": {
+    "AC3_partial_tp_reduction": "PASS",
+    "AC4_top10_median_delta": "PASS",
+    "AC6_rollback_axes_stable": "PASS"
+  },
+  "ac3_ratio": 0.5009784735812133,
+  "ac4_delta_pp": 10.534099999999999,
+  "metrics": {
+    "baseline": {
+      "events_count": 1125,
+      "partial_tp_count": 511,
+      "trades_count": 307,
+      "top10_winner_count": 30,
+      "top10_realized_median_pct": 16.4637,
+      "go_rate": 1.0,
+      "max_mdd": 0.037069,
+      "any_stress_break": false,
+      "min_pf": 3.205522
+    },
+    "candidate": {
+      "events_count": 869,
+      "partial_tp_count": 255,
+      "trades_count": 307,
+      "top10_winner_count": 30,
+      "top10_realized_median_pct": 26.997799999999998,
+      "go_rate": 1.0,
+      "max_mdd": 0.037069,
+      "any_stress_break": false,
+      "min_pf": 3.205522
+    },
+    "delta": {
+      "partial_tp_count": -256,
+      "partial_tp_reduction_ratio": 0.5009784735812133,
+      "top10_realized_median_delta_pp": 10.534099999999999,
+      "go_rate_delta": 0.0,
+      "max_mdd_delta": 0.0,
+      "pf_delta": 0.0,
+      "stress_delta": 0
+    }
+  },
+  "rollback_axes_before_after": {
+    "MDD": {
+      "before": 0.037069,
+      "after": 0.037069,
+      "delta": 0.0
+    },
+    "stress": {
+      "before": false,
+      "after": false,
+      "delta": 0
+    },
+    "GO": {
+      "before": 1.0,
+      "after": 1.0,
+      "delta": 0.0
+    },
+    "PF": {
+      "before": 3.205522,
+      "after": 3.205522,
+      "delta": 0.0
+    }
+  }
+}

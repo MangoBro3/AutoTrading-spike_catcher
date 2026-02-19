@@ -36,3 +36,19 @@
 - R2_RE_GATE_TIMESTAMP_KST: `2026-02-19 08:30:52`
 - R2_RE_GATE_SOURCE_PATH: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
 - R2_RE_GATE_NOTE: `R2_MULTI,R2_SIMPLE both GO`
+
+## PTP_once 후보 반영 전/후표 (AC3/AC4/AC6 + MDD/stress/GO/PF)
+
+- 기준: `backtest/out/baseline`(Pre) vs `backtest/out/candidate_ptp_once_per_position`(Post)
+- 출처: `report_exit_ptp_once_expanded_recomputed.json`
+
+| 항목 | Pre | Post | 변화 |
+|---|---:|---:|---:|
+| AC3_partial_tp_count | 511 | 255 | -50.20% |
+| AC4_top10_realized_median_pct | 16.4637 | 26.9978 | +10.5341 |
+| AC6_min_pf | 3.205522 | 3.205522 | 0.000000 |
+| MDD(max) | 0.037069 | 0.037069 | 0.000000 |
+| stress(any_stress_break) | false | false | 동일 |
+| GO(go_rate) | 1.000000 | 1.000000 | 동일 |
+| PF(min_pf) | 3.205522 | 3.205522 | 0.000000 |
+
