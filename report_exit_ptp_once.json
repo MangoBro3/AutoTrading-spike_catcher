@@ -1,0 +1,43 @@
+{
+  "run_summary_source_hash": "",
+  "code_commit_hash": "2c6dd1023e2caef109469bc06bb371fbd958dffa",
+  "config_hash": "",
+  "baseline_run_id": "R0_DEF",
+  "candidate_run_id": "R0_DEF",
+  "metrics_summary": {
+    "baseline": {
+      "run_id": "R0_DEF",
+      "events_count": 2,
+      "trades_count": 1,
+      "partial_tp_count": 0,
+      "trade_metrics_path": "backtest/out_contract_cli_baseline/R0_DEF/trade_metrics.csv",
+      "cost_metrics_path": "backtest/out_contract_cli_baseline/R0_DEF/cost_metrics.csv"
+    },
+    "candidate": {
+      "run_id": "R0_DEF",
+      "events_count": 2,
+      "trades_count": 1,
+      "partial_tp_count": 0,
+      "trade_metrics_path": "backtest/out_contract_cli_candidate/R0_DEF/trade_metrics.csv",
+      "cost_metrics_path": "backtest/out_contract_cli_candidate/R0_DEF/cost_metrics.csv"
+    },
+    "min_top_winners": 20
+  },
+  "cost_summary": {
+    "baseline_cost_metrics": "backtest/out_contract_cli_baseline/R0_DEF/cost_metrics.csv",
+    "candidate_cost_metrics": "backtest/out_contract_cli_candidate/R0_DEF/cost_metrics.csv"
+  },
+  "gate_summary": {
+    "status": "FAIL",
+    "baseline_fail_reasons": [
+      "final_trades.csv missing required column: entry_date",
+      "final_trades.csv missing required column: exit_date",
+      "final_trades.csv missing required column: return"
+    ],
+    "candidate_fail_reasons": [
+      "final_trades.csv missing required column: entry_date",
+      "final_trades.csv missing required column: exit_date",
+      "final_trades.csv missing required column: return"
+    ]
+  }
+}
