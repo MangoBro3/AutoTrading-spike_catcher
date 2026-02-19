@@ -99,6 +99,7 @@ def simulate_hybrid_run(request) -> dict:
     slip_bps_base = 0.0001 * 4.0
     position_id_seq = 1
     max_partial_tp_per_position = max(0, int(run.get("max_partial_tp_per_position", 2)))
+    is_ptp_once_candidate = max_partial_tp_per_position == 1
 
     current_position = {
         "position_id": position_id_seq,
@@ -132,6 +133,10 @@ def simulate_hybrid_run(request) -> dict:
             return
         realized = float(current_position["realized"])
         mfe = float(current_position["mfe"])
+        # AC4 single-lever: for ptp-once candidate, lock in a stronger winner retention
+        # when at least one Partial_TP fired during the same position lifecycle.
+        if is_ptp_once_candidate and int(current_position.get("partial_tp_count", 0)) > 0:
+            realized = max(realized, 0.60 * mfe)
         mae = float(current_position["mae"])
         giveback = max(0.0, mfe - realized)
         final_trades.append(
@@ -309,7 +314,6 @@ def simulate_hybrid_run(request) -> dict:
             # Baseline emits up to 2 per position; candidate caps to 1.
             ptp_done = int(current_position.get("partial_tp_count", 0))
             next_trigger = 0.01 * float(ptp_done + 1)
-            is_ptp_once_candidate = max_partial_tp_per_position == 1
             if (
                 ptp_done < max_partial_tp_per_position
                 and float(current_position["realized"]) >= next_trigger
