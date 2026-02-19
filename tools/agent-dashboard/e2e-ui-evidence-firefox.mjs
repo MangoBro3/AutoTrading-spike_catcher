@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { firefox } from 'playwright';
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -36,8 +36,8 @@ try {
   dash = start('node', ['server.mjs'], { WORKER_API_BASE_URL: 'http://127.0.0.1:18080' });
   await sleep(1500);
 
-  log('Launching Playwright chromium');
-  browser = await chromium.launch({ headless: true });
+  log('Launching Playwright firefox');
+  browser = await firefox.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1024 } });
 
   await page.goto('http://127.0.0.1:18890', { waitUntil: 'domcontentloaded' });
@@ -48,34 +48,18 @@ try {
   await page.screenshot({ path: join(OUT, '01-dashboard-traffic-light.png'), fullPage: true });
 
   log('Step2: Panic 슬라이더+홀드 동작');
-  await page.evaluate(() => {
-    const s = document.querySelector('#panicSlider');
-    s.value = '100';
-    s.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-  const holdBtn = page.locator('#panicHoldBtn');
-  await holdBtn.dispatchEvent('mousedown');
-  await page.waitForTimeout(2400);
-  try {
-    await page.waitForFunction(() => document.querySelector('#panicStatus')?.textContent?.includes('PANIC 실행됨'), null, { timeout: 5000 });
-  } catch {}
-  await holdBtn.dispatchEvent('mouseup');
+  const slider = page.locator('#panicSlider');
+  await slider.fill('100');
+  await page.dispatchEvent('#panicHoldBtn', 'mousedown');
+  await page.waitForTimeout(2300);
+  await page.dispatchEvent('#panicHoldBtn', 'mouseup');
+  await page.waitForTimeout(900);
   await page.screenshot({ path: join(OUT, '02-panic-safety.png'), fullPage: true });
 
   log('Step3: Orders 취소 흐름');
   await page.fill('#orderIdInput', 'ORD-UI-E2E-001');
   await page.click('#orderCancelBtn');
-  await page.waitForTimeout(500);
-  const cancelOut = await fetch('http://127.0.0.1:18080/control/cancel-order', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ orderId: 'ORD-UI-E2E-001' }),
-  }).then((r) => r.json());
-  await page.evaluate((payload) => {
-    const el = document.querySelector('#orderStatus');
-    if (el) el.textContent = `취소 요청 성공: ${payload?.orderId || 'ORD-UI-E2E-001'} (${payload?.status || 'cancelled'})`;
-  }, cancelOut);
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(1200);
   await page.screenshot({ path: join(OUT, '03-orders-cancel-flow.png'), fullPage: true });
 
   const panicStatus = await page.locator('#panicStatus').innerText();

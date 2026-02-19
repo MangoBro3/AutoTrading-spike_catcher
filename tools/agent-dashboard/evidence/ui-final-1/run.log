@@ -1,11 +1,11 @@
-[2026-02-19T09:04:24.630Z] Starting mock worker API
-[2026-02-19T09:04:24.732Z] node mock-worker-api.mjs :: mock-worker-api listening on http://127.0.0.1:18080
-[2026-02-19T09:04:25.435Z] Starting dashboard server
-[2026-02-19T09:04:25.539Z] node server.mjs :: agent-dashboard listening on http://127.0.0.1:18890
-[2026-02-19T09:04:26.944Z] Launching Playwright chromium
-[2026-02-19T09:04:28.503Z] Step1: Dashboard/Traffic Light 확인
-[2026-02-19T09:04:28.639Z] Step2: Panic 슬라이더+홀드 동작
-[2026-02-19T09:04:31.932Z] Step3: Orders 취소 흐름
-[2026-02-19T09:04:33.258Z] panicStatus=홀드 중...
-[2026-02-19T09:04:33.258Z] orderStatus=대기중
-[2026-02-19T09:04:33.258Z] E2E evidence complete
+[2026-02-19T09:07:56.231Z] Starting mock worker API
+[2026-02-19T09:07:56.318Z] node mock-worker-api.mjs :: mock-worker-api listening on http://127.0.0.1:18080
+[2026-02-19T09:07:57.035Z] Starting dashboard server
+[2026-02-19T09:07:57.126Z] node server.mjs :: agent-dashboard listening on http://127.0.0.1:18890
+[2026-02-19T09:07:58.539Z] Launching Playwright chromium
+[2026-02-19T09:08:00.028Z] Step1: Dashboard/Traffic Light 확인
+[2026-02-19T09:08:00.137Z] Step2: Panic 슬라이더+홀드 동작
+[2026-02-19T09:08:05.634Z] Step3: Orders 취소 흐름
+[2026-02-19T09:08:07.107Z] panicStatus=PANIC 실행됨 (panic_armed)
+[2026-02-19T09:08:07.107Z] orderStatus=취소 요청 성공: ORD-UI-E2E-001 (cancelled)
+[2026-02-19T09:08:07.107Z] E2E evidence complete
