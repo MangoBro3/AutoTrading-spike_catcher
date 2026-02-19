@@ -63,3 +63,12 @@
 - stage/stability tests: `19/19` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage1.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage2.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py`)
 - 근거 통합 파일: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
 - TL 최종 게이트 동기화: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json` (`TL_GATE_RESULT=GO`, `TL_GATE_GO_COUNT=15/15`)
+
+### Backend Sprint1 Evidence Sync (Final)
+- `smoke`=`3/3` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py`)
+- `lock`=`3/3` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/single_instance_lock.py`)
+- `safestart`=`4/4` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/safe_start.py`)
+- `tests`=`19/19` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage1.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage2.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py`)
+- `sync_file`=`/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
+- `TL_GATE_RESULT`=`GO`, `TL_GATE_GO_COUNT`=`15/15`
+- `TL_GATE_PATH`=`/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`

@@ -96,3 +96,8 @@
   - `Tests`: `Auto Trading/test_smoke.py`, `Auto Trading/test_stage1.py`, `Auto Trading/test_stage2.py`, `Auto Trading/test_stage7.py`, `Auto Trading/test_stage10.py`, `Auto Trading/test_stage11_integration.py` (19/19)
   - Sync artifact: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
   - TL 게이트 참조: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json` (`15/15`, `GO`)
+
+## [2026-02-19] Round 8 (Sprint1 Sync Anchored)
+- Sync timestamp: 2026-02-19 14:37 KST
+- Backend Sprint1 evidence keys: `smoke=3/3`, `lock=3/3`, `safestart=4/4`, `tests=19/19`.
+- Evidence aggregate path: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`

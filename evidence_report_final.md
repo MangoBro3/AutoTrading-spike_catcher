@@ -10,6 +10,10 @@
 - `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py`
 - `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py`
 - `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py`
+- `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py`
+- `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/single_instance_lock.py`
+- `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/safe_start.py`
+- `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
 
 ## Numeric Snapshot (TL Latest Fixed)
 - pytest_status: `PASS`
