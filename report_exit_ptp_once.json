@@ -1,43 +1,89 @@
 {
-  "run_summary_source_hash": "",
-  "code_commit_hash": "2c6dd1023e2caef109469bc06bb371fbd958dffa",
-  "config_hash": "",
-  "baseline_run_id": "R0_DEF",
-  "candidate_run_id": "R0_DEF",
+  "run_summary_source_hash": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "code_commit_hash": "c49b9af9b65b0d23e7e8342c7c9fcfd205b8487c",
+  "config_hash": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "baseline_run_id": "R4_KILL",
+  "candidate_run_id": "R4_KILL",
   "metrics_summary": {
     "baseline": {
-      "run_id": "R0_DEF",
-      "events_count": 2,
-      "trades_count": 1,
+      "run_id": "R4_KILL",
+      "events_count": 0,
+      "trades_count": 0,
       "partial_tp_count": 0,
-      "trade_metrics_path": "backtest/out_contract_cli_baseline/R0_DEF/trade_metrics.csv",
-      "cost_metrics_path": "backtest/out_contract_cli_baseline/R0_DEF/cost_metrics.csv"
+      "top10_winner_count": 0,
+      "top10_realized_median_pct": 0.0,
+      "trade_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/baseline/R4_KILL/trade_metrics.csv",
+      "cost_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/baseline/R4_KILL/cost_metrics.csv",
+      "fills_count": 0,
+      "total_fee": "",
+      "slippage_estimate_pct": "",
+      "slippage_source": ""
     },
     "candidate": {
-      "run_id": "R0_DEF",
-      "events_count": 2,
-      "trades_count": 1,
+      "run_id": "R4_KILL",
+      "events_count": 0,
+      "trades_count": 0,
       "partial_tp_count": 0,
-      "trade_metrics_path": "backtest/out_contract_cli_candidate/R0_DEF/trade_metrics.csv",
-      "cost_metrics_path": "backtest/out_contract_cli_candidate/R0_DEF/cost_metrics.csv"
+      "top10_winner_count": 0,
+      "top10_realized_median_pct": 0.0,
+      "trade_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/candidate_ptp_once_per_position/R4_KILL/trade_metrics.csv",
+      "cost_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/candidate_ptp_once_per_position/R4_KILL/cost_metrics.csv",
+      "fills_count": 0,
+      "total_fee": "",
+      "slippage_estimate_pct": "",
+      "slippage_source": ""
     },
-    "min_top_winners": 20
+    "min_top_winners": 20,
+    "derived": {
+      "partial_tp_reduction_ratio": 0.0,
+      "winner_sample_ok": false,
+      "winner_sample_shortage": 20,
+      "top10_realized_median_delta_pctp": 0.0,
+      "cost_reduction_axes": 0
+    }
   },
   "cost_summary": {
-    "baseline_cost_metrics": "backtest/out_contract_cli_baseline/R0_DEF/cost_metrics.csv",
-    "candidate_cost_metrics": "backtest/out_contract_cli_candidate/R0_DEF/cost_metrics.csv"
+    "baseline_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/baseline/R4_KILL/cost_metrics.csv",
+    "candidate_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/candidate_ptp_once_per_position/R4_KILL/cost_metrics.csv"
   },
   "gate_summary": {
     "status": "FAIL",
     "baseline_fail_reasons": [
+      "events.csv missing required column: position_id",
+      "events.csv missing required column: type/event_type",
+      "events.csv missing required column: date/ts",
+      "final_trades.csv missing required column: position_id",
       "final_trades.csv missing required column: entry_date",
       "final_trades.csv missing required column: exit_date",
-      "final_trades.csv missing required column: return"
+      "final_trades.csv missing required column: return",
+      "trade_metrics.csv missing populated MFE_pct/MAE_pct/Giveback_pct values",
+      "cost_metrics.csv total_fee not derivable from current logs",
+      "cost_metrics.csv slippage_estimate_pct not derivable from current logs"
     ],
     "candidate_fail_reasons": [
+      "events.csv missing required column: position_id",
+      "events.csv missing required column: type/event_type",
+      "events.csv missing required column: date/ts",
+      "final_trades.csv missing required column: position_id",
       "final_trades.csv missing required column: entry_date",
       "final_trades.csv missing required column: exit_date",
-      "final_trades.csv missing required column: return"
+      "final_trades.csv missing required column: return",
+      "trade_metrics.csv missing populated MFE_pct/MAE_pct/Giveback_pct values",
+      "cost_metrics.csv total_fee not derivable from current logs",
+      "cost_metrics.csv slippage_estimate_pct not derivable from current logs"
+    ],
+    "derived_fail_reasons": [
+      "partial_tp_reduction_below_50pct",
+      "top10_winner_sample_lt_min(0<20)",
+      "cost_reduction_axes_lt_2",
+      "run_summary_source_hash_empty",
+      "config_hash_empty"
     ]
   }
 }

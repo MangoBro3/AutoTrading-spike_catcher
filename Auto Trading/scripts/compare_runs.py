@@ -10,6 +10,9 @@ from pathlib import Path
 from statistics import median
 from typing import Dict, List, Tuple
 
+MIN_TOP_WINNERS = 20
+COST_EPS = 1e-12
+
 
 def sha256_file(path: Path) -> str:
     if not path.exists() or not path.is_file():
@@ -122,26 +125,39 @@ def materialize_schema(run_dir: Path) -> Tuple[Dict[str, object], List[str]]:
 
     fee_vals = []
     slip_vals = []
+    slip_source = ""
     for r in events:
         v = r.get("fee", "")
         if v not in ("", None):
             fee_vals.append(_f(v))
-        sv = r.get("slippage_estimate_pct", r.get("pnl_leg", ""))
-        if sv not in ("", None):
-            slip_vals.append(_f(sv))
+
+        # Prefer explicit slippage metric. If unavailable, fallback to pnl_leg proxy.
+        if r.get("slippage_estimate_pct", "") not in ("", None):
+            slip_vals.append(abs(_f(r.get("slippage_estimate_pct"))))
+            slip_source = "slippage_estimate_pct"
+        elif r.get("slippage_pct", "") not in ("", None):
+            slip_vals.append(abs(_f(r.get("slippage_pct"))))
+            slip_source = "slippage_pct"
+        elif r.get("pnl_leg", "") not in ("", None):
+            # pnl_leg is usually negative cost contribution; use absolute magnitude as cost proxy.
+            slip_vals.append(abs(_f(r.get("pnl_leg"))))
+            slip_source = "pnl_leg(abs_proxy)"
 
     cost_rows = [
         {
             "fills_count": len(events),
             "total_fee": sum(fee_vals) if fee_vals else "",
             "slippage_estimate_pct": (sum(slip_vals) / len(slip_vals)) if slip_vals else "",
+            "slippage_source": slip_source,
         }
     ]
     cost_metrics_p = run_dir / "cost_metrics.csv"
-    write_csv(cost_metrics_p, cost_rows, ["fills_count", "total_fee", "slippage_estimate_pct"])
+    write_csv(cost_metrics_p, cost_rows, ["fills_count", "total_fee", "slippage_estimate_pct", "slippage_source"])
 
     if cost_rows[0]["total_fee"] == "":
         fails.append("cost_metrics.csv total_fee not derivable from current logs")
+    if cost_rows[0]["slippage_estimate_pct"] == "":
+        fails.append("cost_metrics.csv slippage_estimate_pct not derivable from current logs")
 
     # top-10% winner median (realized_pct)
     realized_vals = sorted([_f(r.get("realized_pct", 0.0)) for r in trade_metrics_rows], reverse=True)
@@ -161,6 +177,7 @@ def materialize_schema(run_dir: Path) -> Tuple[Dict[str, object], List[str]]:
         "fills_count": len(events),
         "total_fee": cost_rows[0]["total_fee"] if cost_rows else "",
         "slippage_estimate_pct": cost_rows[0]["slippage_estimate_pct"] if cost_rows else "",
+        "slippage_source": cost_rows[0]["slippage_source"] if cost_rows else "",
     }
     return summary, fails
 
@@ -177,7 +194,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--baseline", required=True)
     parser.add_argument("--candidate", required=True)
-    parser.add_argument("--min-top-winners", type=int, default=20)
+    parser.add_argument("--min-top-winners", type=int, default=MIN_TOP_WINNERS)
     parser.add_argument("--out", default="report_exit_ptp_once.json")
     parser.add_argument("--base-dir", default="Auto Trading/autotune_runs")
     args = parser.parse_args()
@@ -199,29 +216,50 @@ def main() -> int:
     winner_delta = _f(c_sum.get("top10_realized_median_pct", 0.0)) - _f(b_sum.get("top10_realized_median_pct", 0.0))
 
     cost_axes = 0
-    if _f(c_sum.get("fills_count", 0)) < _f(b_sum.get("fills_count", 0)):
+    if _f(c_sum.get("fills_count", 0)) < _f(b_sum.get("fills_count", 0)) - COST_EPS:
         cost_axes += 1
-    if _f(c_sum.get("total_fee", 0)) < _f(b_sum.get("total_fee", 0)):
-        cost_axes += 1
-    if _f(c_sum.get("slippage_estimate_pct", 0)) < _f(b_sum.get("slippage_estimate_pct", 0)):
-        cost_axes += 1
+    if b_sum.get("total_fee", "") not in ("", None) and c_sum.get("total_fee", "") not in ("", None):
+        if _f(c_sum.get("total_fee", 0)) < _f(b_sum.get("total_fee", 0)) - COST_EPS:
+            cost_axes += 1
+    if b_sum.get("slippage_estimate_pct", "") not in ("", None) and c_sum.get("slippage_estimate_pct", "") not in ("", None):
+        if _f(c_sum.get("slippage_estimate_pct", 0)) < _f(b_sum.get("slippage_estimate_pct", 0)) - COST_EPS:
+            cost_axes += 1
 
-    winner_sample_ok = min(_f(b_sum.get("top10_winner_count", 0)), _f(c_sum.get("top10_winner_count", 0))) >= args.min_top_winners
+    min_top_winners_observed = int(min(_f(b_sum.get("top10_winner_count", 0)), _f(c_sum.get("top10_winner_count", 0))))
+    winner_sample_shortage = max(0, args.min_top_winners - min_top_winners_observed)
+    winner_sample_ok = winner_sample_shortage == 0
+
+    run_summary_source_hash_baseline = sha256_file(baseline_dir / "run_summary.json")
+    run_summary_source_hash_candidate = sha256_file(candidate_dir / "run_summary.json")
+    config_hash_baseline = sha256_file(baseline_dir / "run_config.json")
+    config_hash_candidate = sha256_file(candidate_dir / "run_config.json")
 
     derived_gate_failures: List[str] = []
     if ptp_reduction_ratio < 0.5:
         derived_gate_failures.append("partial_tp_reduction_below_50pct")
-    if winner_sample_ok and winner_delta < 3.0:
+    if not winner_sample_ok:
+        derived_gate_failures.append(f"top10_winner_sample_lt_min({min_top_winners_observed}<{args.min_top_winners})")
+    elif winner_delta < 3.0:
         derived_gate_failures.append("top10_realized_median_delta_below_3.0pp")
     if cost_axes < 2:
         derived_gate_failures.append("cost_reduction_axes_lt_2")
+    if not run_summary_source_hash_baseline or not run_summary_source_hash_candidate:
+        derived_gate_failures.append("run_summary_source_hash_empty")
+    if not config_hash_baseline or not config_hash_candidate:
+        derived_gate_failures.append("config_hash_empty")
 
     all_fail = b_fail + c_fail + derived_gate_failures
 
     report = {
-        "run_summary_source_hash": sha256_file(baseline_dir / "run_summary.json") or sha256_file(candidate_dir / "run_summary.json"),
+        "run_summary_source_hash": {
+            "baseline": run_summary_source_hash_baseline,
+            "candidate": run_summary_source_hash_candidate,
+        },
         "code_commit_hash": git_commit_hash(repo_root),
-        "config_hash": sha256_file(baseline_dir / "run_config.json") or sha256_file(candidate_dir / "run_config.json"),
+        "config_hash": {
+            "baseline": config_hash_baseline,
+            "candidate": config_hash_candidate,
+        },
         "baseline_run_id": baseline_dir.name,
         "candidate_run_id": candidate_dir.name,
         "metrics_summary": {
@@ -231,6 +269,7 @@ def main() -> int:
             "derived": {
                 "partial_tp_reduction_ratio": ptp_reduction_ratio,
                 "winner_sample_ok": winner_sample_ok,
+                "winner_sample_shortage": winner_sample_shortage,
                 "top10_realized_median_delta_pctp": winner_delta,
                 "cost_reduction_axes": cost_axes,
             },

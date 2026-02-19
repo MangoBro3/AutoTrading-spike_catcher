@@ -1192,8 +1192,10 @@ class RunController:
             return None
 
         exchange_api = self._resolve_exchange_api(exchange_api)
+        runtime_snapshot = self._get_runtime_state()
+        active_position_id = runtime_snapshot.get("position_id")
         if qty is None or str(qty).upper() == "ALL":
-            qty = self._get_runtime_state().get("position_qty") or self._get_position_qty(symbol)
+            qty = runtime_snapshot.get("position_qty") or self._get_position_qty(symbol)
 
         try:
             qty = float(qty or 0.0)
@@ -1213,7 +1215,9 @@ class RunController:
             order_res = self.execution_engine.create_market_sell_order(
                 symbol,
                 qty,
-                exchange_api=exchange_api
+                exchange_api=exchange_api,
+                event_type="EXIT",
+                position_id=active_position_id,
             )
         except Exception as e:
             logger.error(f"[EXIT] Order error: {e}")
@@ -1386,6 +1390,8 @@ class RunController:
                 timeout_sec=3.0,
                 params=None,
                 force_refresh_market=False,
+                event_type="Partial_TP",
+                position_id=str(position_id),
             )
         except Exception as e:
             logger.error(f"[TP] Sell error: {e}")

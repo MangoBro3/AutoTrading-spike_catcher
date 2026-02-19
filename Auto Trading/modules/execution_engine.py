@@ -52,7 +52,19 @@ class ExecutionEngine:
         )
         self.exec_logger = CsvLogger(
             f"{log_dir}/execution_events.csv",
-            ["timestamp", "symbol", "side", "price", "qty", "amount", "fee", "order_id"],
+            [
+                "timestamp",
+                "symbol",
+                "side",
+                "event_type",
+                "position_id",
+                "price",
+                "qty",
+                "amount",
+                "fee",
+                "order_id",
+                "reason",
+            ],
         )
 
     def _to_ccxt_symbol(self, symbol):
@@ -450,11 +462,14 @@ class ExecutionEngine:
                     "timestamp": datetime.now().isoformat(),
                     "symbol": result.get("symbol"),
                     "side": result.get("side"),
+                    "event_type": result.get("event_type", "EXECUTION"),
+                    "position_id": result.get("position_id", ""),
                     "price": result.get("real_vwap", 0.0),
                     "qty": result.get("real_qty", 0.0),
                     "amount": result.get("amount", 0.0),
                     "fee": result.get("fee", 0.0),
                     "order_id": result.get("order_id", "unknown"),
+                    "reason": result.get("reason", ""),
                 }
             )
         except Exception:
@@ -601,7 +616,7 @@ class ExecutionEngine:
             return {"ok": False, "reason": "INVALID_BEST_BID"}
         return {"ok": True, "best_bid": best_bid, "best_ask": best_ask, "orderbook": orderbook}
 
-    def create_market_sell_order(self, symbol, qty, exchange_api=None):
+    def create_market_sell_order(self, symbol, qty, exchange_api=None, event_type="EXIT", position_id=None):
         # Compatibility method: implemented as marketable-limit sell (never true market).
         return self.create_marketable_limit_sell_order(
             symbol=symbol,
@@ -610,6 +625,8 @@ class ExecutionEngine:
             aggressive_ticks=1,
             timeout_sec=self.exit_timeout_sec,
             params=None,
+            event_type=event_type,
+            position_id=position_id,
         )
 
     def create_marketable_limit_sell_order(
@@ -621,6 +638,8 @@ class ExecutionEngine:
         timeout_sec=3.0,
         params=None,
         force_refresh_market=False,
+        event_type="EXIT",
+        position_id=None,
     ):
         qty = self._clamp_positive(qty, 0.0)
         if qty <= 0:
@@ -681,7 +700,12 @@ class ExecutionEngine:
                 fills=agg["fills"],
                 rate_limited=polled.get("rate_limited", False),
                 safe_cooldown=safe_cooldown,
-                meta={"limit_price": limit_price, "best_bid": best_bid},
+                meta={
+                    "limit_price": limit_price,
+                    "best_bid": best_bid,
+                    "event_type": event_type,
+                    "position_id": str(position_id) if position_id is not None else "",
+                },
             )
             self._log_execution(result)
 
