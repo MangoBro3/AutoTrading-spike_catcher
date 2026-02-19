@@ -507,22 +507,66 @@ def build_adapter(base_dir: str | Path = ".", run_summary_path: str | None = Non
         ctx, input_mapping_status = _resolve_summary_for_run(request.run_id)
 
         if ctx is None:
+            synthetic_summary = base / "__no_summary__" / "run_summary.json"
+
             guards_rows: list[dict] = []
             guard_mapping_status = "guards_unavailable_no_summary"
+            guards_path, guards_status = _find_fallback_guards_path(base, request.run_id, synthetic_summary)
+            if guards_path is not None:
+                try:
+                    guards_rows = _read_guards_rows(guards_path, reason=f"mapped_from_artifact:{guards_path}")
+                    guard_mapping_status = f"{guards_status}_loaded" if guards_rows else f"{guards_status}_loaded_but_empty"
+                except Exception as e:
+                    guard_mapping_status = f"{guards_status}_read_error:{e.__class__.__name__}"
+
+            trades_rows: list[dict] = []
+            trades_path, trades_status = _find_fallback_trades_path(base, request.run_id, synthetic_summary)
+            if trades_path is not None:
+                try:
+                    with trades_path.open("r", encoding="utf-8", newline="") as f:
+                        reader = csv.DictReader(f)
+                        for i, row in enumerate(reader):
+                            trades_rows.append({
+                                "ts": row.get("Date") or row.get("date") or row.get("dt") or "",
+                                "side": row.get("Type") or row.get("side") or "",
+                                "qty": row.get("Qty") or row.get("qty") or row.get("size") or "",
+                                "price": row.get("price") or row.get("Price") or "",
+                                "reason": f"mapped_from_artifact:{trades_path}",
+                            })
+                            if i >= 999:
+                                break
+                except Exception:
+                    trades_rows = []
+
+            metrics_total_artifact_path, metrics_total_artifact_source = _find_fallback_metrics_total_path(base, request.run_id)
+            metrics_total_artifact_overrides = {}
+            if metrics_total_artifact_path is not None:
+                try:
+                    metrics_total_artifact = json.loads(metrics_total_artifact_path.read_text(encoding="utf-8"))
+                    if isinstance(metrics_total_artifact, dict):
+                        for k in ("oos_cagr_hybrid", "oos_cagr_def", "bull_return_hybrid", "bull_return_def"):
+                            if k in metrics_total_artifact:
+                                metrics_total_artifact_overrides[k] = _to_float(metrics_total_artifact.get(k), 0.0)
+                except Exception as e:
+                    metrics_total_artifact_source = f"{metrics_total_artifact_source}_read_error:{e.__class__.__name__}"
+
             oos_pf = 0.0
-            oos_mdd = 0.0
-            bull_tcr = 0.0
-            bull_tcr_source = "unavailable_no_summary"
             oos_pf_source = "unavailable_no_summary"
+            oos_pf_run, oos_pf_run_source = _compute_oos_pf_from_trades(trades_rows)
+            if oos_pf_run is not None:
+                oos_pf = oos_pf_run
+                oos_pf_source = oos_pf_run_source
+
+            oos_mdd = 0.0
+            bull_tcr, bull_tcr_source = _compute_bull_tcr(trades_rows, 0.0, 0.0, None)
             total_return_pct = 0.0
             max_dd_pct = 0.0
-            trades_rows: list[dict] = []
             mapped_from = None
             raw_created_at = ""
-            schema_status = "summary_unavailable"
-            returns_mapping_source = "summary_unavailable"
-            metrics_total_artifact_source = "summary_unavailable"
-            metrics_total_artifact_overrides = {}
+
+            has_artifact_backfill = bool(guards_rows or trades_rows or metrics_total_artifact_overrides)
+            schema_status = "artifact_backfilled_no_summary" if has_artifact_backfill else "summary_unavailable"
+            returns_mapping_source = "artifact_backfilled_no_summary" if has_artifact_backfill else "summary_unavailable"
         else:
             guards_rows, guard_mapping_status = ctx["guards_for_run"](request.run_id)
             trades_rows = ctx["trades_for_run"](request.run_id)
