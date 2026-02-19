@@ -309,9 +309,11 @@ def simulate_hybrid_run(request) -> dict:
             # Baseline emits up to 2 per position; candidate caps to 1.
             ptp_done = int(current_position.get("partial_tp_count", 0))
             next_trigger = 0.01 * float(ptp_done + 1)
+            is_ptp_once_candidate = max_partial_tp_per_position == 1
             if (
                 ptp_done < max_partial_tp_per_position
                 and float(current_position["realized"]) >= next_trigger
+                and (not is_ptp_once_candidate or bar_ret > 0.0)
             ):
                 current_position["partial_tp_count"] = ptp_done + 1
                 events.append(

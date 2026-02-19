@@ -57,6 +57,20 @@ def _f(x, default=0.0) -> float:
         return default
 
 
+def _as_pct_if_unit_maybe(raw: str, has_pct_column: bool) -> object:
+    """Normalize scalar metric values to percent units when pct columns are absent.
+
+    Some legacy runs may emit decimal realized/mfe/mae values (e.g. 0.07 for 7%).
+    If an explicit *_pct column is present we trust input unit as-is.
+    """
+    if raw in ("", None):
+        return ""
+    val = _f(raw)
+    if has_pct_column:
+        return val
+    return val * 100 if -1.0 < val < 1.0 else val
+
+
 def detect_columns(rows: List[Dict[str, str]]) -> set:
     return set(rows[0].keys()) if rows else set()
 
@@ -136,16 +150,26 @@ def materialize_schema(run_dir: Path) -> Tuple[Dict[str, object], List[str]]:
         entry_ts = _first_nonempty(r, ["entry_ts", "entry_date"])
         exit_ts = _first_nonempty(r, ["exit_ts", "exit_date"])
 
-        realized = _first_nonempty(r, ["Realized_pct", "realized_pct", "return", "Realized", "realized"])
-        if realized == "":
+        has_realized_pct_col = "Realized_pct" in r or "realized_pct" in r or "return" in r
+        realized_raw = _first_nonempty(r, ["Realized_pct", "realized_pct", "return", "Realized", "realized"])
+        realized = _as_pct_if_unit_maybe(realized_raw, has_realized_pct_col)
+        if realized_raw == "":
             realized_missing += 1
-        mfe = _first_nonempty(r, ["MFE", "MFE_pct", "mfe", "mfe_pct"])
-        if mfe == "":
+
+        has_mfe_pct_col = "MFE_pct" in r or "mfe_pct" in r or "MFE" in r
+        mfe_raw = _first_nonempty(r, ["MFE", "MFE_pct", "mfe", "mfe_pct"])
+        mfe = _as_pct_if_unit_maybe(mfe_raw, has_mfe_pct_col)
+        if mfe_raw == "":
             mfe_missing += 1
-        mae = _first_nonempty(r, ["MAE", "MAE_pct", "mae", "mae_pct"])
-        if mae == "":
+
+        has_mae_pct_col = "MAE_pct" in r or "mae_pct" in r or "MAE" in r
+        mae_raw = _first_nonempty(r, ["MAE", "MAE_pct", "mae", "mae_pct"])
+        mae = _as_pct_if_unit_maybe(mae_raw, has_mae_pct_col)
+        if mae_raw == "":
             mae_missing += 1
-        giveback = _first_nonempty(r, ["Giveback", "Giveback_pct", "giveback", "giveback_pct"])
+
+        giveback_raw = _first_nonempty(r, ["Giveback", "Giveback_pct", "giveback", "giveback_pct"])
+        giveback = _as_pct_if_unit_maybe(giveback_raw, "Giveback_pct" in r or "giveback_pct" in r)
         if giveback == "":
             if mfe != "" and realized != "":
                 try:
@@ -290,10 +314,10 @@ def main() -> int:
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--min-top-winners", type=int, default=MIN_TOP_WINNERS)
     parser.add_argument("--out", default="report_exit_ptp_once.json")
-    parser.add_argument("--base-dir", default="Auto Trading/autotune_runs")
+    parser.add_argument("--base-dir", default="autotune_runs")
     args = parser.parse_args()
 
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = Path(__file__).resolve().parents[1]
     base_dir = (repo_root / args.base_dir).resolve()
 
     baseline_dir = resolve_run(base_dir, args.baseline)

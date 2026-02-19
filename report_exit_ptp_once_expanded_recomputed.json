@@ -1,0 +1,66 @@
+{
+  "run_summary_source_hash": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "code_commit_hash": "137259ee70816cce9d4b5c53c43a185a15779844",
+  "config_hash": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "baseline_run_id": "baseline",
+  "candidate_run_id": "candidate_ptp_once_per_position",
+  "metrics_summary": {
+    "baseline": {
+      "run_id": "baseline",
+      "events_count": 2127,
+      "trades_count": 570,
+      "partial_tp_count": 987,
+      "top10_winner_count": 57,
+      "top10_realized_median_pct": 7.018059,
+      "trade_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/baseline/trade_metrics.csv",
+      "cost_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/baseline/cost_metrics.csv",
+      "fills_count": 2127,
+      "total_fee": 1.3746,
+      "slippage_estimate_pct": 0.0646262341325811,
+      "slippage_source": "slippage_estimate_pct"
+    },
+    "candidate": {
+      "run_id": "candidate_ptp_once_per_position",
+      "events_count": 1644,
+      "trades_count": 570,
+      "partial_tp_count": 504,
+      "top10_winner_count": 57,
+      "top10_realized_median_pct": 7.018059,
+      "trade_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/candidate_ptp_once_per_position/trade_metrics.csv",
+      "cost_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/candidate_ptp_once_per_position/cost_metrics.csv",
+      "fills_count": 1644,
+      "total_fee": 1.09492,
+      "slippage_estimate_pct": 0.06660097323600973,
+      "slippage_source": "slippage_estimate_pct"
+    },
+    "min_top_winners": 20,
+    "derived": {
+      "partial_tp_reduction_ratio": 0.4893617021276596,
+      "winner_sample_ok": true,
+      "winner_sample_shortage": 0,
+      "top10_realized_median_delta_pctp": 0.0,
+      "cost_reduction_axes": 2
+    }
+  },
+  "cost_summary": {
+    "baseline_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/baseline/cost_metrics.csv",
+    "candidate_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/candidate_ptp_once_per_position/cost_metrics.csv"
+  },
+  "gate_summary": {
+    "status": "FAIL",
+    "baseline_fail_reasons": [],
+    "candidate_fail_reasons": [],
+    "derived_fail_reasons": [
+      "partial_tp_reduction_below_50pct",
+      "top10_realized_median_delta_below_3.0pp",
+      "run_summary_source_hash_empty",
+      "config_hash_empty"
+    ]
+  }
+}
