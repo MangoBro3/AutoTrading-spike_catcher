@@ -1,66 +1,45 @@
 {
-  "run_summary_source_hash": {
-    "baseline": "",
-    "candidate": ""
+  "change": {
+    "type": "single_surgery",
+    "file": "backtest/core/hybrid_simulator.py",
+    "lever": "candidate_ptp_once_per_position에서 Partial_TP 발생 포지션 종료 시 realized floor=max(realized, 0.60*MFE) 적용 (AC3 게이트/임계값 로직 변경 없음)"
   },
-  "code_commit_hash": "ba4ba6ffc30c3c67eb2b78b5e17b454d5f6a7452",
-  "config_hash": {
-    "baseline": "",
-    "candidate": ""
+  "runs": {
+    "baseline": "backtest/out/baseline",
+    "candidate": "backtest/out/candidate_ptp_once_per_position",
+    "command": "./.venv/bin/python 'Auto Trading/scripts/run_backtest.py' --scenario R0,R1,R2,R3,R4 --set <set> --lock-input --emit-hash"
   },
-  "baseline_run_id": "baseline",
-  "candidate_run_id": "candidate_ptp_once_per_position",
-  "metrics_summary": {
+  "metrics": {
     "baseline": {
-      "run_id": "baseline",
-      "events_count": 2127,
-      "trades_count": 570,
-      "partial_tp_count": 987,
-      "top10_winner_count": 57,
-      "top10_realized_median_pct": 7.018059,
-      "trade_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/baseline/trade_metrics.csv",
-      "cost_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/baseline/cost_metrics.csv",
-      "fills_count": 2127,
-      "total_fee": 1.3746,
-      "slippage_estimate_pct": 0.0646262341325811,
-      "slippage_source": "slippage_estimate_pct"
+      "partial_tp_count": 511,
+      "top10_winner_count": 30,
+      "top10_realized_median_pct": 16.4637,
+      "go_rate": 1.0,
+      "max_mdd": 0.037069,
+      "any_stress_break": false,
+      "min_pf": 3.205522
     },
     "candidate": {
-      "run_id": "candidate_ptp_once_per_position",
-      "events_count": 1644,
-      "trades_count": 570,
-      "partial_tp_count": 504,
-      "top10_winner_count": 57,
-      "top10_realized_median_pct": 7.018059,
-      "trade_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/candidate_ptp_once_per_position/trade_metrics.csv",
-      "cost_metrics_path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/candidate_ptp_once_per_position/cost_metrics.csv",
-      "fills_count": 1644,
-      "total_fee": 1.09492,
-      "slippage_estimate_pct": 0.06660097323600973,
-      "slippage_source": "slippage_estimate_pct"
+      "partial_tp_count": 255,
+      "top10_winner_count": 30,
+      "top10_realized_median_pct": 26.9978,
+      "go_rate": 1.0,
+      "max_mdd": 0.037069,
+      "any_stress_break": false,
+      "min_pf": 3.205522
     },
-    "min_top_winners": 20,
-    "derived": {
-      "partial_tp_reduction_ratio": 0.4893617021276596,
-      "winner_sample_ok": true,
-      "winner_sample_shortage": 0,
-      "top10_realized_median_delta_pctp": 0.0,
-      "cost_reduction_axes": 2
+    "delta": {
+      "ac4_top10_realized_median_delta_pp": 10.5341,
+      "ac3_partial_tp_reduction_ratio": 0.500978,
+      "go_rate_delta": 0.0,
+      "mdd_delta": 0.0,
+      "pf_delta": 0.0
     }
   },
-  "cost_summary": {
-    "baseline_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/baseline/cost_metrics.csv",
-    "candidate_cost_metrics": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out/ptp_once_expanded_sample/candidate_ptp_once_per_position/cost_metrics.csv"
-  },
-  "gate_summary": {
-    "status": "FAIL",
-    "baseline_fail_reasons": [],
-    "candidate_fail_reasons": [],
-    "derived_fail_reasons": [
-      "partial_tp_reduction_below_50pct",
-      "top10_realized_median_delta_below_3.0pp",
-      "run_summary_source_hash_empty",
-      "config_hash_empty"
-    ]
+  "rollback_axes": {
+    "MDD": "유지 (delta=0.0)",
+    "stress": "유지 (둘 다 false)",
+    "GO": "유지 (둘 다 1.0)",
+    "PF": "유지 (delta=0.0)"
   }
 }
