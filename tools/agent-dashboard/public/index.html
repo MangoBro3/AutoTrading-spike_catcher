@@ -41,6 +41,27 @@
     <div class="card"><h3>Checkpoint</h3><div id="checkpoint"></div></div>
     <div class="card"><h3>Token Usage</h3><div id="usage"></div></div>
   </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="card">
+      <h3>Panic 안전장치</h3>
+      <div class="muted">1) 슬라이더 100으로 이동 2) HOLD 2초 유지</div>
+      <div style="margin-top:8px">
+        <input id="panicSlider" type="range" min="0" max="100" step="1" value="0" style="width:100%" />
+        <div class="muted">value: <span id="panicValue">0</span></div>
+      </div>
+      <button id="panicHoldBtn" class="btn" style="margin-top:8px">HOLD TO PANIC</button>
+      <div id="panicStatus" class="muted" style="margin-top:8px">대기중</div>
+    </div>
+    <div class="card">
+      <h3>Orders 취소</h3>
+      <div class="muted">주문 ID 입력 후 Cancel 클릭</div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <input id="orderIdInput" type="text" placeholder="ORD-001" style="flex:1;background:#111722;border:1px solid #2a3342;color:#e9edf1;border-radius:6px;padding:6px" />
+        <button id="orderCancelBtn" class="btn">Cancel Order</button>
+      </div>
+      <div id="orderStatus" class="muted" style="margin-top:8px">대기중</div>
+    </div>
+  </div>
   <div class="card" style="margin-top:12px">
     <h3>Agent Characters</h3>
     <div id="characters" class="room"></div>
@@ -188,6 +209,67 @@ function render(data){
   $('prevBtn').disabled = timelinePage <= 1;
   $('nextBtn').disabled = timelinePage >= totalPages;
 }
+
+async function postControl(action, body){
+  const r = await fetch(`/api/worker/control/${action}`, {
+    method: 'POST',
+    headers: {'content-type':'application/json'},
+    body: JSON.stringify(body || {}),
+  });
+  const j = await r.json();
+  if(!r.ok || j.ok===false) throw new Error(j.error || `control_failed:${action}`);
+  return j;
+}
+
+const panicSlider = $('panicSlider');
+const panicValue = $('panicValue');
+const panicStatus = $('panicStatus');
+const panicHoldBtn = $('panicHoldBtn');
+let holdTimer = null;
+let holdStart = 0;
+
+panicSlider.addEventListener('input', ()=>{ panicValue.textContent = panicSlider.value; });
+
+panicHoldBtn.addEventListener('mousedown', ()=>{
+  if (Number(panicSlider.value) < 100) {
+    panicStatus.textContent = '실패: 슬라이더를 100으로 올리세요';
+    return;
+  }
+  holdStart = Date.now();
+  panicStatus.textContent = '홀드 중...';
+  holdTimer = setTimeout(async ()=>{
+    try {
+      const out = await postControl('panic', { armed: true, holdMs: Date.now()-holdStart, slider: Number(panicSlider.value) });
+      panicStatus.textContent = `PANIC 실행됨 (${out?.result?.status || 'ok'})`;
+      await tick();
+    } catch (e) {
+      panicStatus.textContent = `실패: ${e.message}`;
+    }
+  }, 2000);
+});
+
+['mouseup','mouseleave'].forEach((ev)=> panicHoldBtn.addEventListener(ev, ()=>{
+  if (holdTimer) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    if (Date.now() - holdStart < 2000) panicStatus.textContent = '취소됨: 2초 이상 홀드 필요';
+  }
+}));
+
+$('orderCancelBtn').addEventListener('click', async ()=>{
+  const orderId = String($('orderIdInput').value || '').trim();
+  if (!orderId) {
+    $('orderStatus').textContent = '실패: orderId 입력 필요';
+    return;
+  }
+  try {
+    const out = await postControl('cancel-order', { orderId });
+    $('orderStatus').textContent = `취소 요청 성공: ${out?.result?.orderId || orderId} (${out?.result?.status || 'ok'})`;
+    await tick();
+  } catch (e) {
+    $('orderStatus').textContent = `실패: ${e.message}`;
+  }
+});
 
 async function tick(){
   try{

@@ -1,0 +1,13 @@
+[2026-02-19 18:03 KST] UI Sprint1 PMO Playwright/E2E PNG/JPG/JPEG evidence scan
+---
+total 12
+-rwxrwxrwx 1 mangobro3 mangobro3   57 Feb 19 14:49 00_baseline_git_status.log
+-rwxrwxrwx 1 mangobro3 mangobro3  115 Feb 19 14:48 01_ui_artifact_scan.log
+-rwxrwxrwx 1 mangobro3 mangobro3  245 Feb 19 14:49 02_ui_dir_scan.log
+-rwxrwxrwx 1 mangobro3 mangobro3   80 Feb 19 14:49 03_ui_pytest_collect.log
+-rwxrwxrwx 1 mangobro3 mangobro3   98 Feb 19 16:01 04_ui_build_smoke.log
+-rwxrwxrwx 1 mangobro3 mangobro3  755 Feb 19 16:01 05_worker_monitor_unit.log
+-rwxrwxrwx 1 mangobro3 mangobro3   98 Feb 19 16:01 06_smoke_backend.log
+-rwxrwxrwx 1 mangobro3 mangobro3   84 Feb 19 18:03 07_e2e_screenshot_count.log
+-rwxrwxrwx 1 mangobro3 mangobro3  428 Feb 19 14:50 ui_dod_snapshot.log
+-rwxrwxrwx 1 mangobro3 mangobro3 1386 Feb 19 14:49 ui_dod_snapshot.sh

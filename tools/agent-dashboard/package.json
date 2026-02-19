@@ -1,0 +1,15 @@
+{
+  "name": "agent-dashboard",
+  "version": "1.0.0",
+  "description": "간단한 로컬 대시보드입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.58.2"
+  }
+}
