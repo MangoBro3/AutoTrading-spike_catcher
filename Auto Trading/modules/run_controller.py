@@ -450,7 +450,10 @@ class RunController:
             "last_order_id": None,
             "safe_cooldown_until": 0.0,
             "cooldown_prev_state": self.STATE_FLAT,
-            "active_keys": {}
+            "active_keys": {},
+            "position_id": None,
+            "position_seq": 0,
+            "partial_tp_done_position_id": None
         }
 
     def _load_runtime_state(self):
@@ -519,6 +522,16 @@ class RunController:
                     data[key] = int(data[key])
                 except Exception:
                     data[key] = None
+
+        pos_seq = data.get("position_seq")
+        try:
+            data["position_seq"] = max(0, int(pos_seq or 0))
+        except Exception:
+            data["position_seq"] = 0
+
+        for key in ["position_id", "partial_tp_done_position_id"]:
+            val = data.get(key)
+            data[key] = str(val) if val else None
 
         active_keys = data.get("active_keys")
         if not isinstance(active_keys, dict):
@@ -735,6 +748,38 @@ class RunController:
             self._save_runtime_state()
             return True
 
+    def _next_position_id(self, symbol: str, entry_ts=None):
+        ts = self._safe_float(entry_ts, time.time())
+        ts_ms = int(max(0.0, ts) * 1000)
+        raw_symbol = str(symbol or "UNKNOWN").upper()
+        safe_symbol = raw_symbol.replace("/", "-").replace("_", "-")
+        with self.state_lock:
+            seq = self._safe_int(self.runtime_state.get("position_seq"), 0) + 1
+            self.runtime_state["position_seq"] = seq
+            position_id = f"{safe_symbol}-{ts_ms}-{seq}"
+            self._save_runtime_state()
+        return position_id
+
+    def _ensure_open_position_id(self, symbol: str = None):
+        with self.state_lock:
+            qty = self._safe_float(self.runtime_state.get("position_qty"), 0.0)
+            if qty <= 0:
+                return None
+            existing = self.runtime_state.get("position_id")
+            if existing:
+                return str(existing)
+            entry_ts = self.runtime_state.get("last_entry_ts") or time.time()
+
+        new_id = self._next_position_id(symbol or self.runtime_state.get("symbol"), entry_ts=entry_ts)
+        with self.state_lock:
+            if self._safe_float(self.runtime_state.get("position_qty"), 0.0) <= 0:
+                return None
+            if self.runtime_state.get("position_id"):
+                return str(self.runtime_state.get("position_id"))
+            self.runtime_state["position_id"] = new_id
+            self._save_runtime_state()
+            return new_id
+
     def _in_safe_cooldown(self):
         with self.state_lock:
             if self.runtime_state.get("state") != self.STATE_SAFE_COOLDOWN:
@@ -929,6 +974,8 @@ class RunController:
                     self.runtime_state["last_tp_candle_ts"] = None
                     self.runtime_state["peak_vol_ratio"] = 0.0
                     self.runtime_state["liq_collapse_bars"] = 0
+                    self.runtime_state["position_id"] = None
+                    self.runtime_state["partial_tp_done_position_id"] = None
                 if symbol_override:
                     self.runtime_state["symbol"] = symbol_override
                 self._save_runtime_state()
@@ -1064,6 +1111,7 @@ class RunController:
             fee = self._safe_float(order_res.get("fee"), 0.0)
             if real_qty > 0:
                 now_ts = time.time()
+                position_id = self._next_position_id(symbol, entry_ts=now_ts)
                 with self.state_lock:
                     self.runtime_state.update({
                         "symbol": symbol,
@@ -1077,8 +1125,11 @@ class RunController:
                         "last_tp_candle_ts": None,
                         "peak_vol_ratio": max(0.0, self._safe_float(signal.get("vol_spike"), 0.0)),
                         "liq_collapse_bars": 0,
+                        "position_id": position_id,
+                        "partial_tp_done_position_id": None,
                     })
                     self._save_runtime_state()
+                order_res["position_id"] = position_id
                 self._transition_state(self.STATE_IN_POSITION, reason=f"entry_filled:{symbol}")
                 if bool(order_res.get("safe_cooldown", False)):
                     self._enter_safe_cooldown(
@@ -1175,6 +1226,7 @@ class RunController:
                 now_ts = time.time()
                 final_state = self.STATE_IN_POSITION
                 with self.state_lock:
+                    active_position_id = self.runtime_state.get("position_id")
                     current_qty = self._safe_float(self.runtime_state.get("position_qty"), 0.0)
                     remain_qty = max(0.0, current_qty - sold_qty)
                     self.runtime_state["position_qty"] = remain_qty
@@ -1189,7 +1241,12 @@ class RunController:
                         self.runtime_state["last_tp_candle_ts"] = None
                         self.runtime_state["peak_vol_ratio"] = 0.0
                         self.runtime_state["liq_collapse_bars"] = 0
+                        self.runtime_state["position_id"] = None
+                        self.runtime_state["partial_tp_done_position_id"] = None
                     self._save_runtime_state()
+
+                if active_position_id:
+                    order_res["position_id"] = str(active_position_id)
 
                 if final_state == self.STATE_FLAT:
                     self._transition_state(self.STATE_FLAT, reason=f"exit_filled:{reason or 'signal'}", allow_same=True)
@@ -1281,6 +1338,16 @@ class RunController:
         if best_bid < avg_entry * (1.0 + tp_ratio):
             return None
 
+        position_id = state.get("position_id") or self._ensure_open_position_id(symbol)
+        if not position_id:
+            logger.info("[TP] BLOCK: missing position_id")
+            return None
+
+        partial_done_for = state.get("partial_tp_done_position_id")
+        if partial_done_for and str(partial_done_for) == str(position_id):
+            logger.info(f"[TP] BLOCK: already executed once for position_id={position_id}")
+            return None
+
         current_stage = self._safe_int(state.get("tp_stage"), 0)
         expected_stage = self._safe_int(expected_stage, current_stage + 1)
         if current_stage != expected_stage - 1:
@@ -1338,6 +1405,7 @@ class RunController:
                     self.runtime_state["last_order_id"] = order_res.get("order_id")
                     self.runtime_state["tp_stage"] = expected_stage
                     self.runtime_state["last_tp_candle_ts"] = candle_ts
+                    self.runtime_state["partial_tp_done_position_id"] = str(position_id)
                     if remain_qty <= 1e-12:
                         final_state = self.STATE_FLAT
                         self.runtime_state["last_exit_ts"] = now_ts
@@ -1345,7 +1413,11 @@ class RunController:
                         self.runtime_state["entry_candle_idx"] = None
                         self.runtime_state["peak_vol_ratio"] = 0.0
                         self.runtime_state["liq_collapse_bars"] = 0
+                        self.runtime_state["position_id"] = None
+                        self.runtime_state["partial_tp_done_position_id"] = None
                     self._save_runtime_state()
+
+                order_res["position_id"] = str(position_id)
                 self._transition_state(final_state, reason=f"tp_filled_stage_{expected_stage}", allow_same=True)
                 if bool(order_res.get("safe_cooldown", False)):
                     self._enter_safe_cooldown(

@@ -1,0 +1,108 @@
+{
+  "contract_version": "v1",
+  "contract_id": "C-EXIT-PTP-ONCE-POS-20260219-001-v1.2",
+  "task_id": "T-EXIT-PTP-ONCE-POS",
+  "goal": "현물 롱온리 매도 전략에서 '승자 보존 & 비용 절감'을 위해 Partial TP를 '포지션 라이프사이클당 1회'로 제한하고, 효과를 재현 가능하게 정량 검증한다. (Phase 1: Partial TP만 변경, Trail/Time/Panic 고정)",
+  "scope_allow": [
+    "Auto Trading/modules/run_controller.py",
+    "Auto Trading/modules/**/*.py",
+    "Auto Trading/modules/**/events*.py",
+    "Auto Trading/modules/**/report*.py",
+    "Auto Trading/modules/**/logger*.py",
+    "Auto Trading/scripts/**/*.py",
+    "Auto Trading/**/*.md",
+    "run_backtest.py"
+  ],
+  "scope_forbid": [
+    "/contracts/*",
+    "shared/*",
+    "Auto Trading/modules/**/trail*.py",
+    "Auto Trading/modules/**/time_stop*.py",
+    "Auto Trading/modules/**/panic*.py"
+  ],
+  "constraints": [
+    "Phase 1 최소수술: Partial TP 로직만 변경한다. Trail/TimeStop/PanicExit 동작은 변경 금지.",
+    "오버피팅 방지: N봉 조건, 추가 레짐 조건, 펌프 전용 규칙 추가 금지.",
+    "부분익절 횟수 제한은 '심볼/일'이 아니라 '포지션 라이프사이클(=position_id)당 1회'를 1차 기준으로 한다. (심볼/일 상한은 Phase 2에서만 고려)",
+    "Repro: 동일 입력/동일 커맨드/동일 run_summary 소스 해시에서만 결과 비교를 인정한다.",
+    "Secret hygiene: 키/토큰/시크릿은 출력/기록 금지(유효/무효만).",
+    "Path rule: scope_forbid가 scope_allow보다 우선한다. (forbid > allow)"
+  ],
+  "file_ownership": {
+    "coder_a": [
+      "Auto Trading/modules/**/events*.py",
+      "Auto Trading/modules/**/report*.py",
+      "Auto Trading/modules/**/logger*.py",
+      "Auto Trading/scripts/**/*.py"
+    ],
+    "coder_b": [
+      "Auto Trading/modules/run_controller.py",
+      "Auto Trading/modules/**/*.py"
+    ]
+  },
+  "blocking_dependency": null,
+  "acceptance_criteria": [
+    "AC1 (Mechanism): Partial TP는 position_id 기준 1회만 실행된다. 동일 position_id에서 추가 Partial TP 시도는 반드시 무시/차단된다(기존 idempotency 유지).",
+    "AC2 (Ablation): baseline(기존) vs candidate(변경) 2세트를 동일 입력으로 실행할 수 있어야 한다.",
+    "AC3 (Metrics - PartialTP): candidate의 Partial_TP 이벤트 수가 baseline 대비 50% 이상 감소해야 한다.",
+    "AC4 (Metrics - Winners): candidate의 Top 10% Realized% 중앙값이 baseline 대비 +3.0%p 이상 개선되어야 한다. 단, Top10% 표본(승자 수)이 MIN_TOP_WINNERS 이상일 때만 판정한다.",
+    "AC5 (Risk Guard): candidate의 abs_oos_mdd는 baseline 대비 0.0%p 초과 악화 시 FAIL.",
+    "AC6 (Cost Guard): candidate는 baseline 대비 (a) fills_count, (b) total_fee, (c) slippage_estimate 중 최소 2개 축에서 감소해야 한다. slippage_estimate 정의는 required_logs에 따른다.",
+    "AC7 (No Regression): stress break 발생 시 즉시 FAIL.",
+    "AC8 (Evidence): run_summary_source_hash / code_commit_hash / config_hash를 report_exit_ptp_once.json에 고정 키로 포함해야 한다.",
+    "AC9 (Exec): test_plan의 커맨드/스크립트가 리포지토리 내에 실제 존재해야 한다. 존재하지 않으면 즉시 FAIL(계약 수정 필요)."
+  ],
+  "definition_of_done": [
+    "position_id 기준 Partial TP 1회 제한 로직이 반영되었다.",
+    "position_id 생성/전파 규격이 문서/코드로 고정되었다.",
+    "MFE/MAE/Realized/Giveback 로그가 trade 단위로 생성된다.",
+    "baseline vs candidate를 동일 입력으로 실행하고, 결과 리포트(정량 지표 + 해시 + 비용 지표)를 생성했다.",
+    "test_plan이 통과했다."
+  ],
+  "test_plan": [
+    "0) 존재 확인: ls 'run_backtest.py' 'Auto Trading/scripts/run_backtest.py' 'Auto Trading/scripts/compare_runs.py' (둘 중 실행 엔트리 1개 이상 없으면 FAIL)",
+    "1) 단위/스테이지 테스트: ./.venv/bin/python -m pytest -q 'Auto Trading/test_stage10.py::TestStage10::test_degraded_blocking' (환경에 따라 스킵/모킹이 필요하면 TL이 조정)",
+    "2) baseline 실행(동일 입력 고정): 우선순위 엔트리='Auto Trading/scripts/run_backtest.py'가 있으면 사용, 없으면 'run_backtest.py' 사용. 옵션: --scenario R0,R1,R2,R3,R4 --set baseline --lock-input --emit-hash",
+    "3) candidate 실행(동일 입력 고정): 동일 엔트리로 --scenario R0,R1,R2,R3,R4 --set candidate_ptp_once_per_position --lock-input --emit-hash",
+    "4) 리포트 비교: python 'Auto Trading/scripts/compare_runs.py' --baseline <run_id> --candidate <run_id> --min-top-winners <MIN_TOP_WINNERS> --out report_exit_ptp_once.json"
+  ],
+  "output_format": "anchor_replace_block",
+  "reporting_protocol": {
+    "format": [
+      "status",
+      "blockers",
+      "next_actions",
+      "user_decision_needed",
+      "fail_count",
+      "last_failed_step"
+    ],
+    "no_long_logs": true
+  },
+  "stop_rule": {
+    "retry_limit": 3,
+    "escalate_to_pm_on": "retry_limit_reached_or_user_decision_needed",
+    "pm_questions_max": 2
+  },
+  "rollback_triggers": [
+    "abs_oos_mdd baseline 대비 0.0%p 초과 악화 시 즉시 revert",
+    "stress break 1회라도 발생 시 즉시 revert",
+    "GO 비율이 baseline 대비 하락 시 즉시 revert",
+    "abs_oos_pf baseline 대비 -0.05p 이상 하락 시 즉시 revert"
+  ],
+  "position_id_spec": {
+    "definition": "position_id는 진입 시점에 생성되며, 해당 포지션이 완전히 종료될 때까지 유지된다. 부분익절/추가매수/부분청산은 동일 position_id를 공유한다.",
+    "generation": "position_id는 (symbol + entry_ts + entry_seq) 조합으로 유일해야 하며, 재시작/리플레이에서도 충돌하지 않아야 한다.",
+    "propagation": "events.csv, final_trades.csv, trade_metrics.csv, cost_metrics.csv에 동일 position_id가 기록되어야 한다."
+  },
+  "required_logs": [
+    "events.csv에 Partial_TP 이벤트를 position_id 기준으로 집계 가능한 필드 포함(event_type, position_id, symbol, ts).",
+    "final_trades.csv에 trade_id/position_id/entry_ts/exit_ts/realized_pct 포함.",
+    "trade_metrics.csv(또는 final_trades 확장)에 MFE_pct, MAE_pct, Realized_pct, Giveback_pct(MFE-Realized) 포함.",
+    "cost_metrics.csv에 fills_count, total_fee, slippage_estimate_pct 포함.",
+    "slippage_estimate_pct 정의: (sell 체결가 - event 시점 best_bid) / best_bid * 100 을 체결 수량 가중 평균으로 집계 (매도 기준).",
+    "report_exit_ptp_once.json에 아래 키를 고정 포함: run_summary_source_hash, code_commit_hash, config_hash, baseline_run_id, candidate_run_id, metrics_summary, cost_summary, gate_summary"
+  ],
+  "params": {
+    "MIN_TOP_WINNERS": 20
+  }
+}

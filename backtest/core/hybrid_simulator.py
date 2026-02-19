@@ -74,6 +74,8 @@ def simulate_hybrid_run(request) -> dict:
     switches = []
     guards_rows = []
     trades = []
+    events = []
+    final_trades = []
 
     prev_mode = "DEF"
     kill_zone = split.get("timeframe") == "5m"
@@ -92,6 +94,109 @@ def simulate_hybrid_run(request) -> dict:
     bull_bars = 0
     bull_sum_ret = 0.0
     prev_alloc_cap = 0.0
+
+    fee_bps_base = 0.0001 * 4.0
+    slip_bps_base = 0.0001 * 4.0
+    position_id_seq = 1
+    current_position = {
+        "position_id": position_id_seq,
+        "entry_ts": bars[0].isoformat() if bars else None,
+        "realized": 0.0,
+        "mfe": 0.0,
+        "mae": 0.0,
+        "fee": 0.0,
+        "slippage": 0.0,
+        "fills": 1,
+    }
+    if bars:
+        events.append({
+            "ts": bars[0].isoformat(),
+            "event": "ENTRY",
+            "event_type": "ENTRY",
+            "position_id": position_id_seq,
+            "symbol": str(run.get("symbol", "ALL")),
+            "fills": 1,
+            "fills_count": 1,
+            "fee": 0.0,
+            "total_fee": 0.0,
+            "slippage": 0.0,
+            "slippage_estimate_pct": 0.0,
+        })
+
+    def _close_position(ts_iso: str, reason: str):
+        nonlocal position_id_seq, current_position
+        if current_position is None:
+            return
+        realized = float(current_position["realized"])
+        mfe = float(current_position["mfe"])
+        mae = float(current_position["mae"])
+        giveback = max(0.0, mfe - realized)
+        final_trades.append(
+            {
+                "trade_id": f"T-{int(current_position['position_id'])}",
+                "position_id": int(current_position["position_id"]),
+                "entry_ts": current_position["entry_ts"],
+                "exit_ts": ts_iso,
+                "MFE": round(mfe, 6),
+                "MAE": round(mae, 6),
+                "Realized": round(realized, 6),
+                "Giveback": round(giveback, 6),
+                "MFE_pct": round(mfe * 100.0, 6),
+                "MAE_pct": round(mae * 100.0, 6),
+                "Realized_pct": round(realized * 100.0, 6),
+                "Giveback_pct": round(giveback * 100.0, 6),
+                "fills": int(current_position["fills"] + 1),
+                "fills_count": int(current_position["fills"] + 1),
+                "fee": round(float(current_position["fee"]), 6),
+                "total_fee": round(float(current_position["fee"]), 6),
+                "slippage": round(float(current_position["slippage"]), 6),
+                "slippage_estimate_pct": round(float(current_position["slippage"]) * 100.0, 6),
+                "reason": reason,
+            }
+        )
+        events.append(
+            {
+                "ts": ts_iso,
+                "event": "EXIT",
+                "event_type": "EXIT",
+                "position_id": int(current_position["position_id"]),
+                "symbol": str(run.get("symbol", "ALL")),
+                "fills": int(current_position["fills"] + 1),
+                "fills_count": int(current_position["fills"] + 1),
+                "fee": round(float(current_position["fee"]), 6),
+                "total_fee": round(float(current_position["fee"]), 6),
+                "slippage": round(float(current_position["slippage"]), 6),
+                "slippage_estimate_pct": round(float(current_position["slippage"]) * 100.0, 6),
+                "reason": reason,
+            }
+        )
+        position_id_seq += 1
+        current_position = {
+            "position_id": position_id_seq,
+            "entry_ts": ts_iso,
+            "realized": 0.0,
+            "mfe": 0.0,
+            "mae": 0.0,
+            "fee": 0.0,
+            "slippage": 0.0,
+            "fills": 1,
+        }
+        events.append(
+            {
+                "ts": ts_iso,
+                "event": "ENTRY",
+                "event_type": "ENTRY",
+                "position_id": int(position_id_seq),
+                "symbol": str(run.get("symbol", "ALL")),
+                "fills": 1,
+                "fills_count": 1,
+                "fee": 0.0,
+                "total_fee": 0.0,
+                "slippage": 0.0,
+                "slippage_estimate_pct": 0.0,
+                "reason": "ROLL",
+            }
+        )
 
     for i, ts in enumerate(bars):
         dd = 0.0 if peak <= 0 else (equity / peak - 1.0)
@@ -172,7 +277,9 @@ def simulate_hybrid_run(request) -> dict:
         mode_now = "AGG" if state.meta_mode == MetaMode.AGGRESSIVE else "DEF"
         switched = mode_now != prev_mode
         turnover = 0.2 if switched else 0.05
-        cost = turnover * ((fee_mult * 0.0001 * 4.0) + (slip_mult * 0.0001 * 4.0))
+        fee_cost = turnover * (fee_mult * fee_bps_base)
+        slippage_cost = turnover * (slip_mult * slip_bps_base)
+        cost = fee_cost + slippage_cost
 
         bar_ret = exposure_gain - cost
         bar_ret = max(bar_ret, -0.35)
@@ -185,6 +292,14 @@ def simulate_hybrid_run(request) -> dict:
             gross_profit += bar_ret
         else:
             gross_loss += abs(bar_ret)
+
+        if current_position is not None:
+            current_position["realized"] += bar_ret
+            current_position["mfe"] = max(float(current_position["mfe"]), float(current_position["realized"]))
+            current_position["mae"] = min(float(current_position["mae"]), float(current_position["realized"]))
+            current_position["fee"] += fee_cost
+            current_position["slippage"] += slippage_cost
+            current_position["fills"] += 1
 
         if state.regime in {Regime.TREND, Regime.SUPER_TREND}:
             trend_total += 1
@@ -213,6 +328,7 @@ def simulate_hybrid_run(request) -> dict:
                 }
             )
             trades.append({"ts": ts.isoformat(), "side": "SWITCH", "qty": round(abs(x_total), 6), "reason": state.regime.value})
+            _close_position(ts.isoformat(), reason=f"SWITCH:{state.regime.value}")
 
         if guard.guard_active:
             guards_rows.append(
@@ -243,6 +359,11 @@ def simulate_hybrid_run(request) -> dict:
             )
 
         prev_mode = mode_now
+
+    if bars and current_position is not None:
+        _close_position(bars[-1].isoformat(), reason="EOD")
+        if events and events[-1].get("event") == "ENTRY":
+            events.pop()
 
     max_dd = 0.0
     eq = 1.0
@@ -328,6 +449,34 @@ def simulate_hybrid_run(request) -> dict:
         }
     }
 
+    realized_sum = sum(float(t.get("Realized", 0.0)) for t in final_trades)
+    trade_metrics = {
+        "positions": len(final_trades),
+        "avg_MFE": round(_safe_div(sum(float(t.get("MFE", 0.0)) for t in final_trades), len(final_trades)), 6)
+        if final_trades
+        else 0.0,
+        "avg_MAE": round(_safe_div(sum(float(t.get("MAE", 0.0)) for t in final_trades), len(final_trades)), 6)
+        if final_trades
+        else 0.0,
+        "realized_total": round(realized_sum, 6),
+        "giveback_total": round(sum(float(t.get("Giveback", 0.0)) for t in final_trades), 6),
+        "MFE_pct": round(_safe_div(sum(float(t.get("MFE_pct", 0.0)) for t in final_trades), len(final_trades)), 6) if final_trades else 0.0,
+        "MAE_pct": round(_safe_div(sum(float(t.get("MAE_pct", 0.0)) for t in final_trades), len(final_trades)), 6) if final_trades else 0.0,
+        "Realized_pct": round(_safe_div(sum(float(t.get("Realized_pct", 0.0)) for t in final_trades), len(final_trades)), 6) if final_trades else 0.0,
+        "Giveback_pct": round(_safe_div(sum(float(t.get("Giveback_pct", 0.0)) for t in final_trades), len(final_trades)), 6) if final_trades else 0.0,
+    }
+
+    total_slippage = sum(float(t.get("slippage", 0.0)) for t in final_trades)
+    total_fills = int(sum(int(t.get("fills", 0)) for t in final_trades))
+    cost_metrics = {
+        "fills": total_fills,
+        "fills_count": total_fills,
+        "fee": round(sum(float(t.get("fee", 0.0)) for t in final_trades), 6),
+        "total_fee": round(sum(float(t.get("fee", 0.0)) for t in final_trades), 6),
+        "slippage": round(total_slippage, 6),
+        "slippage_estimate_pct": round(_safe_div(total_slippage * 100.0, float(total_fills)), 6) if total_fills else 0.0,
+    }
+
     summary = {
         "run_id": request.run_id,
         "family": run.get("family"),
@@ -342,6 +491,10 @@ def simulate_hybrid_run(request) -> dict:
         "switches": switches,
         "guards": guards_rows,
         "trades": trades,
+        "events": events,
+        "final_trades": final_trades,
+        "trade_metrics": trade_metrics,
+        "cost_metrics": cost_metrics,
         "summary": summary,
         "metrics_total": metrics_total,
         "metrics_by_mode": metrics_by_mode,
