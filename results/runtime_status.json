@@ -1,1 +1,1 @@
-{"status": "ERROR", "last_error": "Simulated Explosion"}
+{"ts": 1771500734.1566575, "pid": 50508, "mode": "PAPER", "status": "STOPPED", "equity": 100000.0, "pnl_pct": 0.0, "regime": "RISK_OFF", "btc_price": 98740000.0, "watchlist": [], "last_tick_ts": 1771500726.8114808, "last_error": null, "last_error_ts": null}
