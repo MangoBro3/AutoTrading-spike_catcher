@@ -52,3 +52,10 @@
 | GO(go_rate) | 1.000000 | 1.000000 | 동일 |
 | PF(min_pf) | 3.205522 | 3.205522 | 0.000000 |
 
+## Backend Sprint1 PASS 근거 동기화 (수치/경로)
+- `smoke`=`3/3` → `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py`
+- `lock`=`3/3` → `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/single_instance_lock.py`
+- `safestart`=`4/4` → `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/safe_start.py`
+- `tests`=`19/19` → `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage1.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage2.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py`
+- sync: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
+- TL: `GO`, `15/15` → `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`

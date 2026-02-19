@@ -54,3 +54,12 @@
   - `R2_ABS_OOS_PF_PASS_BEFORE_AFTER = 0/2 -> 2/2`
   - `R2_KZ_GUARD_FIRED_PASS_BEFORE_AFTER = 0/2 -> 2/2`
   - `R2_RE_GATE_SOURCE_PATH = /mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json`
+
+## Backend Sprint1 PASS 근거 (수치/경로)
+- 기준 경로: `/mnt/f/SafeBot/openclaw-news-workspace/python`
+- `test_smoke.py`: `3/3` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py`)
+- `single_instance_lock`: `3/3` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/single_instance_lock.py`)
+- `safe_start`: `4/4` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/safe_start.py`)
+- stage/stability tests: `19/19` (`/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage1.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage2.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py`, `/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py`)
+- 근거 통합 파일: `/mnt/f/SafeBot/openclaw-news-workspace/python/results/evidence_backend_sprint1_pass.json`
+- TL 최종 게이트 동기화: `/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json` (`TL_GATE_RESULT=GO`, `TL_GATE_GO_COUNT=15/15`)

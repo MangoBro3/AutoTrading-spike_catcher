@@ -1,0 +1,55 @@
+{
+  "base_path": "/mnt/f/SafeBot/openclaw-news-workspace/python",
+  "kind": "backend_sprint1_final_pass_evidence",
+  "smoke": {
+    "path": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py",
+    "command": "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/bin/python -m pytest -q \"Auto Trading/test_smoke.py\"",
+    "result": {
+      "passed": 3,
+      "total": 3,
+      "failed": 0
+    }
+  },
+  "lock": {
+    "path": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/single_instance_lock.py",
+    "checks": {
+      "acquire_first": true,
+      "acquire_second_blocked": true,
+      "release": true,
+      "passes": 3,
+      "checks_total": 3
+    }
+  },
+  "safestart": {
+    "path": "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/modules/safe_start.py",
+    "state_transitions": [
+      "BOOTING_DEGRADED",
+      "WAITING_OPERATOR",
+      "RUNNING",
+      "STOPPED"
+    ],
+    "passes": 4,
+    "checks_total": 4
+  },
+  "tests": {
+    "paths": [
+      "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_smoke.py",
+      "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage1.py",
+      "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage2.py",
+      "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage7.py",
+      "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage10.py",
+      "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/test_stage11_integration.py"
+    ],
+    "command": "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/bin/python -m pytest -q \"Auto Trading/test_smoke.py\" \"Auto Trading/test_stage1.py\" \"Auto Trading/test_stage2.py\" \"Auto Trading/test_stage7.py\" \"Auto Trading/test_stage10.py\" \"Auto Trading/test_stage11_integration.py\"",
+    "result": {
+      "passed": 19,
+      "total": 19,
+      "failed": 0
+    }
+  },
+  "backtest_gate": {
+    "path": "/mnt/f/SafeBot/openclaw-news-workspace/python/backtest/out_recover_v2_verify/runner_summary.json",
+    "TL_GATE_RESULT": "GO",
+    "TL_GATE_GO_COUNT": "15/15"
+  }
+}
