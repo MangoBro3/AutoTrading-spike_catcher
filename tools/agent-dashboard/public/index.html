@@ -25,12 +25,17 @@
     .btn:disabled{opacity:.5;cursor:not-allowed}
     .bar{height:8px;background:#202838;border-radius:999px;overflow:hidden;margin-top:6px}
     .fill{height:100%;background:linear-gradient(90deg,#47d16c,#ffca5f,#ff6b6b)}
+    .banner{display:none;margin:10px 0;padding:10px 12px;border-radius:8px;font-weight:700}
+    .banner.show{display:block}
+    .banner.danger{background:#4a1318;border:1px solid #a8323d;color:#ffd7dc}
   </style>
 </head>
 <body>
   <h1>Agent Team Dashboard</h1>
   <div class="muted" id="ts">loading...</div>
+  <div id="stopBanner" class="banner danger"></div>
   <div class="grid" style="margin-top:12px">
+    <div class="card"><h3>Worker Safety</h3><div id="worker"></div></div>
     <div class="card"><h3>Gateway</h3><div id="gateway"></div></div>
     <div class="card"><h3>Channels</h3><div id="channels"></div></div>
     <div class="card"><h3>Checkpoint</h3><div id="checkpoint"></div></div>
@@ -65,6 +70,23 @@ const PAGE_SIZE = 30;
 
 function render(data){
   $('ts').textContent = `updated: ${new Date(data.now).toLocaleString()}${data.sourceOk?'':'  |  openclaw json source unavailable'}`;
+  const worker = data.worker || {};
+  const light = String(worker.trafficLight || 'DISCONNECTED').toUpperCase();
+  const lightClass = light === 'GREEN' ? 'ok' : (light === 'YELLOW' ? 'warn' : 'bad');
+  $('worker').innerHTML = `<div><b>api</b>: <code>${esc('1s poll')}</code></div>
+  <div><b>traffic light</b>: <b class="${lightClass}">${esc(light)}</b></div>
+  <div><b>connected</b>: ${worker.connected===true?'<span class="ok">yes</span>':'<span class="bad">no</span>'}</div>
+  <div><b>updated</b>: ${worker.ts?esc(new Date(worker.ts).toLocaleTimeString()):'-'}</div>`;
+
+  const banner = $('stopBanner');
+  if (worker.stopAll) {
+    banner.className = 'banner danger show';
+    banner.textContent = worker.banner || `${light}: 전체 중단`;
+  } else {
+    banner.className = 'banner danger';
+    banner.textContent = '';
+  }
+
   $('gateway').innerHTML = `<div><b>target</b>: <code>${esc(data.gateway?.target||data.gateway?.url||'-')}</code></div>
   <div><b>mode</b>: ${esc(data.gateway?.mode||'-')}</div>
   <div><b>reachable</b>: ${data.gateway?.reachable===true?'<span class="ok">yes</span>':data.gateway?.reachable===false?'<span class="bad">no</span>':'-'}</div>`;
@@ -178,7 +200,7 @@ async function tick(){
 $('prevBtn').addEventListener('click', ()=>{ if(timelinePage>1){ timelinePage--; tick(); } });
 $('nextBtn').addEventListener('click', ()=>{ timelinePage++; tick(); });
 
-tick(); setInterval(tick, 10000);
+tick(); setInterval(tick, 1000);
 </script>
 </body>
 </html>

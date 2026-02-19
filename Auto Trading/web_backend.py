@@ -48,6 +48,8 @@ LABS_LAST_RESULT_PATH = LABS_DIR / "last_result.json"
 LABS_LAST_BASELINE_PATH = LABS_DIR / "last_baseline.json"
 DATA_STATUS_PATH = LABS_DIR / "data_status.json"
 
+OPENCLAW_PANIC_EMERGENCY_DEBOUNCE_MIN = 5
+
 DEFAULT_SETTINGS = {
     "mode": "PAPER",
     "exchange": "UPBIT",
@@ -409,6 +411,64 @@ INDEX_HTML = """<!doctype html>
     .pill.archive { color: #ffcc80; background: rgba(255, 183, 77, 0.18); border: 1px solid rgba(255, 183, 77, 0.45); }
     .labs-note-error { color: #ff9f8f; font-weight: 700; }
     .labs-note-archived { color: #ffd54f; font-weight: 700; }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 12, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      padding: 16px;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal {
+      width: min(560px, 100%);
+      background: #141b23;
+      border: 1px solid #2a3647;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.35);
+    }
+    .modal h3 {
+      margin-top: 0;
+      color: #d9ebff;
+      font-size: 16px;
+    }
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .orders-table th,
+    .orders-table td {
+      border-bottom: 1px solid #202834;
+      padding: 6px 4px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .orders-table th {
+      color: var(--muted);
+      position: sticky;
+      top: 0;
+      background: #111923;
+      z-index: 1;
+    }
+    .order-list-wrap {
+      max-height: 220px;
+      overflow: auto;
+      border: 1px solid #243041;
+      border-radius: 8px;
+      background: #0f151c;
+      padding: 4px;
+    }
+    .panic-progress {
+      margin: 6px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
     @media (max-width: 980px) {
       .grid-2, .grid-3 { grid-template-columns: 1fr; }
     }
@@ -453,12 +513,18 @@ INDEX_HTML = """<!doctype html>
       <div class="card">
         <h3>Quick Actions</h3>
         <div class="actions">
-          <button onclick="startBot()">Start</button>
+          <button onclick="requestStart()">Start</button>
           <button class="danger" onclick="stopBot()">Stop</button>
+          <button onclick="manualRestart()">Manual Restart</button>
+          <button class="danger" id="panicBtn" onpointerdown="startPanicHold()" onpointerup="cancelPanicHold()" onpointerleave="cancelPanicHold()" oncontextmenu="return false;">Panic Exit</button>
           <button class="danger" onclick="shutdownBackend()">Shutdown Backend</button>
           <button class="secondary" onclick="checkHealth()">Check APIs</button>
           <button class="secondary" onclick="refresh()">Refresh</button>
         </div>
+        <div class="muted" id="panicStatus">Hold to panic: move slider to READY and press 3 seconds.</div>
+        <div class="muted" style="margin-top: 6px;">Panic slider</div>
+        <input id="panicSlider" type="range" min="0" max="100" value="0" style="width: 100%;" oninput="updatePanicSliderLabel()" />
+        <div class="muted" id="panicSliderValue">Panic slider: 0%</div>
         <div class="muted" id="actionMsg">-</div>
         <div class="muted">Backend shutdown requires manual restart.</div>
       </div>
@@ -481,6 +547,25 @@ INDEX_HTML = """<!doctype html>
     </div>
 
     <div class="grid-2">
+      <div class="card">
+        <h3>Open Orders</h3>
+        <div class="muted" id="ordersMeta">-</div>
+        <div class="order-list-wrap">
+          <table class="orders-table">
+            <thead>
+              <tr><th>Symbol</th><th>Side</th><th>Type</th><th>Qty</th><th>Price</th><th>Remaining</th><th>Created</th><th>Action</th></tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="8" class="muted">No data.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="actions" style="margin-top:8px;">
+          <button class="secondary" onclick="refreshOrders()">Refresh Orders</button>
+          <button class="danger" onclick="cancelAllOrders()">Cancel All</button>
+        </div>
+        <div class="muted" id="ordersMsg">-</div>
+      </div>
       <div class="card">
         <h3>Data Update</h3>
         <div class="actions">
@@ -704,6 +789,19 @@ INDEX_HTML = """<!doctype html>
       <div class="card">
         <h3>Debug</h3>
         <div class="log" id="debugLog">-</div>
+      </div>
+    </div>
+    <div id="liveConfirmBackdrop" class="modal-backdrop">
+      <div class="modal">
+        <h3>Live Mode Start Confirm</h3>
+        <p class="muted">LIVE 모드 시작은 2단 확인이 필요합니다.</p>
+        <label for="liveConfirmPhrase">Confirm phrase</label>
+        <input id="liveConfirmPhrase" type="text" />
+        <div class="actions" style="margin-top: 8px;">
+          <button onclick="confirmLiveStart()">Confirm and Start</button>
+          <button class="secondary" onclick="closeLiveConfirm()">Cancel</button>
+        </div>
+        <div class="muted" id="liveConfirmMsg">Expected: -</div>
       </div>
     </div>
   </main>
@@ -1353,21 +1451,158 @@ INDEX_HTML = """<!doctype html>
       await refresh();
     }
 
-    async function startBot() {
-      const payload = {
-        confirm: document.getElementById("confirm").value
-      };
+    const PANIC_HOLD_MS = 3000;
+    let panicHoldTimer = null;
+    let panicHoldProgressTimer = null;
+    let pendingLiveAction = "start";
+
+    function buildLiveConfirmPhrase(settings = null) {
+      const exEl = document.getElementById("exchange") || document.getElementById("exchangeInput");
+      const mode = String((settings && settings.mode) || document.getElementById("mode").value || "PAPER").toUpperCase();
+      const exchange = String((settings && settings.exchange) || "UPBIT").toUpperCase();
+      const seed = String((settings && settings.seed_krw) || document.getElementById("seed").value || "1000000");
+      if (mode !== "LIVE") return "";
+      return `LIVE ${exchange} SEED=${seed}`;
+    }
+
+    async function loadLiveSettings() {
+      try {
+        return await fetchJson("/api/settings");
+      } catch {
+        return null;
+      }
+    }
+
+    async function requestStart() {
+      pendingLiveAction = "start";
+      const settings = await loadLiveSettings();
+      const mode = String((settings && settings.mode) || document.getElementById("mode").value || "PAPER").toUpperCase();
+      if (mode !== "LIVE") {
+        await doStart("");
+        return;
+      }
+
+      const expected = buildLiveConfirmPhrase(settings);
+      const input = document.getElementById("liveConfirmPhrase");
+      if (input) {
+        input.value = "";
+        input.placeholder = expected || "LIVE <exchange> SEED=<seed>";
+        document.getElementById("liveConfirmMsg").textContent = "Expected: " + (expected || "-");
+        document.getElementById("liveConfirmBackdrop").classList.add("active");
+      }
+      document.getElementById("actionMsg").textContent = "LIVE 2차 확인이 필요합니다. confirm 문구를 입력하세요.";
+    }
+
+    function closeLiveConfirm() {
+      const backdrop = document.getElementById("liveConfirmBackdrop");
+      if (backdrop) backdrop.classList.remove("active");
+    }
+
+    async function confirmLiveStart() {
+      const expected = buildLiveConfirmPhrase(await loadLiveSettings());
+      const input = document.getElementById("liveConfirmPhrase");
+      const typed = String(input ? input.value : "").trim();
+      if (!typed) {
+        document.getElementById("liveConfirmMsg").textContent = "Confirm phrase is required for LIVE.";
+        return;
+      }
+      document.getElementById("liveConfirmMsg").textContent = "Confirming...";
+      if (pendingLiveAction === "restart") {
+        await doRestart(typed);
+      } else {
+        await doStart(typed, expected);
+      }
+      closeLiveConfirm();
+    }
+
+    async function doStart(confirmValue = "", expected = "") {
+      const payload = { confirm: confirmValue };
       try {
         const res = await fetchJson("/api/start", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        document.getElementById("actionMsg").textContent = res.message || "Started.";
+        if (expected && confirmValue && confirmValue !== expected) {
+          document.getElementById("actionMsg").textContent = "Confirm mismatch. " + (res.message || "Started.");
+        } else {
+          document.getElementById("actionMsg").textContent = res.message || "Started.";
+        }
       } catch (err) {
         document.getElementById("actionMsg").textContent = "Start failed: " + (err.error || "unknown");
       }
       await refresh();
+    }
+
+    function updatePanicSliderLabel() {
+      const slider = document.getElementById("panicSlider");
+      const pct = slider ? Number(slider.value || 0) : 0;
+      document.getElementById("panicSliderValue").textContent = `Panic slider: ${pct}%`;
+      const msg = document.getElementById("panicStatus");
+      if (!msg) return;
+      msg.textContent = pct >= 80 ? "READY: hold 3 seconds to trigger panic." : "Move slider to READY first (80~100).";
+    }
+
+    function clearPanicHold() {
+      if (panicHoldTimer) {
+        clearTimeout(panicHoldTimer);
+        panicHoldTimer = null;
+      }
+      if (panicHoldProgressTimer) {
+        clearInterval(panicHoldProgressTimer);
+        panicHoldProgressTimer = null;
+      }
+      const btn = document.getElementById("panicBtn");
+      const status = document.getElementById("panicStatus");
+      if (btn) btn.textContent = "Panic Exit";
+      if (status) status.textContent = "Hold to panic: move slider to READY and press 3 seconds.";
+      updatePanicSliderLabel();
+    }
+
+    function startPanicHold() {
+      const slider = document.getElementById("panicSlider");
+      const current = Number(slider ? slider.value : 0);
+      if (current < 80) {
+        const status = document.getElementById("panicStatus");
+        if (status) status.textContent = "Panic slider not ready.";
+        return;
+      }
+      clearPanicHold();
+      const btn = document.getElementById("panicBtn");
+      if (btn) btn.disabled = true;
+      const startedAt = Date.now();
+      const finishAt = startedAt + PANIC_HOLD_MS;
+      const update = () => {
+        const remain = Math.max(0, finishAt - Date.now());
+        const status = document.getElementById("panicStatus");
+        if (status) status.textContent = `Panic trigger: ${(remain / 1000).toFixed(1)}s`; 
+      };
+      update();
+      panicHoldProgressTimer = setInterval(update, 80);
+      panicHoldTimer = setTimeout(async () => {
+        clearPanicHold();
+        await triggerPanic();
+      }, PANIC_HOLD_MS);
+    }
+
+    async function cancelPanicHold() {
+      clearPanicHold();
+    }
+
+    async function triggerPanic() {
+      try {
+        const slider = Number(document.getElementById("panicSlider").value || 0);
+        const res = await fetchJson("/api/panic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slider })
+        });
+        document.getElementById("actionMsg").textContent = res.message || "Panic triggered.";
+      } catch (err) {
+        document.getElementById("actionMsg").textContent = "Panic failed: " + (err.error || "unknown");
+      }
+      await refresh();
+      await refreshOrders();
     }
 
     async function stopBot() {
@@ -1378,8 +1613,42 @@ INDEX_HTML = """<!doctype html>
         document.getElementById("actionMsg").textContent = "Stop failed: " + (err.error || "unknown");
       }
       await refresh();
+      await refreshOrders();
     }
 
+    async function doRestart(confirmValue = "") {
+      try {
+        const res = await fetchJson("/api/restart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ confirm: confirmValue })
+        });
+        document.getElementById("actionMsg").textContent = res.message || "Restarted.";
+      } catch (err) {
+        document.getElementById("actionMsg").textContent = "Restart failed: " + (err.error || "unknown");
+      }
+      await refresh();
+      await refreshOrders();
+    }
+
+    async function manualRestart() {
+      const settings = await loadLiveSettings();
+      const mode = String((settings && settings.mode) || document.getElementById("mode").value || "PAPER").toUpperCase();
+      if (mode !== "LIVE") {
+        await doRestart("");
+        return;
+      }
+      pendingLiveAction = "restart";
+      const expected = buildLiveConfirmPhrase(settings);
+      const input = document.getElementById("liveConfirmPhrase");
+      if (input) {
+        input.value = "";
+        input.placeholder = expected || "LIVE <exchange> SEED=<seed>";
+        document.getElementById("liveConfirmMsg").textContent = "Expected: " + (expected || "-");
+        document.getElementById("liveConfirmBackdrop").classList.add("active");
+      }
+      document.getElementById("actionMsg").textContent = "LIVE restart requires 2차 확인.";
+    }
     async function checkHealth() {
       try {
         const res = await fetchJson("/api/health_all", { method: "POST" });
@@ -1428,6 +1697,84 @@ INDEX_HTML = """<!doctype html>
         document.getElementById("dataMsg").textContent = "Data update failed: " + (err.error || "unknown");
       }
       await refresh();
+    }
+
+    function orderStatusText(v) {
+      if (v === undefined || v === null || v === "") return "-";
+      if (typeof v === "number") return Number.isFinite(v) ? v.toString() : "-";
+      return String(v);
+    }
+
+    function _escapeAttr(v) {
+      return String(v || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function _renderOrdersRows(orders) {
+      const tbody = document.getElementById("ordersTableBody");
+      if (!tbody) return;
+      if (!Array.isArray(orders) || orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="muted">No open orders.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = orders.map((o, idx) => {
+        const side = orderStatusText(o.side || o.side_type || "-");
+        const kind = orderStatusText(o.type || o.order_type || "-");
+        const symbol = orderStatusText(o.symbol || o.market || "-");
+        const qty = orderStatusText(o.qty || o.amount || 0);
+        const price = orderStatusText(o.price || o.avg_price || "-");
+        const remaining = orderStatusText(o.remaining || o.remain_qty || 0);
+        const created = orderStatusText(o.created_at || o.datetime || o.created || "-");
+        const oid = _escapeAttr(String(o.order_id || o.id || `auto-${idx}`));
+        const sym = _escapeAttr(String(o.symbol || o.market || ""));
+        return `<tr><td>${symbol}</td><td>${side}</td><td>${kind}</td><td>${qty}</td><td>${price}</td><td>${remaining}</td><td>${created}</td><td><button class="danger" onclick="cancelOrder('${oid}', '${sym}')">Cancel</button></td></tr>`;
+      }).join("");
+    }
+
+    async function refreshOrders() {
+      try {
+        const data = await fetchJson('/api/orders');
+        const orders = data.orders || [];
+        document.getElementById("ordersMeta").textContent = `Exchange: ${data.exchange || "-"} | Count: ${orders.length}`;
+        _renderOrdersRows(orders);
+      } catch (err) {
+        document.getElementById("ordersMeta").textContent = "Orders load failed: " + (err.error || "unknown");
+        const tbody = document.getElementById("ordersTableBody");
+        if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="muted">Load failed.</td></tr>';
+      }
+    }
+
+    async function cancelOrder(orderId, symbol = "") {
+      try {
+        const payload = { order_id: orderId, symbol };
+        const res = await fetchJson('/api/orders/cancel', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        document.getElementById("ordersMsg").textContent = res.message || "Cancel requested.";
+      } catch (err) {
+        document.getElementById("ordersMsg").textContent = "Cancel failed: " + (err.error || "unknown");
+      }
+      await refreshOrders();
+    }
+
+    async function cancelAllOrders() {
+      try {
+        const res = await fetchJson('/api/orders/cancel', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ all: true })
+        });
+        document.getElementById("ordersMsg").textContent = res.message || "Cancel all requested.";
+      } catch (err) {
+        document.getElementById("ordersMsg").textContent = "Cancel all failed: " + (err.error || "unknown");
+      }
+      await refreshOrders();
     }
 
     function renderChart(seriesInput) {
@@ -1595,6 +1942,7 @@ INDEX_HTML = """<!doctype html>
         }
 
         await refreshModelHistory(false);
+        await refreshOrders();
         document.getElementById("debugLog").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
         document.getElementById("debugLog").textContent = "Status fetch failed.";
@@ -1602,6 +1950,7 @@ INDEX_HTML = """<!doctype html>
     }
 
     applyWatchFilterButtons();
+    updatePanicSliderLabel();
     loadSettings().then(refresh);
     (function bindExchangeToggles() {
       const upbitEl = document.getElementById("exchange_upbit");
@@ -2933,6 +3282,19 @@ class BotService:
                 self.last_error = str(e)
                 return False, f"Stop failed: {e}"
 
+    def restart(self, mode: str, seed: int, exchange: str, confirm_phrase: str = ""):
+        with self._lock:
+            stop_status, stop_message = self.stop()
+            if stop_status:
+                # give controller shutdown chance to release locks
+                time.sleep(0.2)
+            start_status, start_message = self.start(mode, seed, exchange, confirm_phrase)
+            if start_status:
+                return True, "Restarted."
+            if not start_status:
+                return False, f"Restart failed: {start_message} (stop: {stop_message})"
+            return False, "Unknown restart error."
+
 
 class _ApiTestExchangeSim:
     """
@@ -3131,6 +3493,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send_json(build_data_payload())
         if self.path == "/api/models":
             return self._send_json(build_models_payload())
+        if self.path == "/api/orders":
+            return self._send_json(_build_orders_payload(self.service.controller))
         self._send_json({"error": "Not found"}, status=404)
 
     def do_POST(self):
@@ -3181,6 +3545,64 @@ class Handler(BaseHTTPRequestHandler):
             )
             status = 200 if ok else 400
             return self._send_json({"ok": ok, "message": msg}, status=status)
+
+        if self.path == "/api/restart":
+            settings = load_settings()
+            ok, msg = self.service.restart(
+                mode=settings.get("mode", "PAPER"),
+                seed=int(settings.get("seed_krw", 1000000)),
+                exchange=settings.get("exchange", "UPBIT"),
+                confirm_phrase=str(data.get("confirm", "")),
+            )
+            status = 200 if ok else 400
+            return self._send_json({"ok": ok, "message": msg}, status=status)
+
+        if self.path == "/api/panic":
+            if not self.service.is_running() or self.service.controller is None:
+                return self._send_json({"ok": False, "message": "Controller is not running."}, status=400)
+            controller = self.service.controller
+            settings = load_settings()
+            symbol = str(data.get("symbol") or controller._get_runtime_state().get("symbol") or "")
+            hard_loss_cap = float(data.get("hard_loss_cap", -0.05)) if data.get("hard_loss_cap") is not None else -0.05
+
+            forced_exit = None
+            try:
+                forced_exit = controller.process_panic_exit(symbol=symbol, hard_loss_cap=hard_loss_cap)
+            except Exception:
+                forced_exit = None
+            fallback_exit = None
+            if not forced_exit:
+                fallback_exit = controller.process_exit_signal(symbol=symbol if symbol else None, qty="ALL")
+
+            cancel_res = _cancel_open_orders(controller, all_orders=True)
+            _notify_openclaw_emergency(
+                f"[Panic Trigger] symbol={symbol or '-'} mode={controller.mode if hasattr(controller, 'mode') else '-'}" +
+                f" forced_exit={'YES' if forced_exit else 'NO'} hard_loss_cap={hard_loss_cap}",
+                exchange=getattr(controller, 'adapter', None).exchange_name if getattr(controller, 'adapter', None) else "SYSTEM",
+            )
+
+            ok = bool((forced_exit and forced_exit.get("ok")) or (fallback_exit and fallback_exit.get("ok")) or cancel_res.get("canceled", 0) > 0)
+            msg = "panic completed" if ok else "panic accepted but action may be unavailable"
+            return self._send_json({
+                "ok": ok,
+                "message": msg,
+                "forced_exit": forced_exit,
+                "fallback_exit": fallback_exit,
+                "cancel_result": cancel_res,
+            })
+
+        if self.path == "/api/orders/cancel":
+            if not self.service.is_running() or self.service.controller is None:
+                return self._send_json({"ok": False, "message": "Controller is not running."}, status=400)
+            controller = self.service.controller
+            all_orders = bool(data.get("all", False))
+            order_id = data.get("order_id")
+            symbol = data.get("symbol")
+            cancel_res = _cancel_open_orders(controller, order_id=str(order_id) if order_id else None, symbol=str(symbol) if symbol else None, all_orders=all_orders)
+            return self._send_json(cancel_res)
+
+        if self.path == "/api/orders":
+            return self._send_json(_build_orders_payload(self.service.controller))
 
         if self.path == "/api/test/entry":
             if not self.service.is_running() or self.service.controller is None:
@@ -3865,6 +4287,90 @@ def watchlist_scheduler():
         except Exception:
             pass
         time.sleep(2)
+
+
+def _build_orders_payload(controller) -> dict:
+    if controller is None:
+        return {"ok": False, "exchange": "-", "orders": []}
+    adapter = getattr(controller, "adapter", None)
+    if adapter is None:
+        return {"ok": False, "exchange": "-", "orders": []}
+    fetcher = getattr(adapter, "get_open_orders", None)
+    exchange_name = getattr(adapter, "exchange_name", "-")
+    if not callable(fetcher):
+        return {"ok": False, "exchange": exchange_name, "orders": []}
+
+    try:
+        raw = fetcher() or []
+    except Exception:
+        raw = []
+
+    orders = []
+    for row in raw if isinstance(raw, list) else []:
+        try:
+            normalized = _normalize_order_row(dict(row))
+            normalized["exchange"] = exchange_name
+            orders.append(normalized)
+        except Exception:
+            continue
+    return {"ok": True, "exchange": exchange_name, "orders": orders, "count": len(orders)}
+
+
+def _cancel_open_orders(controller, order_id: str = None, symbol: str = None, all_orders: bool = False):
+    if controller is None:
+        return {"ok": False, "message": "Controller is not running.", "requested": 0, "canceled": 0, "failed": 0}
+    adapter = getattr(controller, "adapter", None)
+    if adapter is None:
+        return {"ok": False, "message": "Adapter not available.", "requested": 0, "canceled": 0, "failed": 0}
+
+    client = getattr(adapter, "client", None)
+    cancel_fn = getattr(client, "cancel_order", None)
+    if not callable(cancel_fn):
+        return {"ok": False, "message": "Cancel API unavailable.", "requested": 0, "canceled": 0, "failed": 0}
+
+    payload = _build_orders_payload(controller)
+    if not payload.get("ok"):
+        return {"ok": False, "message": "No open orders.", "requested": 0, "canceled": 0, "failed": 0, "orders": []}
+
+    candidates = payload.get("orders") or []
+    to_cancel = []
+    if all_orders:
+        to_cancel = candidates
+    elif order_id:
+        to_cancel = [o for o in candidates if str(o.get("order_id") or "") == str(order_id)]
+    elif symbol:
+        to_cancel = [o for o in candidates if str(o.get("symbol") or "") == str(symbol)]
+
+    if not to_cancel:
+        return {"ok": False, "message": "No matching open orders.", "requested": 0, "canceled": 0, "failed": 0}
+
+    requested = len(to_cancel)
+    canceled = 0
+    failed = 0
+    results = []
+    for item in to_cancel:
+        oid = str(item.get("order_id") or "")
+        sym = str(item.get("symbol") or "")
+        if not oid or not sym:
+            failed += 1
+            continue
+        try:
+            cancel_fn(_to_ccxt_symbol(adapter, sym), oid)
+            canceled += 1
+            results.append({"order_id": oid, "symbol": sym, "ok": True})
+        except Exception as e:
+            failed += 1
+            results.append({"order_id": oid, "symbol": sym, "ok": False, "error": str(e)})
+
+    return {
+        "ok": canceled > 0,
+        "requested": requested,
+        "canceled": canceled,
+        "failed": failed,
+        "results": results,
+        "message": f"Cancel requested: {requested}, canceled: {canceled}, failed: {failed}",
+        "orders": payload.get("orders", []),
+    }
 
 
 def build_status(service: BotService, state: BackendState):
