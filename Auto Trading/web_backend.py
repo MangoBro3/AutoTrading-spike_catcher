@@ -1970,8 +1970,9 @@ INDEX_HTML = """<!doctype html>
 
         const pf = data.portfolio || {};
         const pfPos = pf.position || {};
-        const mode = String(data.mode || data.controller_mode || pf.mode || r.mode || "UNKNOWN").toUpperCase();
-        const isRunning = !!(data.running ?? pf.running);
+        const truth = data.truth || {};
+        const mode = String(truth.mode || data.mode || data.controller_mode || pf.mode || r.mode || "UNKNOWN").toUpperCase();
+        const isRunning = !!(truth.running ?? data.running ?? pf.running);
         const modeLabel = isRunning ? (mode + " RUNNING") : (mode + " STOPPED");
         document.getElementById("modeIndicator").textContent = modeLabel;
         if (!isRunning) {
@@ -3649,7 +3650,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send_html(INDEX_HTML)
         if self.path == "/api/settings":
             return self._send_json(load_settings())
-        if self.path == "/api/status":
+        if self.path == "/api/status" or self.path == "/api/v1/status":
             return self._send_json(build_status(self.service, self.state))
         if self.path == "/api/labs/status":
             return self._send_json(build_labs_payload())
@@ -4803,6 +4804,21 @@ def build_status(service: BotService, state: BackendState):
     runtime_fresh = bool(runtime_age is not None and runtime_age <= 5.0)
     running_value = bool(controller_running or (runtime_running and runtime_fresh and lock_info.get("exists")))
     phase_value = "RUNNING" if running_value else "STOPPED"
+    reason_code = "unknown"
+    try:
+        rc = ((runtime_state or {}) if isinstance(runtime_state, dict) else {}).get("reason_code")
+        if isinstance(rc, str) and rc.strip():
+            reason_code = rc.strip().lower()
+    except Exception:
+        reason_code = "unknown"
+    truth = {
+        "mode": mode_value,
+        "phase": phase_value,
+        "running": running_value,
+        "lock_exists": bool(lock_info.get("exists")),
+        "reason_code": reason_code,
+        "source": "canonical:/api/v1/status+lock",
+    }
     equity_krw = 0.0
     pnl_ratio = 0.0
     try:
@@ -4845,6 +4861,8 @@ def build_status(service: BotService, state: BackendState):
         "mode": mode_value,
         "running": running_value,
         "phase": phase_value,
+        "truth": truth,
+        "reason_code": reason_code,
         "backend": backend,
         "settings": current_settings,
         "runtime": runtime,

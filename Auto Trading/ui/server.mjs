@@ -180,18 +180,12 @@ function sanitizeRuntimeStatus(runtimeStatus, workerSnap) {
   const tsMs = runtimeStatusTsMs(runtimeStatus);
   const maxAge = Math.max(1000, Number(RUNTIME_STATUS_MAX_AGE_MS) || 15000);
   const isFresh = Number.isFinite(tsMs) ? ((now - tsMs) <= maxAge) : false;
-  const statusMode = normalizeMode(runtimeStatus?.mode);
-  const workerMode = normalizeMode(workerSnap?.state?.mode);
-  const modeMismatch = Boolean(statusMode && workerMode && statusMode !== workerMode);
-  const trustMode = Boolean(statusMode && isFresh && !modeMismatch);
-  if (trustMode) return { runtimeStatus, staleIgnored: false, staleReason: '' };
+  if (isFresh) return { runtimeStatus, staleIgnored: false, staleReason: '' };
 
-  const staleReason = !isFresh
-    ? 'runtimeStatus stale ignored'
-    : (modeMismatch ? 'runtimeStatus stale ignored (mode mismatch)' : 'runtimeStatus stale ignored');
+  const staleReason = 'runtimeStatus stale ignored';
   return {
-    runtimeStatus: { ...runtimeStatus, mode: null },
-    staleIgnored: Boolean(statusMode),
+    runtimeStatus,
+    staleIgnored: true,
     staleReason,
   };
 }
@@ -1250,7 +1244,7 @@ const server = http.createServer((req, res) => {
           exchangeTogglesCache = await writeExchangeToggles(toggles);
 
           const modePayload = {
-            mode: String(parsed?.mode || overviewCache?.runtimeStatus?.mode || 'PAPER').toUpperCase(),
+            mode: String(parsed?.mode || overviewCache?.truth?.mode || 'PAPER').toUpperCase(),
             exchanges: {
               upbit: exchangeTogglesCache.upbit,
               bithumb: exchangeTogglesCache.bithumb,
@@ -1412,7 +1406,7 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = body ? JSON.parse(body) : {};
-          const mode = String(parsed?.mode || overviewCache?.runtimeStatus?.mode || 'PAPER').toUpperCase();
+          const mode = String(parsed?.mode || overviewCache?.truth?.mode || 'PAPER').toUpperCase();
           const exchange = String(parsed?.exchange || overviewCache?.runtimeStatus?.exchange || 'UPBIT').toUpperCase();
           const seed = Number(parsed?.seed ?? overviewCache?.runtimeStatus?.seed_krw ?? 0) || 0;
           const payload = { force_unlock: true, mode, exchange, seed };

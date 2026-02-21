@@ -752,7 +752,7 @@ const server = http.createServer((req, res) => {
           exchangeTogglesCache = await writeExchangeToggles(toggles);
 
           const modePayload = {
-            mode: String(parsed?.mode || overviewCache?.runtimeStatus?.mode || 'PAPER').toUpperCase(),
+            mode: String(parsed?.mode || overviewCache?.truth?.mode || 'PAPER').toUpperCase(),
             exchanges: {
               upbit: exchangeTogglesCache.upbit,
               bithumb: exchangeTogglesCache.bithumb,
