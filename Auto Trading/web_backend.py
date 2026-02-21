@@ -530,6 +530,22 @@ INDEX_HTML = """<!doctype html>
         <div class="muted">Backend shutdown requires manual restart.</div>
       </div>
       <div class="card">
+        <h3>Manual Roundtrip Test (1회 왕복)</h3>
+        <div style="display:grid; gap:8px; margin-bottom:8px;">
+          <div><label for="rtSymbol">Symbol</label><input id="rtSymbol" type="text" value="KRW-XRP" /></div>
+          <div><label for="rtKrw">KRW Notional</label><input id="rtKrw" type="number" min="5000" step="100" value="5500" /></div>
+          <div><label for="rtBuyTicks">Buy Offset Ticks</label><input id="rtBuyTicks" type="number" step="1" value="1" /></div>
+          <div><label for="rtHoldSec">Hold Seconds</label><input id="rtHoldSec" type="number" min="1" step="1" value="30" /></div>
+          <div><label for="rtConfirm">LIVE confirm (LIVE일 때만)</label><input id="rtConfirm" type="text" placeholder="MANUAL ROUNDTRIP LIVE" /></div>
+        </div>
+        <div class="actions">
+          <button onclick="runManualRoundtrip()">테스트 1회 왕복주문 실행</button>
+        </div>
+        <div class="muted" id="rtState">-</div>
+        <div class="log" id="rtResult">-</div>
+      </div>
+
+      <div class="card">
         <h3>Current Watchlist</h3>
         <div class="watch-filterbar">
           <button id="watchFilterAll" class="watch-filter-btn" onclick="setWatchFilter('all')">All</button>
@@ -1659,6 +1675,43 @@ INDEX_HTML = """<!doctype html>
       await refreshOrders();
     }
 
+    async function runManualRoundtrip() {
+      try {
+        const payload = {
+          symbol: String(document.getElementById("rtSymbol").value || "KRW-XRP"),
+          krw_notional: Number(document.getElementById("rtKrw").value || 5500),
+          buy_offset_ticks: Number(document.getElementById("rtBuyTicks").value || 1),
+          hold_seconds: Number(document.getElementById("rtHoldSec").value || 30),
+          confirm: String(document.getElementById("rtConfirm").value || "").trim(),
+        };
+        const res = await fetchJson('/api/v1/manual/roundtrip-test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        document.getElementById("rtState").textContent = res.message || "accepted";
+      } catch (err) {
+        document.getElementById("rtState").textContent = "Roundtrip failed: " + (err.error || "unknown");
+      }
+      await refresh();
+    }
+
+    function renderManualRoundtrip(rt) {
+      const stateEl = document.getElementById("rtState");
+      const resultEl = document.getElementById("rtResult");
+      if (!stateEl || !resultEl) return;
+      if (!rt) {
+        stateEl.textContent = "-";
+        resultEl.textContent = "-";
+        return;
+      }
+      const running = !!rt.running;
+      const stage = rt.stage || (running ? "RUNNING" : "IDLE");
+      const mode = String(rt.mode || "-").toUpperCase();
+      stateEl.textContent = `${running ? "RUNNING" : "IDLE"} | mode=${mode} | stage=${stage}`;
+      resultEl.textContent = JSON.stringify(rt.last_result || rt.last_error || rt, null, 2);
+    }
+
     async function stopBot() {
       try {
         const res = await fetchJson("/api/stop", { method: "POST" });
@@ -1970,6 +2023,7 @@ INDEX_HTML = """<!doctype html>
         const wl = data.watchlist_ranked || [];
         renderWatchlist(wl, data.settings || {}, data.watchlist_score_max || 0);
         applyWatchFilterButtons();
+        renderManualRoundtrip(data.manual_roundtrip || null);
 
         if (data.labs) {
           const labsStatus = data.labs.status || {};
@@ -3273,6 +3327,16 @@ class BotService:
         self.thread = None
         self.last_error = None
         self.last_start_params = None
+        self.manual_roundtrip = {
+            "running": False,
+            "stage": "IDLE",
+            "mode": None,
+            "last_result": None,
+            "last_error": None,
+            "last_started_ts": None,
+            "last_finished_ts": None,
+            "request": None,
+        }
 
     def is_running(self):
         return (
@@ -3351,6 +3415,49 @@ class BotService:
             if not start_status:
                 return False, f"Restart failed: {start_message} (stop: {stop_message})"
             return False, "Unknown restart error."
+
+
+    def _manual_roundtrip_state(self):
+        if not hasattr(self, "manual_roundtrip"):
+            self.manual_roundtrip = {"running": False, "stage": "IDLE", "mode": None, "last_result": None, "last_error": None, "last_started_ts": None, "last_finished_ts": None, "request": None}
+        return self.manual_roundtrip
+
+    def get_manual_roundtrip_status(self):
+        with self._lock:
+            return json.loads(json.dumps(self._manual_roundtrip_state(), default=str))
+
+    def start_manual_roundtrip_test(self, symbol="KRW-XRP", krw_notional=5500, buy_offset_ticks=1, hold_seconds=30, confirm_phrase=""):
+        with self._lock:
+            st = self._manual_roundtrip_state()
+            if st.get("running"):
+                return False, "manual roundtrip already running"
+            if not self.is_running() or self.controller is None:
+                return False, "controller is not running"
+            mode = str(getattr(self.controller, "mode", "PAPER") or "PAPER").upper()
+            if mode == "LIVE":
+                expected = "MANUAL ROUNDTRIP LIVE"
+                if str(confirm_phrase or "").strip() != expected:
+                    return False, f"LIVE blocked: confirm required ({expected})"
+            req = {"symbol": str(symbol or "KRW-XRP").upper(), "krw_notional": float(krw_notional or 5500), "buy_offset_ticks": int(buy_offset_ticks or 1), "hold_seconds": int(hold_seconds or 30)}
+            st.update({"running": True, "stage": "QUEUED", "mode": mode, "request": req, "last_error": None, "last_started_ts": time.time()})
+            t = threading.Thread(target=self._run_manual_roundtrip_worker, args=(req,), daemon=True)
+            t.start()
+            return True, "manual roundtrip accepted"
+
+    def _run_manual_roundtrip_worker(self, req):
+        result = None
+        err = None
+        try:
+            result = _execute_manual_roundtrip(self.controller, req, self._manual_roundtrip_state())
+        except Exception as e:
+            err = str(e)
+        with self._lock:
+            st = self._manual_roundtrip_state()
+            st["running"] = False
+            st["stage"] = "DONE" if err is None else "ERROR"
+            st["last_finished_ts"] = time.time()
+            st["last_result"] = result
+            st["last_error"] = err
 
 
 class _ApiTestExchangeSim:
@@ -3663,6 +3770,17 @@ class Handler(BaseHTTPRequestHandler):
 
         if self.path == "/api/orders":
             return self._send_json(_build_orders_payload(self.service.controller))
+
+        if self.path == "/api/v1/manual/roundtrip-test":
+            ok, msg = self.service.start_manual_roundtrip_test(
+                symbol=data.get("symbol", "KRW-XRP"),
+                krw_notional=data.get("krw_notional", 5500),
+                buy_offset_ticks=data.get("buy_offset_ticks", 1),
+                hold_seconds=data.get("hold_seconds", 30),
+                confirm_phrase=data.get("confirm", ""),
+            )
+            status = 200 if ok else 400
+            return self._send_json({"ok": ok, "message": msg, "manual_roundtrip": self.service.get_manual_roundtrip_status()}, status=status)
 
         if self.path == "/api/test/entry":
             if not self.service.is_running() or self.service.controller is None:
@@ -4496,6 +4614,151 @@ def _cancel_open_orders(controller, order_id: str = None, symbol: str = None, al
     }
 
 
+def _tick_size_krw(price: float) -> float:
+    p = _to_order_float(price, 0.0)
+    if p <= 0: return 1.0
+    if p < 0.1: return 0.0001
+    if p < 1: return 0.001
+    if p < 10: return 0.01
+    if p < 100: return 0.1
+    if p < 1000: return 1.0
+    if p < 10000: return 5.0
+    if p < 100000: return 10.0
+    if p < 500000: return 50.0
+    if p < 1000000: return 100.0
+    if p < 2000000: return 500.0
+    return 1000.0
+
+
+def _round_tick(price: float, tick: float, side: str) -> float:
+    p = _to_order_float(price, 0.0)
+    t = max(1e-12, _to_order_float(tick, 1.0))
+    units = p / t
+    if str(side).lower() == "buy":
+        n = int(units) if abs(units - int(units)) < 1e-12 else int(units) + 1
+    else:
+        n = int(units)
+    return max(t, n * t)
+
+
+def _poll_order_fill(client, order_id, ccxt_symbol, timeout_sec=20.0, poll_sec=0.5):
+    end = time.time() + max(1.0, float(timeout_sec))
+    last = None
+    while time.time() < end:
+        try:
+            od = client.fetch_order(order_id, ccxt_symbol)
+            if od:
+                last = od
+                status = str(od.get("status", "")).lower()
+                filled = _to_order_float(od.get("filled"), 0.0)
+                amount = _to_order_float(od.get("amount"), 0.0)
+                if status in {"closed", "filled", "canceled", "cancelled", "rejected", "expired"}:
+                    break
+                if amount > 0 and filled >= amount - 1e-12:
+                    break
+        except Exception:
+            pass
+        time.sleep(poll_sec)
+    return last or {}
+
+
+def _extract_order_fill(order: dict):
+    filled = _to_order_float((order or {}).get("filled"), 0.0)
+    avg = _to_order_float((order or {}).get("average"), 0.0)
+    cost = _to_order_float((order or {}).get("cost"), 0.0)
+    if avg <= 0 and filled > 0 and cost > 0:
+        avg = cost / filled
+    return filled, avg
+
+
+def _execute_manual_roundtrip(controller, req: dict, state_ref: dict):
+    if controller is None:
+        raise RuntimeError("controller missing")
+    exchange_api = controller._resolve_exchange_api(None)
+    if exchange_api is None:
+        raise RuntimeError("exchange api unavailable")
+
+    symbol = str(req.get("symbol") or "KRW-XRP").upper()
+    krw_notional = max(5000.0, _to_order_float(req.get("krw_notional"), 5500.0))
+    buy_offset_ticks = int(req.get("buy_offset_ticks") if req.get("buy_offset_ticks") is not None else 1)
+    hold_seconds = max(1, int(req.get("hold_seconds") if req.get("hold_seconds") is not None else 30))
+    ccxt_symbol = controller._to_ccxt_symbol(symbol)
+
+    state_ref["stage"] = "FETCH_PRICE_BUY"
+    t1 = exchange_api.fetch_ticker(ccxt_symbol) or {}
+    px1 = _to_order_float(t1.get("last") or t1.get("close"), 0.0)
+    if px1 <= 0:
+        raise RuntimeError("ticker(last) unavailable")
+
+    tick = _tick_size_krw(px1)
+    buy_px = _round_tick(px1 + buy_offset_ticks * tick, tick, "buy")
+    buy_qty = (krw_notional * 0.998) / buy_px
+    if buy_qty <= 0:
+        raise RuntimeError("buy qty invalid")
+
+    state_ref["stage"] = "LIMIT_BUY"
+    buy_order = exchange_api.create_order(ccxt_symbol, "limit", "buy", buy_qty, buy_px)
+    buy_id = (buy_order or {}).get("id")
+    if not buy_id:
+        raise RuntimeError("buy order id missing")
+
+    state_ref["stage"] = "WAIT_BUY_FILL"
+    buy_polled = _poll_order_fill(exchange_api, buy_id, ccxt_symbol, timeout_sec=25.0, poll_sec=0.5)
+    buy_filled, buy_avg = _extract_order_fill(buy_polled)
+    if buy_filled < buy_qty - 1e-12:
+        try: exchange_api.cancel_order(buy_id, ccxt_symbol)
+        except Exception: pass
+        buy_polled = _poll_order_fill(exchange_api, buy_id, ccxt_symbol, timeout_sec=2.0, poll_sec=0.3) or buy_polled
+        buy_filled, buy_avg = _extract_order_fill(buy_polled)
+    if buy_filled <= 0:
+        raise RuntimeError("buy not filled")
+
+    state_ref["stage"] = f"HOLD_{hold_seconds}S"
+    time.sleep(hold_seconds)
+
+    remaining = buy_filled
+    sold_total = 0.0
+    sell_amount = 0.0
+    sell_orders = []
+    state_ref["stage"] = "LIMIT_SELL"
+    for _ in range(3):
+        if remaining <= 1e-12:
+            break
+        tx = exchange_api.fetch_ticker(ccxt_symbol) or {}
+        cur = _to_order_float(tx.get("last") or tx.get("close"), 0.0)
+        if cur <= 0: cur = px1
+        st = _tick_size_krw(cur)
+        sell_px = _round_tick(cur, st, "sell")
+        od = exchange_api.create_order(ccxt_symbol, "limit", "sell", remaining, sell_px)
+        oid = (od or {}).get("id")
+        if not oid: break
+        sell_polled = _poll_order_fill(exchange_api, oid, ccxt_symbol, timeout_sec=20.0, poll_sec=0.5)
+        filled, avg = _extract_order_fill(sell_polled)
+        if filled < remaining - 1e-12:
+            try: exchange_api.cancel_order(oid, ccxt_symbol)
+            except Exception: pass
+            sell_polled = _poll_order_fill(exchange_api, oid, ccxt_symbol, timeout_sec=2.0, poll_sec=0.3) or sell_polled
+            filled, avg = _extract_order_fill(sell_polled)
+        sold_total += filled
+        sell_amount += filled * (avg if avg > 0 else sell_px)
+        remaining = max(0.0, remaining - filled)
+        sell_orders.append({"order_id": oid, "filled": filled, "avg": avg if avg > 0 else sell_px, "requested": remaining + filled})
+
+    state_ref["stage"] = "DONE"
+    pnl_krw = sell_amount - (buy_filled * buy_avg)
+    pnl_pct = (pnl_krw / (buy_filled * buy_avg)) if (buy_filled * buy_avg) > 0 else 0.0
+    return {
+        "ok": sold_total > 0,
+        "symbol": symbol,
+        "buy": {"order_id": buy_id, "requested_qty": buy_qty, "filled_qty": buy_filled, "avg_price": buy_avg, "limit_price": buy_px, "ticker_price": px1},
+        "sell": {"orders": sell_orders, "filled_qty": sold_total, "remaining_qty": remaining, "amount": sell_amount},
+        "hold_seconds": hold_seconds,
+        "pnl_krw": pnl_krw,
+        "pnl_pct": pnl_pct,
+        "ts": time.time(),
+    }
+
+
 def build_status(service: BotService, state: BackendState):
     now = time.time()
     current_settings = load_settings()
@@ -4594,6 +4857,7 @@ def build_status(service: BotService, state: BackendState):
         "labs": build_labs_payload(),
         "recent_errors": recent_errors,
         "data_status": build_data_payload(),
+        "manual_roundtrip": service.get_manual_roundtrip_status() if hasattr(service, "get_manual_roundtrip_status") else None,
         "watchlist_ranked": WATCH_CACHE.get("list", []),
         "watchlist_score_max": max_score
     }

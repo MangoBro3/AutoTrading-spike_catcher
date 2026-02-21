@@ -92,6 +92,14 @@ class ConfirmRequest(BaseModel):
     phrase: str
 
 
+class ManualRoundtripRequest(BaseModel):
+    symbol: str = "KRW-XRP"
+    krw_notional: float = 5500
+    buy_offset_ticks: int = 1
+    hold_seconds: int = 30
+    confirm: str = ""
+
+
 class BackendService:
     def __init__(self):
         self._mtx = threading.Lock()
@@ -100,6 +108,7 @@ class BackendService:
         self.last_error: Optional[str] = None
         self.pending = None
         self.lock = SingleInstanceLock(LOCK_PATH)
+        self.manual_roundtrip = {"running": False, "stage": "IDLE", "last_result": None, "last_error": None}
         self.safe_start = SafeStartManager(
             state_path=SAFE_START_STATE_PATH,
             runtime_state_path=RUNTIME_STATE_PATH,
@@ -239,6 +248,8 @@ class BackendService:
         payload = {
             "ok": True,
             "running": self._is_running(),
+            "manual_roundtrip": self.manual_roundtrip,
+
             "phase": state.get("phase"),
             "safe_start": state,
             "pending": self._pending_status(),
@@ -352,6 +363,110 @@ class BackendService:
             self.pending = None
             self.safe_start.mark_running()
             return {"ok": True, "phase": PHASE_RUNNING}
+
+    def _tick_size_krw(self, price: float) -> float:
+        p = float(price or 0.0)
+        if p < 0.1: return 0.0001
+        if p < 1: return 0.001
+        if p < 10: return 0.01
+        if p < 100: return 0.1
+        if p < 1000: return 1.0
+        if p < 10000: return 5.0
+        if p < 100000: return 10.0
+        if p < 500000: return 50.0
+        if p < 1000000: return 100.0
+        if p < 2000000: return 500.0
+        return 1000.0
+
+    def _round_tick(self, price: float, tick: float, side: str) -> float:
+        u = float(price) / max(1e-12, float(tick))
+        n = int(u) if (side == "sell" or abs(u - int(u)) < 1e-12) else int(u) + 1
+        return max(float(tick), n * float(tick))
+
+    def _manual_roundtrip_worker(self, req: ManualRoundtripRequest):
+        err = None
+        result = None
+        try:
+            c = self.controller
+            if c is None:
+                raise RuntimeError("controller not running")
+            ex = c._resolve_exchange_api(None)
+            mode = str(getattr(c, "mode", "PAPER")).upper()
+            if mode == "LIVE" and str(req.confirm or "").strip() != "MANUAL ROUNDTRIP LIVE":
+                raise RuntimeError("LIVE blocked: confirm required (MANUAL ROUNDTRIP LIVE)")
+            symbol = str(req.symbol or "KRW-XRP").upper()
+            ccxt_symbol = c._to_ccxt_symbol(symbol)
+            t = ex.fetch_ticker(ccxt_symbol) or {}
+            px = float(t.get("last") or t.get("close") or 0.0)
+            if px <= 0:
+                raise RuntimeError("ticker unavailable")
+            tick = self._tick_size_krw(px)
+            buy_px = self._round_tick(px + int(req.buy_offset_ticks) * tick, tick, "buy")
+            buy_qty = max(0.0, float(req.krw_notional) * 0.998 / buy_px)
+            self.manual_roundtrip["stage"] = "LIMIT_BUY"
+            bo = ex.create_order(ccxt_symbol, "limit", "buy", buy_qty, buy_px)
+            bid = bo.get("id")
+            if not bid:
+                raise RuntimeError("buy order id missing")
+            time.sleep(1.0)
+            bq = 0.0; bav = 0.0
+            for _ in range(50):
+                od = ex.fetch_order(bid, ccxt_symbol) or {}
+                bq = float(od.get("filled") or 0.0)
+                bav = float(od.get("average") or 0.0)
+                if str(od.get("status","")).lower() in {"closed","filled"} or bq >= buy_qty - 1e-12:
+                    break
+                time.sleep(0.5)
+            if bq < buy_qty - 1e-12:
+                try: ex.cancel_order(bid, ccxt_symbol)
+                except Exception: pass
+            if bq <= 0:
+                raise RuntimeError("buy not filled")
+            self.manual_roundtrip["stage"] = "HOLD"
+            time.sleep(max(1, int(req.hold_seconds)))
+            remaining = bq
+            sold = 0.0
+            amount = 0.0
+            sells = []
+            for _ in range(3):
+                if remaining <= 1e-12: break
+                tx = ex.fetch_ticker(ccxt_symbol) or {}
+                spx0 = float(tx.get("last") or tx.get("close") or px)
+                stk = self._tick_size_krw(spx0)
+                spx = self._round_tick(spx0, stk, "sell")
+                so = ex.create_order(ccxt_symbol, "limit", "sell", remaining, spx)
+                sid = so.get("id")
+                if not sid: break
+                sq=0.0; sav=0.0
+                for _ in range(40):
+                    od = ex.fetch_order(sid, ccxt_symbol) or {}
+                    sq = float(od.get("filled") or 0.0)
+                    sav = float(od.get("average") or 0.0)
+                    if str(od.get("status","")).lower() in {"closed","filled"} or sq >= remaining - 1e-12:
+                        break
+                    time.sleep(0.5)
+                if sq < remaining - 1e-12:
+                    try: ex.cancel_order(sid, ccxt_symbol)
+                    except Exception: pass
+                sold += sq
+                amount += sq * (sav if sav>0 else spx)
+                remaining = max(0.0, remaining - sq)
+                sells.append({"order_id": sid, "filled": sq, "avg": sav if sav>0 else spx})
+            result = {"ok": sold>0, "symbol": symbol, "buy": {"order_id": bid, "filled_qty": bq, "avg": bav, "limit_price": buy_px}, "sell": {"orders": sells, "filled_qty": sold, "remaining_qty": remaining}, "hold_seconds": int(req.hold_seconds)}
+        except Exception as e:
+            err = str(e)
+        self.manual_roundtrip.update({"running": False, "stage": "DONE" if err is None else "ERROR", "last_result": result, "last_error": err})
+
+    def start_manual_roundtrip(self, req: ManualRoundtripRequest):
+        with self._mtx:
+            if self.manual_roundtrip.get("running"):
+                return {"ok": False, "error": "manual-roundtrip-running"}
+            if not self._is_running() or self.controller is None:
+                return {"ok": False, "error": "controller-not-running"}
+            self.manual_roundtrip.update({"running": True, "stage": "QUEUED", "last_error": None})
+            t = threading.Thread(target=self._manual_roundtrip_worker, args=(req,), daemon=True)
+            t.start()
+            return {"ok": True, "message": "accepted", "manual_roundtrip": self.manual_roundtrip}
 
     def stop(self):
         with self._mtx:
@@ -536,6 +651,11 @@ def control_confirm(req: ConfirmRequest):
 @app.post("/api/v1/control/stop")
 def control_stop():
     return service.stop()
+
+
+@app.post("/api/v1/manual/roundtrip-test")
+def manual_roundtrip_test(req: ManualRoundtripRequest):
+    return service.start_manual_roundtrip(req)
 
 
 if __name__ == "__main__":
