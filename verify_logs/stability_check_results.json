@@ -1,0 +1,314 @@
+{
+  "results": [
+    {
+      "endpoint": "/api/worker",
+      "seq": 1,
+      "ok": true,
+      "status": 200,
+      "ms": 4.7969818115234375,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 2,
+      "ok": true,
+      "status": 200,
+      "ms": 2.714395523071289,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 3,
+      "ok": true,
+      "status": 200,
+      "ms": 3.0066967010498047,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 4,
+      "ok": true,
+      "status": 200,
+      "ms": 3.379344940185547,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 5,
+      "ok": true,
+      "status": 200,
+      "ms": 4.944324493408203,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 6,
+      "ok": true,
+      "status": 200,
+      "ms": 2.8836727142333984,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 7,
+      "ok": true,
+      "status": 200,
+      "ms": 2.4764537811279297,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 8,
+      "ok": true,
+      "status": 200,
+      "ms": 2.161264419555664,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 9,
+      "ok": true,
+      "status": 200,
+      "ms": 2.6581287384033203,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 10,
+      "ok": true,
+      "status": 200,
+      "ms": 2.735137939453125,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 11,
+      "ok": true,
+      "status": 200,
+      "ms": 2.5217533111572266,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 12,
+      "ok": true,
+      "status": 200,
+      "ms": 1.983642578125,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 13,
+      "ok": true,
+      "status": 200,
+      "ms": 1.665353775024414,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 14,
+      "ok": true,
+      "status": 200,
+      "ms": 2.7129650115966797,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 15,
+      "ok": true,
+      "status": 200,
+      "ms": 2.8748512268066406,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 16,
+      "ok": true,
+      "status": 200,
+      "ms": 1.9259452819824219,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 17,
+      "ok": true,
+      "status": 200,
+      "ms": 1.9516944885253906,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 18,
+      "ok": true,
+      "status": 200,
+      "ms": 1.6078948974609375,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 19,
+      "ok": true,
+      "status": 200,
+      "ms": 3.185749053955078,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/worker",
+      "seq": 20,
+      "ok": true,
+      "status": 200,
+      "ms": 1.9016265869140625,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 1,
+      "ok": true,
+      "status": 200,
+      "ms": 39.64972496032715,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 2,
+      "ok": true,
+      "status": 200,
+      "ms": 2.2940635681152344,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 3,
+      "ok": true,
+      "status": 200,
+      "ms": 2.0380020141601562,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 4,
+      "ok": true,
+      "status": 200,
+      "ms": 2.9850006103515625,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 5,
+      "ok": true,
+      "status": 200,
+      "ms": 2.6874542236328125,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 6,
+      "ok": true,
+      "status": 200,
+      "ms": 3.2596588134765625,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 7,
+      "ok": true,
+      "status": 200,
+      "ms": 2.7201175689697266,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 8,
+      "ok": true,
+      "status": 200,
+      "ms": 2.4013519287109375,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 9,
+      "ok": true,
+      "status": 200,
+      "ms": 2.8581619262695312,
+      "category": "OK",
+      "timeout": false
+    },
+    {
+      "endpoint": "/api/overview",
+      "seq": 10,
+      "ok": true,
+      "status": 200,
+      "ms": 2.894163131713867,
+      "category": "OK",
+      "timeout": false
+    }
+  ],
+  "summary": {
+    "/api/worker": {
+      "count": 20,
+      "p95_ms": 4.7969818115234375,
+      "timeout_count": 0,
+      "conn_refused": 0,
+      "fivehundred": 0,
+      "other_fail": 20
+    },
+    "/api/overview": {
+      "count": 10,
+      "p95_ms": 3.2596588134765625,
+      "timeout_count": 0,
+      "conn_refused": 0,
+      "fivehundred": 0,
+      "other_fail": 10
+    }
+  },
+  "clean_summary": {
+    "/api/overview": {
+      "requests": 10,
+      "p95_ms": 3.2596588134765625,
+      "timeout_count": 0,
+      "fail_conn_refused": 0,
+      "fail_500": 0,
+      "fail_other": 0,
+      "ok_count": 10,
+      "fail_count": 0
+    },
+    "/api/worker": {
+      "requests": 20,
+      "p95_ms": 4.7969818115234375,
+      "timeout_count": 0,
+      "fail_conn_refused": 0,
+      "fail_500": 0,
+      "fail_other": 0,
+      "ok_count": 20,
+      "fail_count": 0
+    }
+  }
+}

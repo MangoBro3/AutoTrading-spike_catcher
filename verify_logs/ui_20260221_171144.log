@@ -1,0 +1,66 @@
+auto-trading-ui listening on http://127.0.0.1:18890
+[startup] worker.baseURL=http://127.0.0.1:8765/api/v1
+[startup] worker.timeoutMs=3000
+[startup] worker.pollMs=1000 worker.downDebounceMs=4000
+[startup] overview.refreshMs=2000 overview.cmdTimeoutMs=1200
+[startup] api.workerKickTimeoutMs=120
+[watchdog] #1 START GET /api/worker
+[watchdog] #1 END status=200 took=2ms route=/api/worker non_blocking
+[watchdog] #2 START GET /api/worker
+[watchdog] #2 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #3 START GET /api/worker
+[watchdog] #3 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #4 START GET /api/worker
+[watchdog] #4 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #5 START GET /api/worker
+[watchdog] #5 END status=200 took=2ms route=/api/worker non_blocking
+[watchdog] #6 START GET /api/worker
+[watchdog] #6 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #7 START GET /api/worker
+[watchdog] #7 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #8 START GET /api/worker
+[watchdog] #8 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #9 START GET /api/worker
+[watchdog] #9 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #10 START GET /api/worker
+[watchdog] #10 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #11 START GET /api/worker
+[watchdog] #11 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #12 START GET /api/worker
+[watchdog] #12 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #13 START GET /api/worker
+[watchdog] #13 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #14 START GET /api/worker
+[watchdog] #14 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #15 START GET /api/worker
+[watchdog] #15 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #16 START GET /api/worker
+[watchdog] #16 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #17 START GET /api/worker
+[watchdog] #17 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #18 START GET /api/worker
+[watchdog] #18 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #19 START GET /api/worker
+[watchdog] #19 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #20 START GET /api/worker
+[watchdog] #20 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #21 START GET /api/overview
+[watchdog] #21 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #22 START GET /api/overview
+[watchdog] #22 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #23 START GET /api/overview
+[watchdog] #23 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #24 START GET /api/overview
+[watchdog] #24 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #25 START GET /api/overview
+[watchdog] #25 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #26 START GET /api/overview
+[watchdog] #26 END status=200 took=2ms route=/api/overview cache=immediate
+[watchdog] #27 START GET /api/overview
+[watchdog] #27 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #28 START GET /api/overview
+[watchdog] #28 END status=200 took=1ms route=/api/overview cache=immediate
+[watchdog] #29 START GET /api/overview
+[watchdog] #29 END status=200 took=2ms route=/api/overview cache=immediate
+[watchdog] #30 START GET /api/overview
+[watchdog] #30 END status=200 took=2ms route=/api/overview cache=immediate

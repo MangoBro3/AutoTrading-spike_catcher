@@ -23,6 +23,34 @@ const WORKER_POLL_MS = process.env.WORKER_POLL_MS ? Number(process.env.WORKER_PO
 const WORKER_DOWN_DEBOUNCE_MS = process.env.WORKER_DOWN_DEBOUNCE_MS ? Number(process.env.WORKER_DOWN_DEBOUNCE_MS) : 4000;
 const OVERVIEW_REFRESH_MS = process.env.AT_UI_OVERVIEW_REFRESH_MS ? Number(process.env.AT_UI_OVERVIEW_REFRESH_MS) : 2000;
 const OVERVIEW_CMD_TIMEOUT_MS = process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS ? Number(process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS) : 1200;
+const API_WORKER_KICK_TIMEOUT_MS = process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS ? Number(process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS) : 120;
+
+let requestSeq = 0;
+
+function requestStart(req, url) {
+  const id = ++requestSeq;
+  const startedAt = Date.now();
+  console.log(`[watchdog] #${id} START ${req.method || 'GET'} ${url.pathname}`);
+  return { id, startedAt };
+}
+
+function requestEnd(ctx, res, note = '') {
+  const tookMs = Date.now() - ctx.startedAt;
+  const suffix = note ? ` ${note}` : '';
+  console.log(`[watchdog] #${ctx.id} END status=${res.statusCode} took=${tookMs}ms${suffix}`);
+}
+
+function sendJson(res, statusCode, body, ctx, note = '') {
+  if (res.writableEnded) return;
+  res.writeHead(statusCode, { 'content-type': MIME['.json'] });
+  res.end(JSON.stringify(body, null, 2));
+  if (ctx) requestEnd(ctx, res, note);
+}
+
+function sendApiError(res, ctx, error, route = 'unknown') {
+  const message = String(error?.message || error || 'internal_error');
+  sendJson(res, 500, { ok: false, route, error: message }, ctx, `route=${route} error=${message}`);
+}
 
 async function tryExecJson(cmd, timeoutMs = OVERVIEW_CMD_TIMEOUT_MS) {
   const { stdout } = await exec(cmd, {
@@ -384,58 +412,92 @@ const MIME = {
 };
 
 const server = http.createServer((req, res) => {
-  const url = new URL(req.url, `http://${req.headers.host}`);
-
-  if (url.pathname === '/api/overview') {
-    res.writeHead(200, { 'content-type': MIME['.json'] });
-    return res.end(JSON.stringify({ ...overviewCache, worker: workerMonitor.stableSnapshotFallback() }, null, 2));
-  }
-
-  if (url.pathname === '/api/worker') {
-    Promise.race([
-      workerMonitor.tick(),
-      new Promise((resolve) => setTimeout(resolve, 120)),
-    ]).catch(() => {});
-
-    res.writeHead(200, { 'content-type': MIME['.json'] });
-    return res.end(JSON.stringify(workerMonitor.stableSnapshotFallback(), null, 2));
-  }
-
-  if (url.pathname.startsWith('/api/worker/control/')) {
-    if ((req.method || 'GET').toUpperCase() !== 'POST') {
-      res.writeHead(405, { 'content-type': MIME['.json'] });
-      return res.end(JSON.stringify({ ok: false, error: 'method_not_allowed' }));
-    }
-    const action = url.pathname.replace('/api/worker/control/', '').trim();
-    let body = '';
-    req.on('data', (chunk) => { body += chunk; });
-    req.on('end', async () => {
-      try {
-        const parsed = body ? JSON.parse(body) : {};
-        const out = await workerClient.control(action, parsed);
-        await workerMonitor.tick();
-        res.writeHead(200, { 'content-type': MIME['.json'] });
-        return res.end(JSON.stringify({ ok: true, action, result: out, worker: workerMonitor.snapshot() }, null, 2));
-      } catch (e) {
-        res.writeHead(500, { 'content-type': MIME['.json'] });
-        return res.end(JSON.stringify({ ok: false, action, error: String(e?.message || e) }, null, 2));
-      }
-    });
-    return;
-  }
-
-  const path = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
-  const filePath = join(ROOT, path);
+  let url;
   try {
-    const buf = readFileSync(filePath);
-    res.writeHead(200, { 'content-type': MIME[extname(filePath)] || 'application/octet-stream' });
-    res.end(buf);
-  } catch {
-    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
-    res.end('Not Found');
+    url = new URL(req.url, `http://${req.headers.host || '127.0.0.1'}`);
+  } catch (e) {
+    res.writeHead(400, { 'content-type': MIME['.json'] });
+    return res.end(JSON.stringify({ ok: false, error: 'bad_request', detail: String(e?.message || e) }, null, 2));
+  }
+
+  const ctx = requestStart(req, url);
+
+  try {
+    if (url.pathname === '/api/overview') {
+      return sendJson(
+        res,
+        200,
+        { ...overviewCache, worker: workerMonitor.stableSnapshotFallback() },
+        ctx,
+        'route=/api/overview cache=immediate',
+      );
+    }
+
+    if (url.pathname === '/api/worker') {
+      Promise.race([
+        workerMonitor.tick(),
+        new Promise((resolve) => setTimeout(resolve, Math.max(10, Number(API_WORKER_KICK_TIMEOUT_MS) || 120))),
+      ]).catch(() => {});
+
+      return sendJson(
+        res,
+        200,
+        workerMonitor.stableSnapshotFallback(),
+        ctx,
+        'route=/api/worker non_blocking',
+      );
+    }
+
+    if (url.pathname.startsWith('/api/worker/control/')) {
+      if ((req.method || 'GET').toUpperCase() !== 'POST') {
+        return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/control method_guard');
+      }
+      const action = url.pathname.replace('/api/worker/control/', '').trim();
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('error', (e) => sendApiError(res, ctx, e, '/api/worker/control'));
+      req.on('end', async () => {
+        try {
+          const parsed = body ? JSON.parse(body) : {};
+          const out = await workerClient.control(action, parsed);
+          await workerMonitor.tick();
+          return sendJson(res, 200, { ok: true, action, result: out, worker: workerMonitor.snapshot() }, ctx, 'route=/api/worker/control');
+        } catch (e) {
+          return sendApiError(res, ctx, e, '/api/worker/control');
+        }
+      });
+      return;
+    }
+
+    const path = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
+    const filePath = join(ROOT, path);
+    try {
+      const buf = readFileSync(filePath);
+      res.writeHead(200, { 'content-type': MIME[extname(filePath)] || 'application/octet-stream' });
+      res.end(buf);
+      requestEnd(ctx, res, `static=${path}`);
+      return;
+    } catch {
+      res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+      res.end('Not Found');
+      requestEnd(ctx, res, `static_missing=${path}`);
+      return;
+    }
+  } catch (e) {
+    if (url.pathname.startsWith('/api/')) {
+      return sendApiError(res, ctx, e, url.pathname);
+    }
+    res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
+    res.end('Internal Server Error');
+    requestEnd(ctx, res, `route=${url.pathname} error=${String(e?.message || e)}`);
   }
 });
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`auto-trading-ui listening on http://127.0.0.1:${PORT}`);
+  console.log(`[startup] worker.baseURL=${WORKER_API_BASE_URL}`);
+  console.log(`[startup] worker.timeoutMs=${Number(WORKER_API_TIMEOUT_MS)}`);
+  console.log(`[startup] worker.pollMs=${Number(WORKER_POLL_MS)} worker.downDebounceMs=${Number(WORKER_DOWN_DEBOUNCE_MS)}`);
+  console.log(`[startup] overview.refreshMs=${Number(OVERVIEW_REFRESH_MS)} overview.cmdTimeoutMs=${Number(OVERVIEW_CMD_TIMEOUT_MS)}`);
+  console.log(`[startup] api.workerKickTimeoutMs=${Number(API_WORKER_KICK_TIMEOUT_MS)}`);
 });
