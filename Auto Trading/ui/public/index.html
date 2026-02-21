@@ -161,33 +161,33 @@
       <div id="orderStatus" class="muted" style="margin-top:8px">대기중</div>
     </div>
 
-    <div class="card">
+    <div class="card" id="manualRoundtripCard">
       <h2>Manual Roundtrip Test (1회 왕복)</h2>
       <div class="inline" style="margin-top:8px;align-items:center;flex-wrap:wrap">
-        <label class="muted" for="rtSymbolInput" style="min-width:120px">symbol</label>
-        <input id="rtSymbolInput" type="text" value="KRW-XRP" />
+        <label class="muted" for="manualRoundtripSymbol" style="min-width:120px">symbol</label>
+        <input id="manualRoundtripSymbol" type="text" value="KRW-XRP" />
       </div>
       <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
-        <label class="muted" for="rtKrwInput" style="min-width:120px">krw_notional</label>
-        <input id="rtKrwInput" type="text" value="5500" />
+        <label class="muted" for="manualRoundtripNotional" style="min-width:120px">notional</label>
+        <input id="manualRoundtripNotional" type="text" value="5500" />
       </div>
       <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
-        <label class="muted" for="rtBuyTicksInput" style="min-width:120px">buy_offset_ticks</label>
-        <input id="rtBuyTicksInput" type="text" value="1" />
+        <label class="muted" for="manualRoundtripBuyOffsetTicks" style="min-width:120px">buy_offset_ticks</label>
+        <input id="manualRoundtripBuyOffsetTicks" type="text" value="1" />
       </div>
       <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
-        <label class="muted" for="rtHoldSecInput" style="min-width:120px">hold_seconds</label>
-        <input id="rtHoldSecInput" type="text" value="30" />
+        <label class="muted" for="manualRoundtripHoldSeconds" style="min-width:120px">hold_seconds</label>
+        <input id="manualRoundtripHoldSeconds" type="text" value="30" />
       </div>
       <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
-        <label class="muted" for="rtConfirmInput" style="min-width:120px">LIVE confirm</label>
-        <input id="rtConfirmInput" type="text" placeholder="MANUAL ROUNDTRIP LIVE" />
+        <label class="muted" for="manualRoundtripConfirm" style="min-width:120px">confirm</label>
+        <input id="manualRoundtripConfirm" type="text" placeholder="MANUAL ROUNDTRIP LIVE" />
       </div>
       <div class="inline" style="margin-top:8px">
-        <button id="rtRunBtn" class="btn">테스트 1회 왕복주문 실행</button>
+        <button id="manualRoundtripRunBtn" class="btn">테스트 1회 왕복주문 실행</button>
       </div>
-      <div id="rtState" class="muted" style="margin-top:8px">-</div>
-      <pre id="rtResult" class="muted" style="margin-top:8px;white-space:pre-wrap;background:#111722;border:1px solid #2a3342;border-radius:6px;padding:8px;max-height:180px;overflow:auto">-</pre>
+      <div id="manualRoundtripState" class="muted" style="margin-top:8px">-</div>
+      <pre id="manualRoundtripResult" class="muted" style="margin-top:8px;white-space:pre-wrap;background:#111722;border:1px solid #2a3342;border-radius:6px;padding:8px;max-height:180px;overflow:auto">-</pre>
     </div>
   </div>
 
@@ -332,12 +332,12 @@ async function postControl(action, body){
 }
 async function postExchangeToggles(body){ const r=await fetch('/api/worker/control/exchanges', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'control_failed:exchanges'); return j; }
 async function postUiSettings(body){ const r=await fetch('/api/ui-settings', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'save_failed:ui_settings'); return j; }
-async function postManualRoundtrip(body){ const r=await fetch('/api/worker/control/manual-roundtrip-test', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'manual_roundtrip_failed'); return j; }
+async function postManualRoundtrip(body){ const r=await fetch('/api/worker/manual/roundtrip-test', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'manual_roundtrip_failed'); return j; }
 
 function normalizeWorkerPayload(payload){ if(!payload||typeof payload!=='object') return null; if(payload.worker&&typeof payload.worker==='object') return payload.worker; if(payload.result?.worker&&typeof payload.result.worker==='object') return payload.result.worker; if(payload.state||payload.trafficLight||payload.connected!==undefined) return payload; return null; }
 
 function renderManualRoundtrip(rt){
-  const stateEl=$('rtState'), resultEl=$('rtResult');
+  const stateEl=$('manualRoundtripState'), resultEl=$('manualRoundtripResult');
   if(!stateEl||!resultEl) return;
   if(!rt){ stateEl.textContent='-'; resultEl.textContent='-'; return; }
   const running=!!rt.running;
@@ -554,25 +554,31 @@ panicHoldBtn.addEventListener('mousedown',()=>{ if(Number(panicSlider.value)<100
 ['mouseup','mouseleave'].forEach((ev)=> panicHoldBtn.addEventListener(ev,()=>{ if(holdTimer){clearTimeout(holdTimer); holdTimer=null; if(Date.now()-holdStart<2000) panicStatus.textContent='취소됨: 2초 이상 홀드 필요'; }}));
 
 $('orderCancelBtn').addEventListener('click', async()=>{ const orderId=String($('orderIdInput').value||'').trim(); if(!orderId){$('orderStatus').textContent='실패: orderId 입력 필요';return;} try{const out=await postControl('cancel-order',{orderId}); $('orderStatus').textContent=`취소 요청 성공: ${out?.result?.orderId||orderId}`; await tick();}catch(e){$('orderStatus').textContent=`실패: ${e.message}`;} });
-$('rtRunBtn')?.addEventListener('click', async()=>{
-  const parseNum=(id, d)=>{ const n=Number(String($(id)?.value||'').replace(/,/g,'').trim()); return Number.isFinite(n)?n:d; };
+$('manualRoundtripRunBtn')?.addEventListener('click', async()=>{
+  const stateEl=$('manualRoundtripState');
+  const resultEl=$('manualRoundtripResult');
   try{
-    $('rtState').textContent='요청 중...';
-    const out=await postManualRoundtrip({
-      symbol:String($('rtSymbolInput')?.value||'KRW-XRP').trim()||'KRW-XRP',
-      krw_notional:parseNum('rtKrwInput',5500),
-      buy_offset_ticks:parseNum('rtBuyTicksInput',1),
-      hold_seconds:parseNum('rtHoldSecInput',30),
-      confirm:String($('rtConfirmInput')?.value||'').trim(),
-    });
-    $('rtState').textContent=out?.message || 'accepted';
-    renderManualRoundtrip(out?.manual_roundtrip || null);
-  }catch(e){
-    $('rtState').textContent=`Roundtrip failed: ${e.message}`;
-  }
-  await tick();
-});
+    const symbol=String($('manualRoundtripSymbol')?.value||'').trim() || 'KRW-XRP';
+    const krw_notional=Math.floor(Number(String($('manualRoundtripNotional')?.value||'').replace(/,/g,'')));
+    const buy_offset_ticks=Math.floor(Number(String($('manualRoundtripBuyOffsetTicks')?.value||'').replace(/,/g,'')));
+    const hold_seconds=Math.floor(Number(String($('manualRoundtripHoldSeconds')?.value||'').replace(/,/g,'')));
+    const confirm=String($('manualRoundtripConfirm')?.value||'').trim();
+    if(!Number.isFinite(krw_notional)||krw_notional<=0) throw new Error('krw_notional은 0보다 큰 숫자 필요');
+    if(!Number.isFinite(buy_offset_ticks)) throw new Error('buy_offset_ticks 숫자 필요');
+    if(!Number.isFinite(hold_seconds)||hold_seconds<=0) throw new Error('hold_seconds는 0보다 큰 숫자 필요');
 
+    stateEl.textContent='요청 중...';
+    const payload={ symbol, krw_notional, buy_offset_ticks, hold_seconds, confirm };
+    const out=await postManualRoundtrip(payload);
+    stateEl.textContent=out?.message || 'accepted';
+    resultEl.textContent=JSON.stringify(out?.manual_roundtrip || out?.result || out, null, 2);
+    renderManualRoundtrip(out?.manual_roundtrip || null);
+    await tick();
+  }catch(e){
+    stateEl.textContent=`실패: ${e.message}`;
+    resultEl.textContent=JSON.stringify({ error: String(e?.message||e) }, null, 2);
+  }
+});
 function setManualRefreshState(){ const btn=$('refreshConnBtn'), label=$('refreshConnState'); btn.disabled=manualRefreshBusy; btn.innerHTML=manualRefreshBusy?'<span class="spinner"></span> 새로고침 중...':'연결 상태 새로고침'; const t=lastManualRefreshAt?new Date(lastManualRefreshAt).toLocaleTimeString():'-'; label.textContent=lastManualRefreshError?`수동 갱신 실패: ${lastManualRefreshError}`:`수동 갱신: ${t}`; }
 $('refreshConnBtn').addEventListener('click', async()=>{ if(manualRefreshBusy) return; manualRefreshBusy=true; setManualRefreshState(); try{ const [workerPayload, overview] = await Promise.all([fetchJson('/api/worker'), fetchJson(overviewUrl())]); const worker = normalizeWorkerPayload(workerPayload); if(worker) overview.worker=worker; render(overview); lastManualRefreshAt=Date.now(); lastManualRefreshError=''; }catch(e){ lastManualRefreshError=e.message; } finally { manualRefreshBusy=false; setManualRefreshState(); }});
 

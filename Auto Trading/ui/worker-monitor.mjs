@@ -61,6 +61,10 @@ export class WorkerApiClient {
     return fetchJson(this.url(`/control/${action}`), { method: 'POST', body, timeoutMs: this.timeoutMs });
   }
 
+  async manualRoundtrip(body = {}) {
+    return fetchJson(this.url('/manual/roundtrip-test'), { method: 'POST', body, timeoutMs: this.timeoutMs });
+  }
+
   async pollOnce() {
     const calls = [
       this.health().then((v) => ({ ok: true, v })).catch((e) => ({ ok: false, e: String(e?.message || e) })),

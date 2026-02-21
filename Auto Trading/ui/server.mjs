@@ -1088,6 +1088,40 @@ const server = http.createServer((req, res) => {
     }
 
 
+    if (url.pathname === '/api/worker/manual/roundtrip-test') {
+      if ((req.method || 'GET').toUpperCase() !== 'POST') {
+        return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/manual/roundtrip-test method_guard');
+      }
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('error', (e) => sendApiError(res, ctx, e, '/api/worker/manual/roundtrip-test'));
+      req.on('end', async () => {
+        try {
+          const parsed = body ? JSON.parse(body) : {};
+          const result = await postWorkerApi('/manual/roundtrip-test', parsed);
+          await workerMonitor.tick();
+          return sendJson(res, 200, {
+            ok: result?.ok !== false,
+            message: result?.message || null,
+            manual_roundtrip: result?.manual_roundtrip || null,
+            result,
+            worker: workerMonitor.snapshot(),
+          }, ctx, 'route=/api/worker/manual/roundtrip-test');
+        } catch (e) {
+          const message = String(e?.data?.error || e?.message || 'manual_roundtrip_failed');
+          await workerMonitor.tick();
+          return sendJson(res, 500, {
+            ok: false,
+            route: '/api/worker/manual/roundtrip-test',
+            error: message,
+            result: e?.data || null,
+            worker: workerMonitor.snapshot(),
+          }, ctx, `route=/api/worker/manual/roundtrip-test error=${message}`);
+        }
+      });
+      return;
+    }
+
     if (url.pathname === '/api/worker/control/exchanges') {
       if ((req.method || 'GET').toUpperCase() !== 'POST') {
         return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/control/exchanges method_guard');
@@ -1200,6 +1234,58 @@ const server = http.createServer((req, res) => {
           }, ctx, 'route=/api/ui-settings post');
         } catch (e) {
           return sendApiError(res, ctx, e, '/api/ui-settings');
+        }
+      });
+      return;
+    }
+
+    if (url.pathname === '/api/worker/control/manual-roundtrip-test') {
+      if ((req.method || 'GET').toUpperCase() !== 'POST') {
+        return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/control/manual-roundtrip-test method_guard');
+      }
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('error', (e) => sendApiError(res, ctx, e, '/api/worker/control/manual-roundtrip-test'));
+      req.on('end', async () => {
+        try {
+          const parsed = body ? JSON.parse(body) : {};
+          let out = null;
+          let backendRoute = null;
+          const attempts = [
+            { route: '/api/v1/control/manual-roundtrip-test', fn: () => workerClient.control('manual-roundtrip-test', parsed) },
+            { route: '/api/v1/manual/roundtrip-test', fn: () => workerClient.manualRoundtrip(parsed) },
+          ];
+          let lastError = null;
+          for (const attempt of attempts) {
+            try {
+              out = await attempt.fn();
+              backendRoute = attempt.route;
+              break;
+            } catch (e) {
+              lastError = e;
+            }
+          }
+          if (!out) throw lastError || new Error('manual_roundtrip_failed');
+
+          await workerMonitor.tick();
+          return sendJson(res, 200, {
+            ok: true,
+            action: 'manual-roundtrip-test',
+            backendRoute,
+            result: out,
+            worker: workerMonitor.snapshot(),
+          }, ctx, 'route=/api/worker/control/manual-roundtrip-test');
+        } catch (e) {
+          const detail = e?.data && typeof e.data === 'object' ? e.data : null;
+          await workerMonitor.tick();
+          return sendJson(res, 500, {
+            ok: false,
+            route: '/api/worker/control/manual-roundtrip-test',
+            action: 'manual-roundtrip-test',
+            error: String(e?.message || e || 'manual_roundtrip_failed'),
+            result: detail,
+            worker: workerMonitor.snapshot(),
+          }, ctx, `route=/api/worker/control/manual-roundtrip-test error=${String(e?.message || e)}`);
         }
       });
       return;
