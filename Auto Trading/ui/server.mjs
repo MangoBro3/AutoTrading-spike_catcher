@@ -26,6 +26,8 @@ const OVERVIEW_CMD_TIMEOUT_MS = process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS ? Numb
 const API_WORKER_KICK_TIMEOUT_MS = process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS ? Number(process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS) : 120;
 const RUNTIME_STATUS_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_status.json');
 const RUNTIME_STATE_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_state.json');
+const LEDGER_RUNTIME_DIR = join(WORKSPACE_ROOT, 'Auto Trading', 'runtime', 'ledger');
+const RESULTS_RUNTIME_DIR = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime');
 const EXCHANGE_TOGGLES_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'ui_exchange_toggles.json');
 const DEFAULT_TIMELINE_LIMIT = process.env.AT_UI_TIMELINE_DEFAULT_LIMIT ? Number(process.env.AT_UI_TIMELINE_DEFAULT_LIMIT) : 30;
 const DEFAULT_TIMELINE_WINDOW_HOURS = process.env.AT_UI_TIMELINE_DEFAULT_HOURS ? Number(process.env.AT_UI_TIMELINE_DEFAULT_HOURS) : 24;
@@ -101,6 +103,105 @@ async function readRuntimeStatus() {
 
 async function readRuntimeState() {
   return readJsonFile(RUNTIME_STATE_PATH, null);
+}
+
+
+function toNum(v, d = null) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : d;
+}
+
+function dateKeyFromTs(tsMs) {
+  const d = new Date(Number(tsMs || 0));
+  if (Number.isNaN(d.getTime())) return null;
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function normalizeDailyRow(raw = {}) {
+  const date = String(raw.date || raw.day || '').trim();
+  const pnl = toNum(raw.pnl_krw ?? raw.pnl ?? raw.daily_pnl_krw, null);
+  const equity = toNum(raw.virtual_equity ?? raw.equity ?? raw.equity_krw, null);
+  const trades = toNum(raw.trades ?? raw.trade_count, 0);
+  const winRate = toNum(raw.win_rate ?? raw.winRate, null);
+  const source = String(raw.source || raw.kind || 'ledger_snapshot');
+  if (!date) return null;
+  return { date, pnl_krw: pnl, virtual_equity: equity, trades, win_rate: winRate, source };
+}
+
+async function readLedgerDailySnapshots() {
+  const paths = [LEDGER_RUNTIME_DIR, RESULTS_RUNTIME_DIR];
+  const out = [];
+  for (const dir of paths) {
+    try {
+      const names = await readFile(join(dir, '.keep'), 'utf8').then(() => []).catch(async () => {
+        const { readdir } = await import('node:fs/promises');
+        return readdir(dir);
+      });
+      for (const name of names) {
+        const low = String(name || '').toLowerCase();
+        if (!low.endsWith('.json')) continue;
+        if (!(low.includes('ledger') || low.includes('snapshot'))) continue;
+        const obj = await readJsonFile(join(dir, name), null);
+        if (!obj || typeof obj !== 'object') continue;
+        const candidates = [];
+        if (Array.isArray(obj.daily_reviews)) candidates.push(...obj.daily_reviews);
+        if (Array.isArray(obj.daily)) candidates.push(...obj.daily);
+        if (Array.isArray(obj.reviews)) candidates.push(...obj.reviews);
+        if (Array.isArray(obj.snapshots)) candidates.push(...obj.snapshots);
+        if (!candidates.length && (obj.date || obj.day)) candidates.push(obj);
+        for (const c of candidates) {
+          const row = normalizeDailyRow(c || {});
+          if (row) out.push(row);
+        }
+      }
+    } catch {
+      // ignore missing dirs/files
+    }
+  }
+  const dedup = new Map();
+  for (const r of out) dedup.set(r.date, r);
+  return [...dedup.values()].sort((a, b) => String(b.date).localeCompare(String(a.date)));
+}
+
+function buildFallbackDailyReview(runtimeStatus, runtimeState, days = 7) {
+  const nowKey = dateKeyFromTs(Date.now());
+  const yesterday = nowKey ? new Date(Date.now() - 24 * 3600 * 1000) : null;
+  const yk = yesterday ? dateKeyFromTs(yesterday.getTime()) : null;
+  const vc = runtimeStatus?.virtual_capital || runtimeState?.virtual_capital || {};
+  const pnl = toNum(vc.pnl_virtual ?? runtimeStatus?.pnl_krw ?? runtimeState?.realized_pnl_krw, 0);
+  const veq = toNum(vc.equity_virtual ?? runtimeStatus?.equity ?? runtimeState?.equity, null);
+  const one = yk ? [{ date: yk, pnl_krw: pnl, virtual_equity: veq, trades: 0, win_rate: null, source: 'fallback' }] : [];
+  return one.slice(0, Math.max(1, Number(days) || 7));
+}
+
+function deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap }) {
+  const fromStatus = runtimeStatus?.virtual_capital || {};
+  const equity = toNum(
+    fromStatus.equity_virtual
+      ?? fromStatus.next_available_capital
+      ?? runtimeStatus?.equity
+      ?? runtimeState?.equity
+      ?? workerSnap?.state?.equity,
+    0,
+  );
+  const seed = toNum(fromStatus.allocated ?? runtimeStatus?.seed_krw ?? workerSnap?.state?.seed ?? 0, 0);
+  const pnl = toNum(fromStatus.pnl_virtual, equity - seed);
+  const pnlPct = toNum(fromStatus.pnl_pct_virtual, seed > 0 ? (pnl / seed) * 100 : 0);
+  const cap = toNum(fromStatus.cap_krw, null);
+  const nextAvail = cap != null && cap > 0 ? Math.min(equity, cap) : equity;
+  return {
+    rule: 'next_available_capital = current_virtual_equity',
+    seed_krw: seed,
+    equity_virtual: equity,
+    pnl_virtual: pnl,
+    pnl_pct_virtual: pnlPct,
+    next_available_capital: Math.max(0, nextAvail),
+    available_for_bot: Math.max(0, nextAvail),
+    cap_krw: cap,
+  };
 }
 
 function pickArray(obj, paths = []) {
@@ -583,6 +684,9 @@ async function rebuildOverviewCache() {
 
     const workerSnap = workerMonitor.stableSnapshotFallback();
     exchangeTogglesCache = await readExchangeToggles();
+    const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
+    const ledgerReviews = await readLedgerDailySnapshots();
+    const yesterdayTradingReview = (ledgerReviews.length ? ledgerReviews : buildFallbackDailyReview(runtimeStatus, runtimeState, 7)).slice(0, 7);
     // Auto Trading UI split: keep only fields actually used by this UI.
     overviewCache = {
       now: new Date().toISOString(),
@@ -595,6 +699,8 @@ async function rebuildOverviewCache() {
       exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
       exchangeToggles: exchangeTogglesCache,
       marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
+      virtualCapital,
+      yesterdayTradingReview,
       usage,
       taskSignals,
       timeline: timelineView.rows,
@@ -645,6 +751,11 @@ const server = http.createServer((req, res) => {
 
       const workerSnap = workerMonitor.stableSnapshotFallback();
       const runtimeStatus = overviewCache.runtimeStatus || null;
+      const runtimeState = overviewCache.runtimeState || null;
+      const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
+      const yesterdayTradingReview = Array.isArray(overviewCache.yesterdayTradingReview) && overviewCache.yesterdayTradingReview.length
+        ? overviewCache.yesterdayTradingReview.slice(0, 7)
+        : buildFallbackDailyReview(runtimeStatus, runtimeState, 7);
       return sendJson(
         res,
         200,
@@ -665,6 +776,8 @@ const server = http.createServer((req, res) => {
             statePoint: overviewCache.statePoint || null,
             workerSnap,
           }),
+          virtualCapital,
+          yesterdayTradingReview,
           timeline: timelineView.rows,
           timelineMeta: timelineView.meta,
         },

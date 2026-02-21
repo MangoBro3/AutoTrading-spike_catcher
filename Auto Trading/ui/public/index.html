@@ -27,7 +27,7 @@
     .slider:before{position:absolute;content:"";height:22px;width:22px;left:4px;bottom:4px;background:white;transition:.2s;border-radius:50%}
     input:checked + .slider{background:#2e6f43} input:checked + .slider:before{transform:translateX(22px)} input:disabled + .slider{opacity:.5;cursor:not-allowed}
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50}.modal.show{display:flex}
-    .modal-card{width:min(460px,92vw);background:#161a22;border:1px solid #2f3745;border-radius:10px;padding:14px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+    .modal-card{width:min(460px,92vw);background:#161a22;border:1px solid #2f3745;border-radius:10px;padding:14px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.review-list{max-height:240px;overflow:auto;border:1px solid #262d38;border-radius:8px}.review-list table{font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
   </style>
 </head>
 <body>
@@ -82,6 +82,18 @@
       <div id="watchingList" class="muted">불러오는 중...</div>
     </div>
 
+
+    <div class="card">
+      <h2>어제의 트레이딩 리뷰 (최근 7일)</h2>
+      <div id="virtualCapitalMeta" class="muted">가용자금 규칙: 현재 virtual_equity = 다음 가용자금</div>
+      <div class="review-list" style="margin-top:8px">
+        <table>
+          <thead><tr><th>Date</th><th>PnL</th><th>Virtual Equity</th><th>Trades</th><th>Source</th></tr></thead>
+          <tbody id="reviewTable"><tr><td colspan="5" class="muted">불러오는 중...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Panic 안전장치</h2>
       <div class="muted">1) 슬라이더를 100으로 이동 2) HOLD 2초 유지</div>
@@ -105,6 +117,7 @@
 const $ = (id)=>document.getElementById(id);
 const esc = (s)=>String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]));
 const val = (obj, keys, fallback='-') => { for (const k of keys){const v=obj?.[k]; if(v!==undefined&&v!==null&&v!=='') return v;} return fallback; };
+const fmtKrw = (v)=>{ const n=Number(v); return Number.isFinite(n) ? `${n.toLocaleString()} KRW` : '-'; };
 
 let latestOverview=null, controlBusy=false, syncingToggle=false, syncingExchangeToggle=false;
 let manualRefreshBusy=false, lastManualRefreshAt=null, lastManualRefreshError='';
@@ -172,6 +185,13 @@ function render(data){
 
   const watch = Array.isArray(data?.watchingSymbols) ? data.watchingSymbols : [];
   $('watchingList').innerHTML = watch.length ? watch.map((x)=>`<code>${esc(x)}</code>`).join(' ') : '<span class="muted">watchlist/symbols 데이터 없음 (fallback)</span>';
+
+  const vc = data?.virtualCapital || data?.runtimeStatus?.virtual_capital || {};
+  $('virtualCapitalMeta').innerHTML = `규칙: <span class='mono'>current virtual_equity = next available capital</span><br/>현재 Virtual Equity: <b>${esc(fmtKrw(vc.equity_virtual ?? vc.next_available_capital))}</b> | 다음 가용자금: <b>${esc(fmtKrw(vc.next_available_capital ?? vc.available_for_bot))}</b>`;
+  const reviewRows = Array.isArray(data?.yesterdayTradingReview) ? data.yesterdayTradingReview.slice(0,7) : [];
+  $('reviewTable').innerHTML = reviewRows.length
+    ? reviewRows.map((r)=>`<tr><td>${esc(r.date||'-')}</td><td>${esc(fmtKrw(r.pnl_krw))}</td><td>${esc(fmtKrw(r.virtual_equity))}</td><td>${esc(String(r.trades ?? '-'))}</td><td>${esc(String(r.source||'-'))}</td></tr>`).join('')
+    : '<tr><td colspan="5" class="muted">리뷰 데이터 없음 (fallback)</td></tr>';
 
   const indicators = data?.exchangeIndicators || {};
   const renderIndicator = (name, obj) => {

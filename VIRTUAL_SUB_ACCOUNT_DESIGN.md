@@ -225,4 +225,55 @@
 - 수수료/슬리피지 배부 방식(정확배부 vs 비율배부)
 - 입출금/수동거래 발생 시 원장 보정 운영정책
 
-버전: v1.0
+---
+
+## 12. v1.1 추가 확정 사항
+
+### 12.1 '어제의 트레이딩 리뷰' UI/데이터 스키마
+
+#### UI (일자별 카드)
+- 기준: KST `D-1`(어제) 일자 단위 카드
+- 카드 필드:
+  - 시작자금 (`start_equity_krw`)
+  - 종료자금 (`end_equity_krw`)
+  - 일일손익 (`daily_pnl_krw`, `daily_pnl_pct`)
+  - 거래수 (`trades_count`)
+  - 승률 (`win_rate_pct`)
+  - 최대손실 (`max_loss_trade_krw`)
+  - 코멘트 (`review_comment`)
+
+#### 데이터 스키마 확장 (`daily_virtual_snapshot`)
+- 기존 필드 유지 + 아래 필드 추가:
+  - `win_trades_count` (INT, default 0)
+  - `loss_trades_count` (INT, default 0)
+  - `win_rate_pct` (DECIMAL(6,3), 계산/저장 가능)
+  - `max_loss_trade_krw` (BIGINT, default 0)
+  - `review_comment` (VARCHAR(500), nullable)
+
+#### 계산 규칙
+- `win_rate_pct = (win_trades_count / nullif(trades_count, 0)) * 100`
+- 거래가 0건이면 `win_rate_pct = 0`
+- `max_loss_trade_krw`는 해당 일자 체결 기준 최저(가장 음수) 거래손익의 절대값/음수표기 중 택1로 UI 정책 통일
+
+### 12.2 전용 운용금 복리 규칙 (virtual_equity 기반)
+
+#### 목적
+일일 손익을 다음 주문 가능 운용금에 자동 반영하여, 전략 자금을 `virtual_equity` 기준으로 복리 운용한다.
+
+#### 규칙 정의
+1. **기준 자금:** 다음 주문 기준자금(`next_order_base_krw`)은 `virtual_equity_krw`를 사용
+2. **상한 적용:** 실제 주문 가능금은 항상
+   - `effective_order_cap_krw = min(capital_cap_krw, virtual_equity_krw)`
+3. **자동 갱신 시점:** 체결/수수료 반영으로 `virtual_equity_krw` 변경 시 즉시 재계산
+4. **주문 금액 산식:**
+   - `order_notional_krw = strategy_risk_fraction * effective_order_cap_krw`
+   - 이후 최소주문금액/호가단위/거래소 제약으로 라운딩
+5. **손실 구간 축소:** 손실로 `virtual_equity_krw`가 감소하면 다음 주문자금도 동일 비율로 자동 축소
+6. **이익 구간 확대:** 이익으로 `virtual_equity_krw`가 증가하면 다음 주문자금도 동일 비율로 자동 확대
+7. **안전 바닥:** `virtual_equity_krw <= 0` 또는 리스크 하드가드 위반 시 신규진입 차단(`HALT_NEW_ENTRY`)
+
+#### 구현 메모
+- 기존 `available_to_trade_krw` 산식과 충돌 없이, 주문 직전 `effective_order_cap_krw`를 우선 계산
+- UI에는 "현재 복리 기준자금"(= `effective_order_cap_krw`)을 노출하여 운영자가 즉시 확인 가능하게 함
+
+버전: v1.1
