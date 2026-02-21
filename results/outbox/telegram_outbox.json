@@ -2338,7 +2338,63 @@
             "retry_count": 0,
             "next_retry_ts": 1771682713.1697311,
             "last_error": null
+        },
+        {
+            "id": "1771688475918_ALL_SYSTEM",
+            "ts": "2026-02-22T00:41:15.918558",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771688475.9184449,
+            "last_error": null
+        },
+        {
+            "id": "1771688477864_ALL_RISK",
+            "ts": "2026-02-22T00:41:17.864480",
+            "event_type": "RISK",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [RISK] Regime Change",
+            "message": "Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 100730000, SMA20: 102498450)",
+            "dedupe_key": "REGIME_RISK_OFF_2026022200",
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771688477.8644433,
+            "last_error": null
+        },
+        {
+            "id": "1771688564822_ALL_SYSTEM",
+            "ts": "2026-02-22T00:42:44.823034",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771688564.8229942,
+            "last_error": null
+        },
+        {
+            "id": "1771688615205_SYSTEM_RISK",
+            "ts": "2026-02-22T00:43:35.205240",
+            "event_type": "RISK",
+            "exchange": "SYSTEM",
+            "severity": "CRITICAL",
+            "title": "[SYSTEM] [RISK] STOP LOSS",
+            "message": "📉 **EMERGENCY STOP**\nReason: [RISK] Daily DD hard limit triggered! eq=100,000, start=1,000,000, peak=1,000,000, dd_start=-90.00%, dd_peak=-90.00%\nAction: cancel_open_orders=0, flatten_attempt=False, mode=PAPER",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771688615.2052157,
+            "last_error": null
         }
     ],
-    "updated_at": 1771682714.113277
+    "updated_at": 1771688616.1645377
 }
