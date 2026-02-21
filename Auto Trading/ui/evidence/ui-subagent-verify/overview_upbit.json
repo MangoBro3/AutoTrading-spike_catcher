@@ -1,0 +1,2489 @@
+{
+  "now": "2026-02-21T09:09:52.454Z",
+  "sourceOk": false,
+  "worker": {
+    "ts": 1771664992227,
+    "connected": true,
+    "health": {
+      "ok": true,
+      "status": "up"
+    },
+    "state": null,
+    "orders": null,
+    "errors": {
+      "health": null,
+      "state": "HTTP 404",
+      "orders": "HTTP 404"
+    },
+    "trafficLight": "GREEN",
+    "stopAll": false,
+    "banner": ""
+  },
+  "statePoint": null,
+  "runtimeStatus": {
+    "mode": "PAPER",
+    "exchange": "UPBIT",
+    "status": "OK",
+    "ts": 1771664991176
+  },
+  "runtimeState": null,
+  "watchingSymbols": [],
+  "exchangeIndicators": {
+    "upbit": {
+      "status": "connected",
+      "detail": "worker connected"
+    },
+    "bithumb": {
+      "status": "idle",
+      "detail": "active=UPBIT"
+    }
+  },
+  "usage": {
+    "daily": {
+      "total": 1921482,
+      "perAgent": {
+        "pm": 1473679,
+        "coder_b": 85848,
+        "tl": 182373,
+        "architect": 13044,
+        "coder_a": 107770,
+        "main": 58768
+      }
+    },
+    "weekly": {
+      "total": 5010210,
+      "perAgent": {
+        "pm": 2825699,
+        "main": 1144467,
+        "coder_b": 441463,
+        "tl": 356591,
+        "architect": 134220,
+        "coder_a": 107770
+      }
+    },
+    "byTask": {
+      "unassigned": 5010210
+    },
+    "warning": "warn",
+    "snapshotCount": 2015,
+    "deltaCount": 2015
+  },
+  "taskSignals": {
+    "inProgressWorkers": [],
+    "tasks": [
+      {
+        "taskId": "T-001",
+        "status": "DONE",
+        "owner": "pm",
+        "description": "Hybrid v1.2 core + backtest runner integration (Phase 1)",
+        "ownership": "a:engine/**,alloc/** b:guards/**,backtest/**,run_backtest.py"
+      }
+    ],
+    "agentWork": {}
+  },
+  "timeline": [
+    {
+      "ts": 1771660541172,
+      "time": "2026-02-21T07:55:41.172Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660536096,
+      "time": "2026-02-21T07:55:36.096Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660535853,
+      "time": "2026-02-21T07:55:35.853Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660460557,
+      "time": "2026-02-21T07:54:20.557Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660455946,
+      "time": "2026-02-21T07:54:15.946Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660455718,
+      "time": "2026-02-21T07:54:15.718Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660357810,
+      "time": "2026-02-21T07:52:37.810Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660353071,
+      "time": "2026-02-21T07:52:33.071Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660338159,
+      "time": "2026-02-21T07:52:18.159Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660332695,
+      "time": "2026-02-21T07:52:12.695Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660332608,
+      "time": "2026-02-21T07:52:12.608Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660300261,
+      "time": "2026-02-21T07:51:40.261Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660092345,
+      "time": "2026-02-21T07:48:12.345Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660089014,
+      "time": "2026-02-21T07:48:09.014Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660073920,
+      "time": "2026-02-21T07:47:53.920Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660018892,
+      "time": "2026-02-21T07:46:58.892Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660014856,
+      "time": "2026-02-21T07:46:54.856Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660014629,
+      "time": "2026-02-21T07:46:54.629Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659970145,
+      "time": "2026-02-21T07:46:10.145Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659966294,
+      "time": "2026-02-21T07:46:06.294Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659966174,
+      "time": "2026-02-21T07:46:06.174Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659958988,
+      "time": "2026-02-21T07:45:58.988Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659958978,
+      "time": "2026-02-21T07:45:58.978Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659886693,
+      "time": "2026-02-21T07:44:46.693Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659878048,
+      "time": "2026-02-21T07:44:38.048Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659811079,
+      "time": "2026-02-21T07:43:31.079Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659802667,
+      "time": "2026-02-21T07:43:22.667Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659793144,
+      "time": "2026-02-21T07:43:13.144Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659745883,
+      "time": "2026-02-21T07:42:25.883Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659690325,
+      "time": "2026-02-21T07:41:30.325Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    }
+  ],
+  "timelineMeta": {
+    "limit": 30,
+    "hours": 0,
+    "totalAfterCompress": 236,
+    "totalAfterWindow": 236,
+    "cap": 300
+  },
+  "timelineAll": [
+    {
+      "ts": 1771660541172,
+      "time": "2026-02-21T07:55:41.172Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660536096,
+      "time": "2026-02-21T07:55:36.096Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660535853,
+      "time": "2026-02-21T07:55:35.853Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660460557,
+      "time": "2026-02-21T07:54:20.557Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660455946,
+      "time": "2026-02-21T07:54:15.946Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660455718,
+      "time": "2026-02-21T07:54:15.718Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660357810,
+      "time": "2026-02-21T07:52:37.810Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660353071,
+      "time": "2026-02-21T07:52:33.071Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660338159,
+      "time": "2026-02-21T07:52:18.159Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660332695,
+      "time": "2026-02-21T07:52:12.695Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660332608,
+      "time": "2026-02-21T07:52:12.608Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660300261,
+      "time": "2026-02-21T07:51:40.261Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660092345,
+      "time": "2026-02-21T07:48:12.345Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660089014,
+      "time": "2026-02-21T07:48:09.014Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660073920,
+      "time": "2026-02-21T07:47:53.920Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660018892,
+      "time": "2026-02-21T07:46:58.892Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660014856,
+      "time": "2026-02-21T07:46:54.856Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660014629,
+      "time": "2026-02-21T07:46:54.629Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659970145,
+      "time": "2026-02-21T07:46:10.145Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659966294,
+      "time": "2026-02-21T07:46:06.294Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659966174,
+      "time": "2026-02-21T07:46:06.174Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659958988,
+      "time": "2026-02-21T07:45:58.988Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659958978,
+      "time": "2026-02-21T07:45:58.978Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659886693,
+      "time": "2026-02-21T07:44:46.693Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659878048,
+      "time": "2026-02-21T07:44:38.048Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659811079,
+      "time": "2026-02-21T07:43:31.079Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659802667,
+      "time": "2026-02-21T07:43:22.667Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659793144,
+      "time": "2026-02-21T07:43:13.144Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659745883,
+      "time": "2026-02-21T07:42:25.883Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659690325,
+      "time": "2026-02-21T07:41:30.325Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659679773,
+      "time": "2026-02-21T07:41:19.773Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659677277,
+      "time": "2026-02-21T07:41:17.277Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659605319,
+      "time": "2026-02-21T07:40:05.319Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659425807,
+      "time": "2026-02-21T07:37:05.807Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659415112,
+      "time": "2026-02-21T07:36:55.112Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659414597,
+      "time": "2026-02-21T07:36:54.597Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659405845,
+      "time": "2026-02-21T07:36:45.845Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659386937,
+      "time": "2026-02-21T07:36:26.937Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659301827,
+      "time": "2026-02-21T07:35:01.827Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659295403,
+      "time": "2026-02-21T07:34:55.403Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659247935,
+      "time": "2026-02-21T07:34:07.935Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659247935,
+      "time": "2026-02-21T07:34:07.935Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:a9efb1c0-7494-4dc7-a0ae-d83abf56dd0b updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658701553,
+      "time": "2026-02-21T07:25:01.553Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658669454,
+      "time": "2026-02-21T07:24:29.454Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658238358,
+      "time": "2026-02-21T07:17:18.358Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658233778,
+      "time": "2026-02-21T07:17:13.778Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658161701,
+      "time": "2026-02-21T07:16:01.701Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658012954,
+      "time": "2026-02-21T07:13:32.954Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771658004012,
+      "time": "2026-02-21T07:13:24.012Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:14e11119-114c-4da3-99f7-510b842ac0fa updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657991276,
+      "time": "2026-02-21T07:13:11.276Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:c313b907-8aab-4911-9c18-1e3da0b8f926 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657949296,
+      "time": "2026-02-21T07:12:29.296Z",
+      "agent": "coder_a",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_a:subagent:f5906533-11c8-4c65-8393-ca898eb91a36 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657948820,
+      "time": "2026-02-21T07:12:28.820Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657940756,
+      "time": "2026-02-21T07:12:20.756Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657925597,
+      "time": "2026-02-21T07:12:05.597Z",
+      "agent": "coder_a",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_a:subagent:f5906533-11c8-4c65-8393-ca898eb91a36 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657896159,
+      "time": "2026-02-21T07:11:36.159Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657888900,
+      "time": "2026-02-21T07:11:28.900Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657830659,
+      "time": "2026-02-21T07:10:30.659Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657825861,
+      "time": "2026-02-21T07:10:25.861Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:c313b907-8aab-4911-9c18-1e3da0b8f926 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657825753,
+      "time": "2026-02-21T07:10:25.753Z",
+      "agent": "coder_a",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_a:subagent:f5906533-11c8-4c65-8393-ca898eb91a36 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657825665,
+      "time": "2026-02-21T07:10:25.665Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:14e11119-114c-4da3-99f7-510b842ac0fa updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657813288,
+      "time": "2026-02-21T07:10:13.288Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657813280,
+      "time": "2026-02-21T07:10:13.280Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657778514,
+      "time": "2026-02-21T07:09:38.514Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657769344,
+      "time": "2026-02-21T07:09:29.344Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657748059,
+      "time": "2026-02-21T07:09:08.059Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657731288,
+      "time": "2026-02-21T07:08:51.288Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657579161,
+      "time": "2026-02-21T07:06:19.161Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657563699,
+      "time": "2026-02-21T07:06:03.699Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657401559,
+      "time": "2026-02-21T07:03:21.559Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657401559,
+      "time": "2026-02-21T07:03:21.559Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657353086,
+      "time": "2026-02-21T07:02:33.086Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657344999,
+      "time": "2026-02-21T07:02:24.999Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:55dbab6b-c433-428a-aad9-ca3e75ea7b8d updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657344999,
+      "time": "2026-02-21T07:02:24.999Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:55dbab6b-c433-428a-aad9-ca3e75ea7b8d updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657290076,
+      "time": "2026-02-21T07:01:30.076Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657290076,
+      "time": "2026-02-21T07:01:30.076Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657279822,
+      "time": "2026-02-21T07:01:19.822Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ae784654-5b83-431d-920d-97609a3f7370 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657279822,
+      "time": "2026-02-21T07:01:19.822Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ae784654-5b83-431d-920d-97609a3f7370 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657279822,
+      "time": "2026-02-21T07:01:19.822Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ae784654-5b83-431d-920d-97609a3f7370 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657241541,
+      "time": "2026-02-21T07:00:41.541Z",
+      "agent": "architect",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:6c22a397-1ca3-4a37-b6d7-49c84f021ceb updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657241541,
+      "time": "2026-02-21T07:00:41.541Z",
+      "agent": "architect",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:6c22a397-1ca3-4a37-b6d7-49c84f021ceb updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657241541,
+      "time": "2026-02-21T07:00:41.541Z",
+      "agent": "architect",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:6c22a397-1ca3-4a37-b6d7-49c84f021ceb updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657241541,
+      "time": "2026-02-21T07:00:41.541Z",
+      "agent": "architect",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:6c22a397-1ca3-4a37-b6d7-49c84f021ceb updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657240595,
+      "time": "2026-02-21T07:00:40.595Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657240595,
+      "time": "2026-02-21T07:00:40.595Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657205468,
+      "time": "2026-02-21T07:00:05.468Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:55dbab6b-c433-428a-aad9-ca3e75ea7b8d updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657205468,
+      "time": "2026-02-21T07:00:05.468Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:55dbab6b-c433-428a-aad9-ca3e75ea7b8d updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657205468,
+      "time": "2026-02-21T07:00:05.468Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:55dbab6b-c433-428a-aad9-ca3e75ea7b8d updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657205363,
+      "time": "2026-02-21T07:00:05.363Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ae784654-5b83-431d-920d-97609a3f7370 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657205363,
+      "time": "2026-02-21T07:00:05.363Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ae784654-5b83-431d-920d-97609a3f7370 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771657161875,
+      "time": "2026-02-21T06:59:21.875Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771656821288,
+      "time": "2026-02-21T06:53:41.288Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:758c179a-a93b-4dda-8a79-ac4fbae2aaee updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656821288,
+      "time": "2026-02-21T06:53:41.288Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:758c179a-a93b-4dda-8a79-ac4fbae2aaee updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656821288,
+      "time": "2026-02-21T06:53:41.288Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:758c179a-a93b-4dda-8a79-ac4fbae2aaee updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656821288,
+      "time": "2026-02-21T06:53:41.288Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:758c179a-a93b-4dda-8a79-ac4fbae2aaee updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656773835,
+      "time": "2026-02-21T06:52:53.835Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771656767015,
+      "time": "2026-02-21T06:52:47.015Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:509383cf-764a-4753-a9ad-b2d6aab17b7c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656767015,
+      "time": "2026-02-21T06:52:47.015Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:509383cf-764a-4753-a9ad-b2d6aab17b7c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656767015,
+      "time": "2026-02-21T06:52:47.015Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:509383cf-764a-4753-a9ad-b2d6aab17b7c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656767015,
+      "time": "2026-02-21T06:52:47.015Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:509383cf-764a-4753-a9ad-b2d6aab17b7c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656758398,
+      "time": "2026-02-21T06:52:38.398Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 4
+    },
+    {
+      "ts": 1771656710405,
+      "time": "2026-02-21T06:51:50.405Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:ec13a103-769c-4dc9-8210-21792ba006c1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656710405,
+      "time": "2026-02-21T06:51:50.405Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:ec13a103-769c-4dc9-8210-21792ba006c1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656710405,
+      "time": "2026-02-21T06:51:50.405Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:ec13a103-769c-4dc9-8210-21792ba006c1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656710405,
+      "time": "2026-02-21T06:51:50.405Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:ec13a103-769c-4dc9-8210-21792ba006c1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656662410,
+      "time": "2026-02-21T06:51:02.410Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656654939,
+      "time": "2026-02-21T06:50:54.939Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:ec13a103-769c-4dc9-8210-21792ba006c1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656654837,
+      "time": "2026-02-21T06:50:54.837Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:509383cf-764a-4753-a9ad-b2d6aab17b7c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656629329,
+      "time": "2026-02-21T06:50:29.329Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656475195,
+      "time": "2026-02-21T06:47:55.195Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:7a483327-5045-460a-883e-dda1d110ccda updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656475195,
+      "time": "2026-02-21T06:47:55.195Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:7a483327-5045-460a-883e-dda1d110ccda updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656475195,
+      "time": "2026-02-21T06:47:55.195Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:7a483327-5045-460a-883e-dda1d110ccda updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656475195,
+      "time": "2026-02-21T06:47:55.195Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:7a483327-5045-460a-883e-dda1d110ccda updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656474705,
+      "time": "2026-02-21T06:47:54.705Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771656463877,
+      "time": "2026-02-21T06:47:43.877Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:7a483327-5045-460a-883e-dda1d110ccda updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656453738,
+      "time": "2026-02-21T06:47:33.738Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 5
+    },
+    {
+      "ts": 1771656347220,
+      "time": "2026-02-21T06:45:47.220Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:758c179a-a93b-4dda-8a79-ac4fbae2aaee updated",
+      "count": 1
+    },
+    {
+      "ts": 1771656347082,
+      "time": "2026-02-21T06:45:47.082Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:7a483327-5045-460a-883e-dda1d110ccda updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655695588,
+      "time": "2026-02-21T06:34:55.588Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655695588,
+      "time": "2026-02-21T06:34:55.588Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655695588,
+      "time": "2026-02-21T06:34:55.588Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655695588,
+      "time": "2026-02-21T06:34:55.588Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655647937,
+      "time": "2026-02-21T06:34:07.937Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655647937,
+      "time": "2026-02-21T06:34:07.937Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:d462279a-b6b6-43ab-bada-9c9046388d0c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655647937,
+      "time": "2026-02-21T06:34:07.937Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655647937,
+      "time": "2026-02-21T06:34:07.937Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655647937,
+      "time": "2026-02-21T06:34:07.937Z",
+      "agent": "main",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771655197155,
+      "time": "2026-02-21T06:26:37.155Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:884fd69c-16ca-4673-9583-05df85d6ef5a updated",
+      "count": 1
+    },
+    {
+      "ts": 1771634047949,
+      "time": "2026-02-21T00:34:07.949Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:54a4daf1-022a-496f-a0b0-9a937d0fe8c9 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771630447954,
+      "time": "2026-02-20T23:34:07.954Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:2a587cf1-6bda-4050-bea1-e5988d3c74fd updated",
+      "count": 1
+    },
+    {
+      "ts": 1771626847941,
+      "time": "2026-02-20T22:34:07.941Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:dca0b3d2-64f8-4dd0-a175-de4b1023603e updated",
+      "count": 1
+    },
+    {
+      "ts": 1771501047321,
+      "time": "2026-02-19T11:37:27.321Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5312d2f9-fbb0-4e45-87fe-d27c18b56061 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771501047209,
+      "time": "2026-02-19T11:37:27.209Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:9d422777-6d93-4ab4-863c-099bca7be074 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771501047131,
+      "time": "2026-02-19T11:37:27.131Z",
+      "agent": "architect",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:bf29eb8b-24ea-466e-832e-8554e33e8892 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771501034941,
+      "time": "2026-02-19T11:37:14.941Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771501031320,
+      "time": "2026-02-19T11:37:11.320Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771500847936,
+      "time": "2026-02-19T11:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500847936,
+      "time": "2026-02-19T11:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:b061067f-dbcd-4a93-805c-c725f1ac0cd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500802074,
+      "time": "2026-02-19T11:33:22.074Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 5
+    },
+    {
+      "ts": 1771500761130,
+      "time": "2026-02-19T11:32:41.130Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:f25e14dd-8b4e-4743-86f7-16cb7fb19b77 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500727356,
+      "time": "2026-02-19T11:32:07.356Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771500686158,
+      "time": "2026-02-19T11:31:26.158Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:b76db4fd-66d7-4f2f-8494-05e039819d17 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500685647,
+      "time": "2026-02-19T11:31:25.647Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771500676859,
+      "time": "2026-02-19T11:31:16.859Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:b76db4fd-66d7-4f2f-8494-05e039819d17 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500670798,
+      "time": "2026-02-19T11:31:10.798Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:f25e14dd-8b4e-4743-86f7-16cb7fb19b77 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500664432,
+      "time": "2026-02-19T11:31:04.432Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500654737,
+      "time": "2026-02-19T11:30:54.737Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5293b3b9-d68c-43e7-b7b3-6329dd741bbe updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500654277,
+      "time": "2026-02-19T11:30:54.277Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771500633904,
+      "time": "2026-02-19T11:30:33.904Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5293b3b9-d68c-43e7-b7b3-6329dd741bbe updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500544039,
+      "time": "2026-02-19T11:29:04.039Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771500440964,
+      "time": "2026-02-19T11:27:20.964Z",
+      "agent": "architect",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:484deafd-6102-46e1-9054-18a04333cd02 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500440500,
+      "time": "2026-02-19T11:27:20.500Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771500430509,
+      "time": "2026-02-19T11:27:10.509Z",
+      "agent": "architect",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:484deafd-6102-46e1-9054-18a04333cd02 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500418079,
+      "time": "2026-02-19T11:26:58.079Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771500356787,
+      "time": "2026-02-19T11:25:56.787Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5293b3b9-d68c-43e7-b7b3-6329dd741bbe updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500356670,
+      "time": "2026-02-19T11:25:56.670Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:b76db4fd-66d7-4f2f-8494-05e039819d17 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500356588,
+      "time": "2026-02-19T11:25:56.588Z",
+      "agent": "architect",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:architect:subagent:484deafd-6102-46e1-9054-18a04333cd02 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771500344855,
+      "time": "2026-02-19T11:25:44.855Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 4
+    },
+    {
+      "ts": 1771497304367,
+      "time": "2026-02-19T10:35:04.367Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771497247943,
+      "time": "2026-02-19T10:34:07.943Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771497247943,
+      "time": "2026-02-19T10:34:07.943Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:4ad500cb-b726-4362-92ed-c2cfc51289a8 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771493647939,
+      "time": "2026-02-19T09:34:07.939Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:b144fe35-0bdb-49db-89ac-1106548a7487 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771492698615,
+      "time": "2026-02-19T09:18:18.615Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771492039089,
+      "time": "2026-02-19T09:07:19.089Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:4d1f3f53-5410-426b-894d-8486ba30b9b4 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771491906127,
+      "time": "2026-02-19T09:05:06.127Z",
+      "agent": "pm",
+      "work": "task_status",
+      "project": "openclaw-news-workspace",
+      "detail": "T-001: IN_PROGRESS -> DONE | Hybrid v1.2 core + backtest runner integration (Phase 1)",
+      "count": 1
+    },
+    {
+      "ts": 1771491804463,
+      "time": "2026-02-19T09:03:24.463Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771491796126,
+      "time": "2026-02-19T09:03:16.126Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:74c9dea8-a0a1-46b7-a787-1ff5043084b7 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771491731920,
+      "time": "2026-02-19T09:02:11.920Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:4d1f3f53-5410-426b-894d-8486ba30b9b4 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771491706125,
+      "time": "2026-02-19T09:01:46.125Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:70f99c33-8ba5-4a35-a811-db9746a0ac85 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771491621792,
+      "time": "2026-02-19T09:00:21.792Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:4f5dbe51-66d5-4ec1-8b44-953692def4e2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771490101424,
+      "time": "2026-02-19T08:35:01.424Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771490047936,
+      "time": "2026-02-19T08:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771490047936,
+      "time": "2026-02-19T08:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:78bd8b5c-9c5d-4fc0-93d2-dc97be8178d6 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771486447940,
+      "time": "2026-02-19T07:34:07.940Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:5417dde4-4d81-4248-be3a-5fa4431007f8 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771482847940,
+      "time": "2026-02-19T06:34:07.940Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:f39c7ce7-c358-4188-9df5-0480c361730d updated",
+      "count": 1
+    },
+    {
+      "ts": 1771479247930,
+      "time": "2026-02-19T05:34:07.930Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:99c5019a-0e91-421b-aa33-aa8e20fe07c0 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771475647937,
+      "time": "2026-02-19T04:34:07.937Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:f8e00c70-a10e-4429-bbb4-a9ec3b4bd9de updated",
+      "count": 1
+    },
+    {
+      "ts": 1771428847935,
+      "time": "2026-02-18T15:34:07.935Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771428847935,
+      "time": "2026-02-18T15:34:07.935Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:1f68210b-2284-431a-ad4e-c4bcbc27f3b3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771428760924,
+      "time": "2026-02-18T15:32:40.924Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 6
+    },
+    {
+      "ts": 1771427022301,
+      "time": "2026-02-18T15:03:42.301Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 6
+    },
+    {
+      "ts": 1771426549493,
+      "time": "2026-02-18T14:55:49.493Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771425322046,
+      "time": "2026-02-18T14:35:22.046Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771425247936,
+      "time": "2026-02-18T14:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771425247936,
+      "time": "2026-02-18T14:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:01c28ece-c539-4189-9588-5b0582233e9c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771424442606,
+      "time": "2026-02-18T14:20:42.606Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 6
+    },
+    {
+      "ts": 1771424015115,
+      "time": "2026-02-18T14:13:35.115Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:e4b07553-c288-4f05-8dbc-2c5b52921814 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771424014627,
+      "time": "2026-02-18T14:13:34.627Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771423988519,
+      "time": "2026-02-18T14:13:08.519Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:e4b07553-c288-4f05-8dbc-2c5b52921814 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771423979066,
+      "time": "2026-02-18T14:12:59.066Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 3
+    },
+    {
+      "ts": 1771423901153,
+      "time": "2026-02-18T14:11:41.153Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:e4b07553-c288-4f05-8dbc-2c5b52921814 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771421721838,
+      "time": "2026-02-18T13:35:21.838Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771421647940,
+      "time": "2026-02-18T13:34:07.940Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771421647940,
+      "time": "2026-02-18T13:34:07.940Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:13928e76-a5d6-44d6-9608-90f8c1220165 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771419106430,
+      "time": "2026-02-18T12:51:46.430Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771418118741,
+      "time": "2026-02-18T12:35:18.741Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771418047938,
+      "time": "2026-02-18T12:34:07.938Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771418047938,
+      "time": "2026-02-18T12:34:07.938Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:72c0e11e-e3eb-4045-bb42-af52f5ee5b3c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771418008019,
+      "time": "2026-02-18T12:33:28.019Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:d3c6259b-b472-4e7d-900f-e69b37b466c9 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771418007007,
+      "time": "2026-02-18T12:33:27.007Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771417957850,
+      "time": "2026-02-18T12:32:37.850Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:85f645a0-d708-484c-8c15-9ad528f574d5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771414553341,
+      "time": "2026-02-18T11:35:53.341Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771414447943,
+      "time": "2026-02-18T11:34:07.943Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771414447943,
+      "time": "2026-02-18T11:34:07.943Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:7aad8a27-63fc-41c9-aec3-5f9db8b8fd1c updated",
+      "count": 1
+    },
+    {
+      "ts": 1771413178024,
+      "time": "2026-02-18T11:12:58.024Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 4
+    },
+    {
+      "ts": 1771412733328,
+      "time": "2026-02-18T11:05:33.328Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:651b2b45-1b78-46af-a704-1c971c8c6b37 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412696851,
+      "time": "2026-02-18T11:04:56.851Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412688015,
+      "time": "2026-02-18T11:04:48.015Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:769ccf93-7eb7-4043-a0cc-1555a5a9baa4 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412659169,
+      "time": "2026-02-18T11:04:19.169Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:651b2b45-1b78-46af-a704-1c971c8c6b37 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412440198,
+      "time": "2026-02-18T11:00:40.198Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412411434,
+      "time": "2026-02-18T11:00:11.434Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:24b97f9f-148e-468f-94d2-4e247ce7a1ac updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412411418,
+      "time": "2026-02-18T11:00:11.418Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:441e190c-10f0-4533-a055-4391714bed7a updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412308516,
+      "time": "2026-02-18T10:58:28.516Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412294153,
+      "time": "2026-02-18T10:58:14.153Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:24b97f9f-148e-468f-94d2-4e247ce7a1ac updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412294082,
+      "time": "2026-02-18T10:58:14.082Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:441e190c-10f0-4533-a055-4391714bed7a updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412269463,
+      "time": "2026-02-18T10:57:49.463Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:6f6dbd5b-7d2c-49f9-93e5-76cf48c6a6b1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412178269,
+      "time": "2026-02-18T10:56:18.269Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771412168902,
+      "time": "2026-02-18T10:56:08.902Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ba85950f-7f12-4a90-931c-5d1f17b10a80 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412164800,
+      "time": "2026-02-18T10:56:04.800Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412152118,
+      "time": "2026-02-18T10:55:52.118Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ba85950f-7f12-4a90-931c-5d1f17b10a80 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412152035,
+      "time": "2026-02-18T10:55:52.035Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:6f6dbd5b-7d2c-49f9-93e5-76cf48c6a6b1 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771412139202,
+      "time": "2026-02-18T10:55:39.202Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771411004925,
+      "time": "2026-02-18T10:36:44.925Z",
+      "agent": "tl",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:701e0172-8782-4789-bd16-42bf60350409 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771410930069,
+      "time": "2026-02-18T10:35:30.069Z",
+      "agent": "coder_b",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:dafd3044-ce4b-4ba5-b9f5-9d32c3902aa6 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771410900796,
+      "time": "2026-02-18T10:35:00.796Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771410847936,
+      "time": "2026-02-18T10:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771410847936,
+      "time": "2026-02-18T10:34:07.936Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:5b811221-774d-48cf-8ace-87ca71f73367 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771407305418,
+      "time": "2026-02-18T09:35:05.418Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:main updated",
+      "count": 2
+    },
+    {
+      "ts": 1771407247938,
+      "time": "2026-02-18T09:34:07.938Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771407247938,
+      "time": "2026-02-18T09:34:07.938Z",
+      "agent": "main",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:main:cron:3e649eb9-d800-4bdf-8346-fde23f81a3c3:run:69f959a8-d35d-40d8-bb38-f11695423e73 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771406611495,
+      "time": "2026-02-18T09:23:31.495Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 9
+    },
+    {
+      "ts": 1771406493052,
+      "time": "2026-02-18T09:21:33.052Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771406493052,
+      "time": "2026-02-18T09:21:33.052Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:7fea9ed2-721b-4f0f-8543-804b5fa08eb6 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771405593055,
+      "time": "2026-02-18T09:06:33.055Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:f93862cc-184d-4b6d-ac5d-f4ef3e867e4a updated",
+      "count": 1
+    },
+    {
+      "ts": 1771405293053,
+      "time": "2026-02-18T09:01:33.053Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:367809d0-11e5-47ce-9de6-010033c3d581 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771404993054,
+      "time": "2026-02-18T08:56:33.054Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:b38496d7-d8fd-420e-9284-0b73557d0ce4 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771404693053,
+      "time": "2026-02-18T08:51:33.053Z",
+      "agent": "pm",
+      "work": "session_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:cron:050a9491-38ac-457d-b1e9-18cd4d597929:run:d4861298-e3e9-46ef-b635-8d25c96dff17 updated",
+      "count": 1
+    }
+  ]
+}

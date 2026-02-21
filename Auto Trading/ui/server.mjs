@@ -24,6 +24,8 @@ const WORKER_DOWN_DEBOUNCE_MS = process.env.WORKER_DOWN_DEBOUNCE_MS ? Number(pro
 const OVERVIEW_REFRESH_MS = process.env.AT_UI_OVERVIEW_REFRESH_MS ? Number(process.env.AT_UI_OVERVIEW_REFRESH_MS) : 2000;
 const OVERVIEW_CMD_TIMEOUT_MS = process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS ? Number(process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS) : 1200;
 const API_WORKER_KICK_TIMEOUT_MS = process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS ? Number(process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS) : 120;
+const RUNTIME_STATUS_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_status.json');
+const RUNTIME_STATE_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_state.json');
 const DEFAULT_TIMELINE_LIMIT = process.env.AT_UI_TIMELINE_DEFAULT_LIMIT ? Number(process.env.AT_UI_TIMELINE_DEFAULT_LIMIT) : 30;
 const DEFAULT_TIMELINE_WINDOW_HOURS = process.env.AT_UI_TIMELINE_DEFAULT_HOURS ? Number(process.env.AT_UI_TIMELINE_DEFAULT_HOURS) : 24;
 const TIMELINE_MAX_CAP = process.env.AT_UI_TIMELINE_MAX_CAP ? Number(process.env.AT_UI_TIMELINE_MAX_CAP) : 300;
@@ -90,6 +92,57 @@ async function readJsonFile(path, fallback = null) {
 async function readStatePoint() {
   const p = join(WORKSPACE_ROOT, 'team', 'statepoints', 'latest.json');
   return readJsonFile(p, null);
+}
+
+async function readRuntimeStatus() {
+  return readJsonFile(RUNTIME_STATUS_PATH, null);
+}
+
+async function readRuntimeState() {
+  return readJsonFile(RUNTIME_STATE_PATH, null);
+}
+
+function pickArray(obj, paths = []) {
+  for (const p of paths) {
+    const v = p.split('.').reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, obj);
+    if (Array.isArray(v)) return v;
+  }
+  return [];
+}
+
+function normalizeSymbols(list) {
+  return [...new Set((Array.isArray(list) ? list : []).map((x) => String(x || '').trim()).filter(Boolean))];
+}
+
+function deriveWatchingSymbols({ runtimeStatus, runtimeState, statePoint, workerSnap }) {
+  const fromRuntimeStatus = pickArray(runtimeStatus, ['watchlist', 'symbols']);
+  const fromRuntimeState = pickArray(runtimeState, ['watchlist', 'symbols']);
+  const fromStatePoint = pickArray(statePoint, ['watchlist', 'symbols', 'runtime.watchlist', 'runtime.symbols']);
+  const fromWorkerState = pickArray(workerSnap, ['state.watchlist', 'state.symbols', 'watchlist', 'symbols']);
+  return normalizeSymbols([...fromRuntimeStatus, ...fromRuntimeState, ...fromStatePoint, ...fromWorkerState]);
+}
+
+function deriveExchangeIndicators({ runtimeStatus, workerSnap }) {
+  const activeExchange = String(
+    runtimeStatus?.exchange
+    || workerSnap?.state?.pending?.exchange
+    || workerSnap?.state?.exchange
+    || ''
+  ).toUpperCase();
+  const connected = workerSnap?.connected === true;
+
+  const asStatus = (exchange) => {
+    if (!exchange || !activeExchange) return { status: 'unknown', detail: 'exchange state unavailable' };
+    if (activeExchange !== exchange) return { status: 'idle', detail: `active=${activeExchange}` };
+    return connected
+      ? { status: 'connected', detail: 'worker connected' }
+      : { status: 'disconnected', detail: 'worker disconnected' };
+  };
+
+  return {
+    upbit: asStatus('UPBIT'),
+    bithumb: asStatus('BITHUMB'),
+  };
 }
 
 async function readTaskSignals() {
@@ -419,6 +472,13 @@ let overviewCache = {
   sourceOk: false,
   worker: workerMonitor.stableSnapshotFallback(),
   statePoint: null,
+  runtimeStatus: null,
+  runtimeState: null,
+  watchingSymbols: [],
+  exchangeIndicators: {
+    upbit: { status: 'unknown', detail: 'backend state unavailable' },
+    bithumb: { status: 'unknown', detail: 'backend state unavailable' },
+  },
   usage: summarizeUsage([]),
   taskSignals: { inProgressWorkers: [], tasks: [], agentWork: {} },
   timeline: [],
@@ -429,11 +489,13 @@ async function rebuildOverviewCache() {
   if (overviewRefreshRunning) return;
   overviewRefreshRunning = true;
   try {
-    const [status, agents, statePoint, taskSignals] = await Promise.all([
+    const [status, agents, statePoint, taskSignals, runtimeStatus, runtimeState] = await Promise.all([
       safeRun('openclaw status --all --json', null),
       safeRun('openclaw agents list --json', null),
       readStatePoint(),
       readTaskSignals(),
+      readRuntimeStatus(),
+      readRuntimeState(),
     ]);
 
     let rawTimeline = [];
@@ -452,12 +514,17 @@ async function rebuildOverviewCache() {
 
     const usage = summarizeUsage(await readSnapshots());
 
+    const workerSnap = workerMonitor.stableSnapshotFallback();
     // Auto Trading UI split: keep only fields actually used by this UI.
     overviewCache = {
       now: new Date().toISOString(),
       sourceOk: Boolean(status && agents),
-      worker: workerMonitor.stableSnapshotFallback(),
+      worker: workerSnap,
       statePoint,
+      runtimeStatus,
+      runtimeState,
+      watchingSymbols: deriveWatchingSymbols({ runtimeStatus, runtimeState, statePoint, workerSnap }),
+      exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
       usage,
       taskSignals,
       timeline: timelineView.rows,
@@ -507,12 +574,21 @@ const server = http.createServer((req, res) => {
       const limit = clampTimelineLimit(qLimitRaw || DEFAULT_TIMELINE_LIMIT);
       const timelineView = buildTimelineView(overviewCache.timelineAll || overviewCache.timeline || [], { hours, limit });
 
+      const workerSnap = workerMonitor.stableSnapshotFallback();
+      const runtimeStatus = overviewCache.runtimeStatus || null;
       return sendJson(
         res,
         200,
         {
           ...overviewCache,
-          worker: workerMonitor.stableSnapshotFallback(),
+          worker: workerSnap,
+          watchingSymbols: deriveWatchingSymbols({
+            runtimeStatus,
+            runtimeState: overviewCache.runtimeState || null,
+            statePoint: overviewCache.statePoint || null,
+            workerSnap,
+          }),
+          exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
           timeline: timelineView.rows,
           timelineMeta: timelineView.meta,
         },

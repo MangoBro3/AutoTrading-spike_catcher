@@ -1,0 +1,27 @@
+[2026-02-21T09:09:51.222Z] mock mock-worker-api listening on http://127.0.0.1:18080
+[2026-02-21T09:09:51.240Z] ui auto-trading-ui listening on http://127.0.0.1:18890
+[2026-02-21T09:09:51.240Z] ui [startup] worker.baseURL=http://127.0.0.1:18080
+[startup] worker.timeoutMs=3000
+[startup] worker.pollMs=1000 worker.downDebounceMs=4000
+[startup] overview.refreshMs=2000 overview.cmdTimeoutMs=1200
+[startup] api.workerKickTimeoutMs=120
+[2026-02-21T09:09:52.095Z] ui [watchdog] #1 START GET /api/overview
+[2026-02-21T09:09:52.098Z] ui [watchdog] #1 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:52.100Z] ui [watchdog] #2 START GET /api/overview
+[2026-02-21T09:09:52.101Z] ui [watchdog] #2 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:52.238Z] ui [watchdog] #3 START GET /api/overview
+[2026-02-21T09:09:52.238Z] ui [watchdog] #3 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:53.007Z] ui [watchdog] #4 START GET /api/overview
+[2026-02-21T09:09:53.015Z] UPBIT indicators: {"upbit":{"status":"connected","detail":"worker connected"},"bithumb":{"status":"idle","detail":"active=UPBIT"}}
+[2026-02-21T09:09:53.015Z] UPBIT watchlist: []
+[2026-02-21T09:09:53.018Z] ui [watchdog] #4 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:53.244Z] ui [watchdog] #5 START GET /api/overview
+[2026-02-21T09:09:53.245Z] ui [watchdog] #5 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:54.238Z] ui [watchdog] #6 START GET /api/overview
+[2026-02-21T09:09:54.239Z] ui [watchdog] #6 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:54.820Z] ui [watchdog] #7 START GET /api/overview
+[2026-02-21T09:09:54.824Z] BITHUMB indicators: {"upbit":{"status":"idle","detail":"active=BITHUMB"},"bithumb":{"status":"connected","detail":"worker connected"}}
+[2026-02-21T09:09:54.824Z] BITHUMB watchlist: []
+[2026-02-21T09:09:54.826Z] ui [watchdog] #7 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:55.240Z] ui [watchdog] #8 START GET /api/overview
+[2026-02-21T09:09:55.240Z] ui [watchdog] #8 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0

@@ -1,0 +1,13 @@
+[2026-02-21T09:09:16.101Z] mock: mock-worker-api listening on http://127.0.0.1:18080
+[2026-02-21T09:09:16.119Z] ui: auto-trading-ui listening on http://127.0.0.1:18890
+[2026-02-21T09:09:16.119Z] ui: [startup] worker.baseURL=http://127.0.0.1:18080
+[startup] worker.timeoutMs=3000
+[startup] worker.pollMs=1000 worker.downDebounceMs=4000
+[startup] overview.refreshMs=2000 overview.cmdTimeoutMs=1200
+[startup] api.workerKickTimeoutMs=120
+[2026-02-21T09:09:17.142Z] ui: [watchdog] #1 START GET /api/overview
+[2026-02-21T09:09:17.144Z] ui: [watchdog] #1 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:17.147Z] ui: [watchdog] #2 START GET /api/overview
+[2026-02-21T09:09:17.147Z] ui: [watchdog] #2 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:09:17.230Z] ui: [watchdog] #3 START GET /api/overview
+[2026-02-21T09:09:17.231Z] ui: [watchdog] #3 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
