@@ -2506,7 +2506,21 @@
             "retry_count": 0,
             "next_retry_ts": 1771689736.4610748,
             "last_error": null
+        },
+        {
+            "id": "1771690339632_ALL_SYSTEM",
+            "ts": "2026-02-22T01:12:19.632809",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771690339.6327705,
+            "last_error": null
         }
     ],
-    "updated_at": 1771689738.4105937
+    "updated_at": 1771690340.578668
 }
