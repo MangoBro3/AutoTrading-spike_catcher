@@ -160,6 +160,35 @@
       <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><input id="orderIdInput" type="text" placeholder="ORD-001" /><button id="orderCancelBtn" class="btn">Cancel Order</button></div>
       <div id="orderStatus" class="muted" style="margin-top:8px">대기중</div>
     </div>
+
+    <div class="card">
+      <h2>Manual Roundtrip Test (1회 왕복)</h2>
+      <div class="inline" style="margin-top:8px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="rtSymbolInput" style="min-width:120px">symbol</label>
+        <input id="rtSymbolInput" type="text" value="KRW-XRP" />
+      </div>
+      <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="rtKrwInput" style="min-width:120px">krw_notional</label>
+        <input id="rtKrwInput" type="text" value="5500" />
+      </div>
+      <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="rtBuyTicksInput" style="min-width:120px">buy_offset_ticks</label>
+        <input id="rtBuyTicksInput" type="text" value="1" />
+      </div>
+      <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="rtHoldSecInput" style="min-width:120px">hold_seconds</label>
+        <input id="rtHoldSecInput" type="text" value="30" />
+      </div>
+      <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="rtConfirmInput" style="min-width:120px">LIVE confirm</label>
+        <input id="rtConfirmInput" type="text" placeholder="MANUAL ROUNDTRIP LIVE" />
+      </div>
+      <div class="inline" style="margin-top:8px">
+        <button id="rtRunBtn" class="btn">테스트 1회 왕복주문 실행</button>
+      </div>
+      <div id="rtState" class="muted" style="margin-top:8px">-</div>
+      <pre id="rtResult" class="muted" style="margin-top:8px;white-space:pre-wrap;background:#111722;border:1px solid #2a3342;border-radius:6px;padding:8px;max-height:180px;overflow:auto">-</pre>
+    </div>
   </div>
 
   <div class="card" style="margin-top:12px"><h2>계좌 / 포지션 / PnL</h2><div id="account"></div><div id="positions" style="margin-top:10px"></div></div>
@@ -303,8 +332,20 @@ async function postControl(action, body){
 }
 async function postExchangeToggles(body){ const r=await fetch('/api/worker/control/exchanges', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'control_failed:exchanges'); return j; }
 async function postUiSettings(body){ const r=await fetch('/api/ui-settings', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'save_failed:ui_settings'); return j; }
+async function postManualRoundtrip(body){ const r=await fetch('/api/worker/control/manual-roundtrip-test', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'manual_roundtrip_failed'); return j; }
 
 function normalizeWorkerPayload(payload){ if(!payload||typeof payload!=='object') return null; if(payload.worker&&typeof payload.worker==='object') return payload.worker; if(payload.result?.worker&&typeof payload.result.worker==='object') return payload.result.worker; if(payload.state||payload.trafficLight||payload.connected!==undefined) return payload; return null; }
+
+function renderManualRoundtrip(rt){
+  const stateEl=$('rtState'), resultEl=$('rtResult');
+  if(!stateEl||!resultEl) return;
+  if(!rt){ stateEl.textContent='-'; resultEl.textContent='-'; return; }
+  const running=!!rt.running;
+  const stage=String(rt.stage || (running?'RUNNING':'IDLE'));
+  const mode=String(rt.mode || '-').toUpperCase();
+  stateEl.textContent=`${running?'RUNNING':'IDLE'} | mode=${mode} | stage=${stage}`;
+  resultEl.textContent=JSON.stringify(rt.last_result || rt.last_error || rt, null, 2);
+}
 
 function render(data){
   latestOverview=data;
@@ -391,6 +432,9 @@ function render(data){
     return `<div><b>${name}</b>: <span class="${klass}">${esc(status.toUpperCase())}</span> <span class="muted">(${esc(detail)})</span></div>`;
   };
   $('connIndicators').innerHTML = renderIndicator('Upbit', indicators.upbit) + renderIndicator('Bithumb', indicators.bithumb) + `<div><b>Worker</b>: <b class="${lightClass}">${esc(light)}</b></div>`;
+
+  const rt = data?.manual_roundtrip || data?.worker?.state?.manual_roundtrip || null;
+  renderManualRoundtrip(rt);
 }
 
 function openConfirmModal(text){ return new Promise((resolve)=>{ const m=$('confirmModal'), a=$('confirmModalApprove'), c=$('confirmModalCancel'); $('confirmModalText').textContent=text; m.classList.add('show'); const done=(ok)=>{m.classList.remove('show'); a.removeEventListener('click',onA); c.removeEventListener('click',onC); resolve(ok);}; const onA=()=>done(true), onC=()=>done(false); a.addEventListener('click',onA); c.addEventListener('click',onC); }); }
@@ -510,6 +554,24 @@ panicHoldBtn.addEventListener('mousedown',()=>{ if(Number(panicSlider.value)<100
 ['mouseup','mouseleave'].forEach((ev)=> panicHoldBtn.addEventListener(ev,()=>{ if(holdTimer){clearTimeout(holdTimer); holdTimer=null; if(Date.now()-holdStart<2000) panicStatus.textContent='취소됨: 2초 이상 홀드 필요'; }}));
 
 $('orderCancelBtn').addEventListener('click', async()=>{ const orderId=String($('orderIdInput').value||'').trim(); if(!orderId){$('orderStatus').textContent='실패: orderId 입력 필요';return;} try{const out=await postControl('cancel-order',{orderId}); $('orderStatus').textContent=`취소 요청 성공: ${out?.result?.orderId||orderId}`; await tick();}catch(e){$('orderStatus').textContent=`실패: ${e.message}`;} });
+$('rtRunBtn')?.addEventListener('click', async()=>{
+  const parseNum=(id, d)=>{ const n=Number(String($(id)?.value||'').replace(/,/g,'').trim()); return Number.isFinite(n)?n:d; };
+  try{
+    $('rtState').textContent='요청 중...';
+    const out=await postManualRoundtrip({
+      symbol:String($('rtSymbolInput')?.value||'KRW-XRP').trim()||'KRW-XRP',
+      krw_notional:parseNum('rtKrwInput',5500),
+      buy_offset_ticks:parseNum('rtBuyTicksInput',1),
+      hold_seconds:parseNum('rtHoldSecInput',30),
+      confirm:String($('rtConfirmInput')?.value||'').trim(),
+    });
+    $('rtState').textContent=out?.message || 'accepted';
+    renderManualRoundtrip(out?.manual_roundtrip || null);
+  }catch(e){
+    $('rtState').textContent=`Roundtrip failed: ${e.message}`;
+  }
+  await tick();
+});
 
 function setManualRefreshState(){ const btn=$('refreshConnBtn'), label=$('refreshConnState'); btn.disabled=manualRefreshBusy; btn.innerHTML=manualRefreshBusy?'<span class="spinner"></span> 새로고침 중...':'연결 상태 새로고침'; const t=lastManualRefreshAt?new Date(lastManualRefreshAt).toLocaleTimeString():'-'; label.textContent=lastManualRefreshError?`수동 갱신 실패: ${lastManualRefreshError}`:`수동 갱신: ${t}`; }
 $('refreshConnBtn').addEventListener('click', async()=>{ if(manualRefreshBusy) return; manualRefreshBusy=true; setManualRefreshState(); try{ const [workerPayload, overview] = await Promise.all([fetchJson('/api/worker'), fetchJson(overviewUrl())]); const worker = normalizeWorkerPayload(workerPayload); if(worker) overview.worker=worker; render(overview); lastManualRefreshAt=Date.now(); lastManualRefreshError=''; }catch(e){ lastManualRefreshError=e.message; } finally { manualRefreshBusy=false; setManualRefreshState(); }});

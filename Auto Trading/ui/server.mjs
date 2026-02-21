@@ -61,6 +61,33 @@ function sendApiError(res, ctx, error, route = 'unknown') {
   sendJson(res, 500, { ok: false, route, error: message }, ctx, `route=${route} error=${message}`);
 }
 
+async function postWorkerApi(path, body = {}) {
+  const url = workerClient.url(path);
+  const timeoutMs = Math.max(100, Number(WORKER_API_TIMEOUT_MS) || 3000);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body || {}),
+      signal: controller.signal,
+    });
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = { raw: text }; }
+    if (!res.ok) {
+      const err = new Error(data?.error || `HTTP ${res.status}`);
+      err.status = res.status;
+      err.data = data;
+      throw err;
+    }
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function tryExecJson(cmd, timeoutMs = OVERVIEW_CMD_TIMEOUT_MS) {
   const { stdout } = await exec(cmd, {
     encoding: 'utf8',
