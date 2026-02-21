@@ -6,6 +6,7 @@ import threading
 import time
 import logging
 import logging.config
+import requests
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -41,6 +42,8 @@ RUNTIME_STATUS_PATH = RESULTS_DIR / "runtime_status.json"
 RUNTIME_STATE_PATH = RESULTS_DIR / "runtime_state.json"
 SAFE_START_STATE_PATH = RESULTS_DIR / "safe_start_state.json"
 BACKEND_LOG_PATH = RESULTS_DIR / "logs" / "backend.log"
+OWNER_TELEGRAM_CHAT_ID = "7024783360"
+MODE_ALERT_DEBOUNCE_SEC = 60
 
 
 def configure_logging() -> dict:
@@ -123,6 +126,11 @@ class BackendService:
             runtime_state_path=RUNTIME_STATE_PATH,
             runtime_status_path=RUNTIME_STATUS_PATH,
         )
+        self._mode_alert_last = {"key": None, "ts": 0.0}
+        self._mode_alert_initialized = False
+        self._mode_alert_thread = None
+        self._mode_alert_stop = threading.Event()
+        self._start_mode_alert_monitor()
 
     def _is_running(self) -> bool:
         return bool(self.worker and self.worker.is_alive() and self.controller and self.controller.running)
@@ -175,6 +183,69 @@ class BackendService:
             "source": "canonical:/api/v1/status+lock",
         }
         return truth
+
+    def _send_owner_telegram_text(self, text: str) -> bool:
+        token = os.getenv("TELEGRAM_TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN")
+        if not token or not text:
+            return False
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        try:
+            resp = requests.post(
+                url,
+                data={"chat_id": OWNER_TELEGRAM_CHAT_ID, "text": str(text)},
+                timeout=5,
+            )
+            resp.raise_for_status()
+            return True
+        except Exception as e:
+            logging.getLogger("BackendService").warning(f"mode alert telegram send failed: {e}")
+            return False
+
+    def _build_mode_alert(self, truth: dict):
+        mode = str((truth or {}).get("mode") or "PAPER").upper()
+        phase = str((truth or {}).get("phase") or "STOPPED").upper()
+        reason = _normalize_reason_code((truth or {}).get("reason_code"))
+
+        if phase == PHASE_RUNNING and mode == "LIVE":
+            return f"mode:{mode}|phase:{phase}", "[SYSTEM] MODE LIVE ON"
+        if phase == PHASE_RUNNING and mode == "PAPER":
+            return f"mode:{mode}|phase:{phase}", "[SYSTEM] MODE PAPER ON"
+        if phase == "STOPPED":
+            return f"phase:{phase}|reason:{reason}", f"[SYSTEM] STOPPED reason={reason}"
+        return None, None
+
+    def _maybe_emit_mode_alert(self, truth: dict):
+        key, text = self._build_mode_alert(truth)
+        if not key or not text:
+            return
+        now = time.time()
+        last_key = self._mode_alert_last.get("key")
+        last_ts = float(self._mode_alert_last.get("ts") or 0.0)
+        if not self._mode_alert_initialized:
+            self._mode_alert_last = {"key": key, "ts": now}
+            self._mode_alert_initialized = True
+            return
+        if key == last_key and (now - last_ts) < MODE_ALERT_DEBOUNCE_SEC:
+            return
+        if self._send_owner_telegram_text(text):
+            self._mode_alert_last = {"key": key, "ts": now}
+
+    def _mode_alert_loop(self):
+        while not self._mode_alert_stop.is_set():
+            try:
+                safe_state = self.safe_start.read_state()
+                truth = self._canonical_status(safe_state)
+                self._maybe_emit_mode_alert(truth)
+            except Exception:
+                pass
+            self._mode_alert_stop.wait(1.0)
+
+    def _start_mode_alert_monitor(self):
+        if self._mode_alert_thread and self._mode_alert_thread.is_alive():
+            return
+        self._mode_alert_stop.clear()
+        self._mode_alert_thread = threading.Thread(target=self._mode_alert_loop, daemon=True)
+        self._mode_alert_thread.start()
 
     def _json_safe(self, value):
         if value is None or isinstance(value, (str, int, float, bool)):
@@ -640,12 +711,11 @@ class BackendStatusTUI:
         state = self._safe_json_read(RUNTIME_STATE_PATH)
         safe = self.backend_service.safe_start.read_state()
 
-        canonical_mode = backend.get("mode")
-        mode = str((canonical_mode or backend.get("controller_mode") or runtime.get("mode") or "PAPER")).upper()
+        canonical = self.backend_service._canonical_status(safe)
+        mode = str((canonical.get("mode") or "PAPER")).upper()
         is_live = mode == "LIVE"
         mode_badge = f"{mode} {'⚠️ LIVE REAL MONEY' if is_live else '🧪 PAPER'}"
 
-        canonical = self.backend_service._canonical_status(safe)
         running = bool(canonical.get("running", False))
         phase = str(canonical.get("phase") or "STOPPED")
         lock_exists = bool((backend.get("lock") or {}).get("exists"))
