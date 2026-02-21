@@ -1124,7 +1124,7 @@ class RunController:
             run_id = datetime.now().strftime("runtime_%Y%m%d_%H%M%S")
             log_dir = "results/logs"
             Path(log_dir).mkdir(parents=True, exist_ok=True)
-            self.execution_engine = ExecutionEngine(run_id, log_dir, _BudgetStub(), notifier=self.notifier)
+            self.execution_engine = ExecutionEngine(run_id, log_dir, _BudgetStub(self), notifier=self.notifier)
             return True
         except Exception as e:
             logger.error(f"[STATE] Failed to init ExecutionEngine: {e}")
@@ -1779,6 +1779,8 @@ class RunController:
         last_error = str(error) if error else self.last_error
         last_error_ts = time.time() if error else self.last_error_ts
 
+        virtual = self._compute_available_for_bot(exchange_balance_krw=self._get_krw_balance())
+
         status_data = {
             'ts': time.time(),
             'pid': os.getpid(),
@@ -1790,6 +1792,14 @@ class RunController:
             'regime': regime,
             'btc_price': btc_price,
             'watchlist': watchlist,
+            'virtual_capital': {
+                'allocated': virtual.get('allocated', 0.0),
+                'equity_virtual': virtual.get('equity_virtual', 0.0),
+                'pnl_virtual': virtual.get('pnl_virtual', 0.0),
+                'pnl_pct_virtual': virtual.get('pnl_pct_virtual', 0.0),
+                'available_for_bot': virtual.get('available_for_bot', 0.0),
+                'cap_krw': virtual.get('cap_krw', None),
+            },
             'last_tick_ts': self.last_tick_ts,
             'last_error': last_error,
             'last_error_ts': last_error_ts

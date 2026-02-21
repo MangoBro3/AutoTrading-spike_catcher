@@ -54,6 +54,7 @@ DEFAULT_SETTINGS = {
     "mode": "PAPER",
     "exchange": "UPBIT",
     "seed_krw": 1000000,
+    "capital_cap_krw": 1000000,
     "watchlist": ["KRW-BTC", "KRW-ETH"],
     "watch_refresh_sec": 60,
     "watch_score_min": 1.0,
@@ -666,6 +667,10 @@ INDEX_HTML = """<!doctype html>
           <div>
             <label for="seed">Seed (KRW)</label>
             <input id="seed" type="number" min="1" step="1" />
+          </div>
+          <div>
+            <label for="capital_cap_krw">Capital Cap (KRW, 0=off)</label>
+            <input id="capital_cap_krw" type="number" min="0" step="1" />
           </div>
           <div>
             <label for="watchlist">Watchlist (comma separated)</label>
@@ -1361,6 +1366,7 @@ INDEX_HTML = """<!doctype html>
         bithumbEl.checked = ex === "BITHUMB";
       }
       document.getElementById("seed").value = data.seed_krw || 1000000;
+      document.getElementById("capital_cap_krw").value = (data.capital_cap_krw ?? data.seed_krw ?? 1000000);
       document.getElementById("watchlist").value = (data.watchlist || []).join(", ");
       document.getElementById("watch_refresh_sec").value = data.watch_refresh_sec || 60;
       document.getElementById("watch_score_min").value = data.watch_score_min || 1.0;
@@ -1409,6 +1415,7 @@ INDEX_HTML = """<!doctype html>
         mode: document.getElementById("mode").value,
         exchange: selectedExchange,
         seed_krw: parseInt(document.getElementById("seed").value || "0", 10),
+        capital_cap_krw: parseInt(document.getElementById("capital_cap_krw").value || "0", 10),
         watchlist: document.getElementById("watchlist").value,
         watch_refresh_sec: parseInt(document.getElementById("watch_refresh_sec").value || "60", 10),
         watch_score_min: parseFloat(document.getElementById("watch_score_min").value || "1.0"),
@@ -2099,6 +2106,9 @@ def save_settings(data: dict):
         settings["exchange"] = str(data.get("exchange", settings["exchange"])).upper()
     if "seed_krw" in data:
         settings["seed_krw"] = int(data.get("seed_krw", settings["seed_krw"]))
+    if "capital_cap_krw" in data:
+        cap = int(data.get("capital_cap_krw", settings.get("capital_cap_krw", settings["seed_krw"])))
+        settings["capital_cap_krw"] = max(0, cap)
 
     if "watchlist" in data:
         watchlist_raw = data.get("watchlist", "")
