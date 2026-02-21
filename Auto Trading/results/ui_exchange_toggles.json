@@ -1,4 +1,4 @@
 {
-  "upbit": false,
-  "bithumb": false
+  "upbit": true,
+  "bithumb": true
 }
