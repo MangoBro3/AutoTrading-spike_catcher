@@ -1,0 +1,176 @@
+auto-trading-ui listening on http://127.0.0.1:18890
+[startup] worker.baseURL=http://127.0.0.1:8765/api/v1
+[startup] worker.timeoutMs=3000
+[startup] worker.pollMs=1000 worker.downDebounceMs=4000
+[startup] overview.refreshMs=2000 overview.cmdTimeoutMs=1200
+[startup] api.workerKickTimeoutMs=120
+[watchdog] #1 START GET /api/overview
+[watchdog] #1 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #2 START GET /api/worker
+[watchdog] #2 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #3 START GET /api/worker
+[watchdog] #3 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #4 START GET /api/worker
+[watchdog] #4 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #5 START GET /api/worker
+[watchdog] #5 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #6 START GET /api/worker
+[watchdog] #6 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #7 START POST /api/worker/control/start
+[watchdog] #7 END status=200 took=46ms route=/api/worker/control
+[watchdog] #8 START POST /api/worker/control/confirm
+[watchdog] #8 END status=200 took=13ms route=/api/worker/control
+[watchdog] #9 START GET /api/worker
+[watchdog] #9 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #10 START GET /api/worker
+[watchdog] #10 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #11 START GET /api/worker
+[watchdog] #11 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #12 START GET /api/worker
+[watchdog] #12 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #13 START GET /api/worker
+[watchdog] #13 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #14 START GET /api/worker
+[watchdog] #14 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #15 START GET /api/worker
+[watchdog] #15 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #16 START GET /api/worker
+[watchdog] #16 END status=200 took=0ms route=/api/worker non_blocking
+[watchdog] #17 START GET /api/worker
+[watchdog] #17 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #18 START GET /api/worker
+[watchdog] #18 END status=200 took=1ms route=/api/worker non_blocking
+[watchdog] #19 START GET /api/overview
+[watchdog] #19 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #20 START GET /api/overview
+[watchdog] #20 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #21 START GET /api/overview
+[watchdog] #21 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #22 START GET /api/overview
+[watchdog] #22 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #23 START GET /api/worker
+[watchdog] #23 END status=200 took=4ms route=/api/worker non_blocking
+[watchdog] #24 START GET /api/overview
+[watchdog] #24 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #25 START GET /api/overview
+[watchdog] #25 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #26 START GET /api/overview
+[watchdog] #26 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #27 START GET /api/overview
+[watchdog] #27 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #28 START GET /api/overview
+[watchdog] #28 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #29 START GET /api/overview
+[watchdog] #29 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #30 START GET /api/overview
+[watchdog] #30 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #31 START GET /api/overview
+[watchdog] #31 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #32 START GET /api/overview
+[watchdog] #32 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #33 START GET /api/overview
+[watchdog] #33 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #34 START GET /api/overview
+[watchdog] #34 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #35 START GET /api/overview
+[watchdog] #35 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #36 START GET /api/overview
+[watchdog] #36 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #37 START GET /api/overview
+[watchdog] #37 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #38 START GET /api/overview
+[watchdog] #38 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #39 START GET /api/overview
+[watchdog] #39 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #40 START GET /api/overview
+[watchdog] #40 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #41 START GET /api/overview
+[watchdog] #41 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #42 START GET /api/overview
+[watchdog] #42 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #43 START GET /api/overview
+[watchdog] #43 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #44 START GET /api/overview
+[watchdog] #44 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #45 START GET /api/overview
+[watchdog] #45 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #46 START GET /api/overview
+[watchdog] #46 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #47 START GET /api/overview
+[watchdog] #47 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #48 START GET /api/overview
+[watchdog] #48 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #49 START GET /api/overview
+[watchdog] #49 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #50 START GET /api/overview
+[watchdog] #50 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #51 START GET /api/overview
+[watchdog] #51 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #52 START GET /api/overview
+[watchdog] #52 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #53 START GET /api/overview
+[watchdog] #53 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #54 START GET /api/overview
+[watchdog] #54 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #55 START GET /api/overview
+[watchdog] #55 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #56 START GET /api/overview
+[watchdog] #56 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #57 START GET /api/overview
+[watchdog] #57 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #58 START GET /api/overview
+[watchdog] #58 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #59 START GET /api/overview
+[watchdog] #59 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #60 START GET /api/overview
+[watchdog] #60 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #61 START GET /api/overview
+[watchdog] #61 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #62 START GET /api/overview
+[watchdog] #62 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #63 START GET /api/overview
+[watchdog] #63 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #64 START GET /api/overview
+[watchdog] #64 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #65 START GET /api/overview
+[watchdog] #65 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #66 START GET /api/overview
+[watchdog] #66 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #67 START GET /api/overview
+[watchdog] #67 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #68 START GET /api/overview
+[watchdog] #68 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #69 START GET /api/overview
+[watchdog] #69 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #70 START GET /api/overview
+[watchdog] #70 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #71 START GET /api/overview
+[watchdog] #71 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #72 START GET /api/overview
+[watchdog] #72 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #73 START GET /api/overview
+[watchdog] #73 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #74 START GET /api/overview
+[watchdog] #74 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #75 START GET /api/overview
+[watchdog] #75 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #76 START GET /api/overview
+[watchdog] #76 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #77 START GET /api/overview
+[watchdog] #77 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #78 START GET /api/overview
+[watchdog] #78 END status=200 took=0ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #79 START GET /api/overview
+[watchdog] #79 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #80 START GET /api/overview
+[watchdog] #80 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #81 START GET /api/overview
+[watchdog] #81 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #82 START GET /api/overview
+[watchdog] #82 END status=200 took=4ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #83 START GET /api/overview
+[watchdog] #83 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #84 START GET /api/overview
+[watchdog] #84 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[watchdog] #85 START GET /api/overview
+[watchdog] #85 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0

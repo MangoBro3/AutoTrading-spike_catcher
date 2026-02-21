@@ -2282,7 +2282,35 @@
             "retry_count": 0,
             "next_retry_ts": 1771657946.8007107,
             "last_error": null
+        },
+        {
+            "id": "1771664591258_ALL_RISK",
+            "ts": "2026-02-21T18:03:11.258711",
+            "event_type": "RISK",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [RISK] Regime Change",
+            "message": "Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 100100000, SMA20: 102466950)",
+            "dedupe_key": "REGIME_RISK_OFF_2026022118",
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771664591.2586765,
+            "last_error": null
+        },
+        {
+            "id": "1771664592648_ALL_SYSTEM",
+            "ts": "2026-02-21T18:03:12.648590",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771664592.648557,
+            "last_error": null
         }
     ],
-    "updated_at": 1771657947.7534163
+    "updated_at": 1771664593.605365
 }
