@@ -1291,6 +1291,66 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    if (url.pathname === '/api/worker/control/force-unlock') {
+      if ((req.method || 'GET').toUpperCase() !== 'POST') {
+        return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/control/force-unlock method_guard');
+      }
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('error', (e) => sendApiError(res, ctx, e, '/api/worker/control/force-unlock'));
+      req.on('end', async () => {
+        try {
+          const parsed = body ? JSON.parse(body) : {};
+          const mode = String(parsed?.mode || overviewCache?.runtimeStatus?.mode || 'PAPER').toUpperCase();
+          const exchange = String(parsed?.exchange || overviewCache?.runtimeStatus?.exchange || 'UPBIT').toUpperCase();
+          const seed = Number(parsed?.seed ?? overviewCache?.runtimeStatus?.seed_krw ?? 0) || 0;
+          const payload = { force_unlock: true, mode, exchange, seed };
+
+          let out = null;
+          let backendRoute = null;
+          let lastError = null;
+          const attempts = [
+            { route: '/api/v1/control/force-unlock', fn: () => workerClient.control('force-unlock', payload) },
+            { route: '/api/v1/control/unlock', fn: () => workerClient.control('unlock', payload) },
+            { route: '/api/v1/control/start(force_unlock=true)', fn: () => workerClient.control('start', payload) },
+          ];
+          for (const attempt of attempts) {
+            try {
+              out = await attempt.fn();
+              backendRoute = attempt.route;
+              break;
+            } catch (e) {
+              lastError = e;
+            }
+          }
+          if (!out) throw lastError || new Error('force_unlock_failed');
+
+          await workerMonitor.tick();
+          return sendJson(res, 200, {
+            ok: true,
+            action: 'force-unlock',
+            message: 'stale lock 해제 요청 완료',
+            backendRoute,
+            request: payload,
+            result: out,
+            worker: workerMonitor.snapshot(),
+          }, ctx, `route=/api/worker/control/force-unlock backend=${backendRoute || 'none'}`);
+        } catch (e) {
+          const detail = e?.data && typeof e.data === 'object' ? e.data : null;
+          await workerMonitor.tick();
+          return sendJson(res, 500, {
+            ok: false,
+            route: '/api/worker/control/force-unlock',
+            action: 'force-unlock',
+            error: String(e?.message || e || 'force_unlock_failed'),
+            result: detail,
+            worker: workerMonitor.snapshot(),
+          }, ctx, `route=/api/worker/control/force-unlock error=${String(e?.message || e)}`);
+        }
+      });
+      return;
+    }
+
     if (url.pathname.startsWith('/api/worker/control/')) {
       if ((req.method || 'GET').toUpperCase() !== 'POST') {
         return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/control method_guard');

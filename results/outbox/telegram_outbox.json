@@ -2422,7 +2422,49 @@
             "retry_count": 0,
             "next_retry_ts": 1771688876.6791525,
             "last_error": null
+        },
+        {
+            "id": "1771689089183_ALL_SYSTEM",
+            "ts": "2026-02-22T00:51:29.183417",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771689089.1833844,
+            "last_error": null
+        },
+        {
+            "id": "1771689109514_ALL_SYSTEM",
+            "ts": "2026-02-22T00:51:49.514373",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771689109.5143383,
+            "last_error": null
+        },
+        {
+            "id": "1771689136927_ALL_SYSTEM",
+            "ts": "2026-02-22T00:52:16.927695",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771689136.9276555,
+            "last_error": null
         }
     ],
-    "updated_at": 1771688877.6271536
+    "updated_at": 1771689137.8887591
 }

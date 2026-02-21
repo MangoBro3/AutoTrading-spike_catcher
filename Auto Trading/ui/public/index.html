@@ -85,6 +85,11 @@
         <span id="autoToggleLabel" style="font-weight:700">OFF</span>
       </div>
       <div id="controlStatus" class="muted">대기중</div>
+      <div style="margin-top:10px;padding:8px;border:1px solid #7a2f39;border-radius:8px;background:#2a171b">
+        <div style="font-weight:700;color:#ffd7dc">⚠ Lock 강제해제 (Force Unlock)</div>
+        <div class="muted" style="margin-top:4px">stale lock 의심 상황에서만 사용하세요. 강제해제 후 즉시 Start 재시도 가능하며, 잘못 사용하면 중복 실행 위험이 있습니다.</div>
+        <div class="inline" style="margin-top:8px"><button id="forceUnlockBtn" class="btn btn-danger">Lock 강제해제</button></div>
+      </div>
     </div>
 
     <div class="card">
@@ -337,6 +342,7 @@ async function postControl(action, body){
 async function postExchangeToggles(body){ const r=await fetch('/api/worker/control/exchanges', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'control_failed:exchanges'); return j; }
 async function postUiSettings(body){ const r=await fetch('/api/ui-settings', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'save_failed:ui_settings'); return j; }
 async function postManualRoundtrip(body){ const r=await fetch('/api/worker/manual/roundtrip-test', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'manual_roundtrip_failed'); return j; }
+async function postForceUnlock(body){ const r=await fetch('/api/worker/control/force-unlock', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'force_unlock_failed'); return j; }
 
 function normalizeWorkerPayload(payload){ if(!payload||typeof payload!=='object') return null; if(payload.worker&&typeof payload.worker==='object') return payload.worker; if(payload.result?.worker&&typeof payload.result.worker==='object') return payload.result.worker; if(payload.state||payload.trafficLight||payload.connected!==undefined) return payload; return null; }
 
@@ -442,7 +448,7 @@ function render(data){
 }
 
 function openConfirmModal(text){ return new Promise((resolve)=>{ const m=$('confirmModal'), a=$('confirmModalApprove'), c=$('confirmModalCancel'); $('confirmModalText').textContent=text; m.classList.add('show'); const done=(ok)=>{m.classList.remove('show'); a.removeEventListener('click',onA); c.removeEventListener('click',onC); resolve(ok);}; const onA=()=>done(true), onC=()=>done(false); a.addEventListener('click',onA); c.addEventListener('click',onC); }); }
-async function runWithControlBusy(fn){ if(controlBusy) return; controlBusy=true; $('autoToggle').disabled=true; try{await fn();} finally{controlBusy=false; syncToggleUI(phaseFromOverview(latestOverview||{}));} }
+async function runWithControlBusy(fn){ if(controlBusy) return; controlBusy=true; $('autoToggle').disabled=true; if($('forceUnlockBtn')) $('forceUnlockBtn').disabled=true; try{await fn();} finally{controlBusy=false; syncToggleUI(phaseFromOverview(latestOverview||{})); if($('forceUnlockBtn')) $('forceUnlockBtn').disabled=false;} }
 
 async function handleModeChange(nextMode){
   if (nextMode === selectedMode) return;
@@ -507,6 +513,27 @@ $('capitalViewUpbit')?.addEventListener('click', ()=>{ capitalView='upbit'; setC
 $('capitalViewBithumb')?.addEventListener('click', ()=>{ capitalView='bithumb'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
 $('autoToggle').addEventListener('change', async(ev)=>{ if(syncingToggle) return; try{ if(ev.target.checked) await handleTurnOn(); else await handleTurnOff(); }catch(e){ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); } });
 
+$('forceUnlockBtn')?.addEventListener('click', async()=>{
+  try{
+    const ok = await openConfirmModal('정말 Lock 강제해제를 실행하시겠습니까? stale lock 해제 목적 외에는 사용하지 마세요.');
+    if(!ok) return;
+    await runWithControlBusy(async()=>{
+      const exchange = pickStartExchange() || String(latestOverview?.runtimeStatus?.exchange || 'UPBIT').toUpperCase();
+      const seed = Number(latestOverview?.runtimeStatus?.seed_krw ?? latestOverview?.virtualCapital?.seed_krw ?? 0) || 0;
+      $('controlStatus').textContent='Lock 강제해제 요청 중...';
+      const out = await postForceUnlock({ mode: selectedMode, exchange, seed });
+      const route = out?.backendRoute ? ` (${out.backendRoute})` : '';
+      const msg = out?.message || out?.result?.message || 'stale lock 해제 요청 성공';
+      setBlockedUI({ worker: { state: { why_blocked: `FORCE-UNLOCK OK: ${msg}${route}`, next_action: 'start' } } });
+      $('controlStatus').textContent = `Force Unlock 성공: ${msg}${route}`;
+      await tick();
+    });
+  }catch(e){
+    setBlockedUI({ worker: { state: { why_blocked: `FORCE-UNLOCK 실패: ${e.message}`, next_action: '' } } });
+    $('controlStatus').textContent=`Force Unlock 실패: ${e.message}`;
+    await tick();
+  }
+});
 
 async function handleExchangeToggleChange(){
   if(syncingExchangeToggle) return;
