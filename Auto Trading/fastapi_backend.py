@@ -119,6 +119,35 @@ class BackendService:
     def _is_running(self) -> bool:
         return bool(self.worker and self.worker.is_alive() and self.controller and self.controller.running)
 
+    def _resolve_mode(self) -> str:
+        mode = None
+        try:
+            if self.controller is not None:
+                mode = getattr(self.controller, "mode", None)
+            if mode is None and isinstance(self.pending, dict):
+                mode = self.pending.get("mode")
+            if mode is None:
+                li = self.lock.read()
+                if li is not None:
+                    mode = li.mode
+        except Exception:
+            mode = mode or None
+        return str(mode or "PAPER").upper()
+
+    def _canonical_status(self, safe_state: dict):
+        running = self._is_running()
+        phase = str((safe_state or {}).get("phase") or "STOPPED").upper()
+        if running:
+            phase = PHASE_RUNNING
+        elif phase == PHASE_RUNNING:
+            # stale safe-start RUNNING flag; worker is not actually running
+            phase = "STOPPED"
+        return {
+            "mode": self._resolve_mode(),
+            "running": bool(running),
+            "phase": phase,
+        }
+
     def _json_safe(self, value):
         if value is None or isinstance(value, (str, int, float, bool)):
             return value
@@ -245,13 +274,17 @@ class BackendService:
         except Exception as e:
             state = {"phase": "STOPPED", "details": {"error": f"safe_start_read_failed:{e.__class__.__name__}"}, "ts": None}
 
-        guidance = self._status_guidance(state)
+        canonical = self._canonical_status(state)
+        state_for_guidance = dict(state or {})
+        state_for_guidance["phase"] = canonical["phase"]
+        guidance = self._status_guidance(state_for_guidance)
         payload = {
             "ok": True,
-            "running": self._is_running(),
+            "mode": canonical["mode"],
+            "running": canonical["running"],
             "manual_roundtrip": self.manual_roundtrip,
 
-            "phase": state.get("phase"),
+            "phase": canonical["phase"],
             "safe_start": state,
             "pending": self._pending_status(),
             "virtual_capital": self._build_virtual_capital(),
@@ -573,12 +606,14 @@ class BackendStatusTUI:
         state = self._safe_json_read(RUNTIME_STATE_PATH)
         safe = self.backend_service.safe_start.read_state()
 
-        mode = str((backend.get("controller_mode") or runtime.get("mode") or "PAPER")).upper()
+        canonical_mode = backend.get("mode")
+        mode = str((canonical_mode or backend.get("controller_mode") or runtime.get("mode") or "PAPER")).upper()
         is_live = mode == "LIVE"
         mode_badge = f"{mode} {'⚠️ LIVE REAL MONEY' if is_live else '🧪 PAPER'}"
 
-        running = bool(self.backend_service._is_running())
-        phase = safe.get("phase", "STOPPED")
+        canonical = self.backend_service._canonical_status(safe)
+        running = bool(canonical.get("running", False))
+        phase = str(canonical.get("phase") or "STOPPED")
         lock_exists = bool((backend.get("lock") or {}).get("exists"))
         conn = "CONNECTED" if running else ("WAITING" if phase in {PHASE_BOOTING_DEGRADED, PHASE_WAITING_OPERATOR, PHASE_WAITING_SYNC} else "DISCONNECTED")
 

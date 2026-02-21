@@ -1970,8 +1970,8 @@ INDEX_HTML = """<!doctype html>
 
         const pf = data.portfolio || {};
         const pfPos = pf.position || {};
-        const mode = String(pf.mode || data.controller_mode || r.mode || "UNKNOWN").toUpperCase();
-        const isRunning = !!pf.running;
+        const mode = String(data.mode || data.controller_mode || pf.mode || r.mode || "UNKNOWN").toUpperCase();
+        const isRunning = !!(data.running ?? pf.running);
         const modeLabel = isRunning ? (mode + " RUNNING") : (mode + " STOPPED");
         document.getElementById("modeIndicator").textContent = modeLabel;
         if (!isRunning) {
@@ -4799,10 +4799,10 @@ def build_status(service: BotService, state: BackendState):
         or (runtime or {}).get("mode")
         or current_settings.get("mode", "PAPER")
     ).upper()
-    running_value = bool(
-        ((runtime or {}).get("status") == "RUNNING")
-        or controller_running
-    )
+    runtime_running = bool((runtime or {}).get("status") == "RUNNING")
+    runtime_fresh = bool(runtime_age is not None and runtime_age <= 5.0)
+    running_value = bool(controller_running or (runtime_running and runtime_fresh and lock_info.get("exists")))
+    phase_value = "RUNNING" if running_value else "STOPPED"
     equity_krw = 0.0
     pnl_ratio = 0.0
     try:
@@ -4842,13 +4842,16 @@ def build_status(service: BotService, state: BackendState):
     }
 
     status = {
+        "mode": mode_value,
+        "running": running_value,
+        "phase": phase_value,
         "backend": backend,
         "settings": current_settings,
         "runtime": runtime,
         "runtime_state": runtime_state,
         "portfolio": portfolio,
         "runtime_age_sec": runtime_age,
-        "controller_state": (runtime or {}).get("status") if runtime else ("RUNNING" if controller_running else "STOPPED"),
+        "controller_state": phase_value,
         "controller_owner": controller_owner,
         "controller_mode": controller_mode,
         "lock": lock_info,

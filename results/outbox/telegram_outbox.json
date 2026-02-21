@@ -2394,7 +2394,35 @@
             "retry_count": 0,
             "next_retry_ts": 1771688615.2052157,
             "last_error": null
+        },
+        {
+            "id": "1771688852315_ALL_SYSTEM",
+            "ts": "2026-02-22T00:47:32.315182",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771688852.3151407,
+            "last_error": null
+        },
+        {
+            "id": "1771688876679_SYSTEM_RISK",
+            "ts": "2026-02-22T00:47:56.679178",
+            "event_type": "RISK",
+            "exchange": "SYSTEM",
+            "severity": "CRITICAL",
+            "title": "[SYSTEM] [RISK] STOP LOSS",
+            "message": "📉 **EMERGENCY STOP**\nReason: [RISK] Daily DD hard limit triggered! eq=100,000, start=1,000,000, peak=1,000,000, dd_start=-90.00%, dd_peak=-90.00%\nAction: cancel_open_orders=0, flatten_attempt=False, mode=PAPER",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771688876.6791525,
+            "last_error": null
         }
     ],
-    "updated_at": 1771688616.1645377
+    "updated_at": 1771688877.6271536
 }

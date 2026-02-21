@@ -324,6 +324,46 @@ class RunController:
             "real_balance_krw": real_balance,
         }
 
+    def _sync_risk_baseline_with_effective_cap(self, force: bool = False):
+        """
+        Keep ledger/daily-risk baseline aligned with effective tradable capital.
+        Prevent stale baseline (e.g. 1,000,000 -> 100,000 cap change) from
+        being interpreted as massive drawdown on restart.
+        """
+        try:
+            virtual = self._compute_available_for_bot(exchange_balance_krw=self._get_krw_balance())
+            effective_cap = self._safe_float(virtual.get("available_for_bot"), 0.0)
+            if effective_cap <= 0:
+                return False
+
+            ls = self.ledger.get_state() if self.ledger else {}
+            baseline_seed = self._safe_float(ls.get("baseline_seed"), 0.0)
+
+            tol = max(100.0, effective_cap * 0.001)  # 0.1% or 100 KRW
+            if (not force) and abs(baseline_seed - effective_cap) <= tol:
+                return False
+
+            if self.ledger:
+                ok, _ = self.ledger.reset_seed(
+                    new_seed=effective_cap,
+                    open_positions_count=0,
+                    open_orders_count=0,
+                )
+                if not ok:
+                    return False
+
+            self.daily_risk_state["day"] = self._today_key_local()
+            self.daily_risk_state["daily_start_equity"] = float(effective_cap)
+            self.daily_risk_state["intraday_peak_equity"] = float(effective_cap)
+            self.daily_risk_state["hard_stop_triggered"] = False
+            self.daily_risk_state["last_trigger_reason"] = None
+            self._save_daily_risk_state()
+            logger.info(f"[RISK] Baseline synced to effective_capital={effective_cap:,.0f} KRW")
+            return True
+        except Exception as e:
+            logger.warning(f"[RISK] baseline sync skipped: {e}")
+            return False
+
     def _rollover_daily_state_if_needed(self, equity_now):
         today = self._today_key_local()
         if self.daily_risk_state.get("day") != today:
@@ -371,6 +411,9 @@ class RunController:
 
     def check_risk_limits(self):
         """Evaluates true daily drawdown on mark-to-market equity."""
+        # Auto-sync risk baseline if cap/seed changed.
+        self._sync_risk_baseline_with_effective_cap(force=False)
+
         equity_now = self._estimate_equity()
         if equity_now is None or equity_now <= 0:
             return True
@@ -1886,6 +1929,9 @@ class RunController:
         """
         self.running = True
         logger.info(f"[RunController] Loop STARTED. Mode={self.mode}")
+
+        # Force start capital baseline = effective tradable capital on run start.
+        self._sync_risk_baseline_with_effective_cap(force=True)
 
         if not self._startup_reconciled:
             try:
