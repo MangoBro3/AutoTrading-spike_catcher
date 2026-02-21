@@ -171,24 +171,46 @@ async function writeExchangeToggles(next) {
   return normalized;
 }
 
-function normalizeCapitalCap(raw, fallback = null) {
+function normalizeCapField(raw, fallback = null) {
   const n = Number(raw);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(0, Math.floor(n));
 }
 
+function normalizeCapitalCap(raw, fallback = null) {
+  return normalizeCapField(raw, fallback);
+}
+
 async function readUiSettings() {
   const payload = await readJsonFile(UI_SETTINGS_PATH, {});
+  const legacyCap = normalizeCapField(payload?.capital_cap_krw, null);
+  const totalCap = normalizeCapField(payload?.total_cap_krw, legacyCap);
+  const upbitCap = normalizeCapField(payload?.upbit_cap_krw, null);
+  const bithumbCap = normalizeCapField(payload?.bithumb_cap_krw, null);
   return {
     ...payload,
-    capital_cap_krw: normalizeCapitalCap(payload?.capital_cap_krw, null),
+    capital_cap_krw: totalCap,
+    total_cap_krw: totalCap,
+    upbit_cap_krw: upbitCap,
+    bithumb_cap_krw: bithumbCap,
   };
 }
 
 async function writeUiSettings(next = {}) {
   const prev = await readJsonFile(UI_SETTINGS_PATH, {});
-  const cap = normalizeCapitalCap(next?.capital_cap_krw, normalizeCapitalCap(prev?.capital_cap_krw, 0));
-  const merged = { ...prev, ...next, capital_cap_krw: cap };
+  const prevLegacy = normalizeCapField(prev?.capital_cap_krw, 0);
+  const prevTotal = normalizeCapField(prev?.total_cap_krw, prevLegacy);
+  const totalCap = normalizeCapField(next?.total_cap_krw ?? next?.capital_cap_krw, prevTotal);
+  const upbitCap = normalizeCapField(next?.upbit_cap_krw, normalizeCapField(prev?.upbit_cap_krw, 0));
+  const bithumbCap = normalizeCapField(next?.bithumb_cap_krw, normalizeCapField(prev?.bithumb_cap_krw, 0));
+  const merged = {
+    ...prev,
+    ...next,
+    capital_cap_krw: totalCap,
+    total_cap_krw: totalCap,
+    upbit_cap_krw: upbitCap,
+    bithumb_cap_krw: bithumbCap,
+  };
   await writeFile(UI_SETTINGS_PATH, JSON.stringify(merged, null, 2), 'utf8');
   return merged;
 }
@@ -562,7 +584,7 @@ let overviewCache = {
     upbit: { status: 'unknown', detail: 'backend state unavailable' },
     bithumb: { status: 'unknown', detail: 'backend state unavailable' },
   },
-  uiSettings: { capital_cap_krw: null },
+  uiSettings: { capital_cap_krw: null, total_cap_krw: null, upbit_cap_krw: null, bithumb_cap_krw: null },
   usage: summarizeUsage([]),
   taskSignals: { inProgressWorkers: [], tasks: [], agentWork: {} },
   timeline: [],
@@ -785,11 +807,18 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = body ? JSON.parse(body) : {};
-          const capitalCap = normalizeCapitalCap(parsed?.capital_cap_krw, null);
-          if (!Number.isFinite(capitalCap)) {
-            return sendJson(res, 400, { ok: false, error: 'invalid_capital_cap_krw' }, ctx, 'route=/api/ui-settings invalid');
+          const totalCap = normalizeCapField(parsed?.total_cap_krw ?? parsed?.capital_cap_krw, null);
+          const upbitCap = normalizeCapField(parsed?.upbit_cap_krw, null);
+          const bithumbCap = normalizeCapField(parsed?.bithumb_cap_krw, null);
+          if (!Number.isFinite(totalCap) || !Number.isFinite(upbitCap) || !Number.isFinite(bithumbCap)) {
+            return sendJson(res, 400, { ok: false, error: 'invalid_cap_values' }, ctx, 'route=/api/ui-settings invalid');
           }
-          const saved = await writeUiSettings({ capital_cap_krw: capitalCap });
+          const saved = await writeUiSettings({
+            capital_cap_krw: totalCap,
+            total_cap_krw: totalCap,
+            upbit_cap_krw: upbitCap,
+            bithumb_cap_krw: bithumbCap,
+          });
           overviewCache = { ...overviewCache, uiSettings: saved };
           return sendJson(res, 200, { ok: true, settings: saved }, ctx, 'route=/api/ui-settings post');
         } catch (e) {

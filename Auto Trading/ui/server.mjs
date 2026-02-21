@@ -379,8 +379,12 @@ function deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap }) {
   const seed = toNum(fromStatus.allocated ?? runtimeStatus?.seed_krw ?? workerSnap?.state?.seed ?? 0, 0);
   const pnl = toNum(fromStatus.pnl_virtual, equity - seed);
   const pnlPct = toNum(fromStatus.pnl_pct_virtual, seed > 0 ? (pnl / seed) * 100 : 0);
-  const cap = toNum(fromStatus.cap_krw, null);
-  const nextAvail = cap != null && cap > 0 ? Math.min(equity, cap) : equity;
+  const totalCap = toNum(fromStatus.total_cap_krw ?? fromStatus.cap_krw, null);
+  const upbitCap = toNum(fromStatus.upbit_cap_krw, null);
+  const bithumbCap = toNum(fromStatus.bithumb_cap_krw, null);
+  const selectedCap = toNum(fromStatus.selected_cap_krw ?? fromStatus.cap_krw, null);
+  const effectiveCap = selectedCap != null ? selectedCap : totalCap;
+  const nextAvail = effectiveCap != null && effectiveCap > 0 ? Math.min(equity, effectiveCap) : equity;
   return {
     rule: 'next_available_capital = current_virtual_equity',
     seed_krw: seed,
@@ -389,7 +393,12 @@ function deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap }) {
     pnl_pct_virtual: pnlPct,
     next_available_capital: Math.max(0, nextAvail),
     available_for_bot: Math.max(0, nextAvail),
-    cap_krw: cap,
+    cap_krw: effectiveCap,
+    total_cap_krw: totalCap,
+    upbit_cap_krw: upbitCap,
+    bithumb_cap_krw: bithumbCap,
+    selected_cap_krw: effectiveCap,
+    exchange: fromStatus.exchange ?? null,
   };
 }
 
@@ -458,28 +467,50 @@ async function writeExchangeToggles(next) {
   return normalized;
 }
 
-function normalizeCapitalCap(raw, fallback = null) {
+function normalizeCapField(raw, fallback = null) {
   const n = Number(raw);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(0, Math.floor(n));
 }
 
+function normalizeCapitalCap(raw, fallback = null) {
+  return normalizeCapField(raw, fallback);
+}
+
 async function readUiSettings() {
   const payload = await readJsonFile(UI_SETTINGS_PATH, {});
-  const capitalCap = normalizeCapitalCap(payload?.capital_cap_krw, null);
+  const legacyCap = normalizeCapField(payload?.capital_cap_krw, null);
+  const totalCap = normalizeCapField(payload?.total_cap_krw, legacyCap);
+  const upbitCap = normalizeCapField(payload?.upbit_cap_krw, null);
+  const bithumbCap = normalizeCapField(payload?.bithumb_cap_krw, null);
   return {
     ...payload,
-    capital_cap_krw: capitalCap,
+    capital_cap_krw: totalCap,
+    total_cap_krw: totalCap,
+    upbit_cap_krw: upbitCap,
+    bithumb_cap_krw: bithumbCap,
   };
 }
 
 async function writeUiSettings(next = {}) {
   const prev = await readJsonFile(UI_SETTINGS_PATH, {});
-  const cap = normalizeCapitalCap(next?.capital_cap_krw, normalizeCapitalCap(prev?.capital_cap_krw, 0));
+  const prevLegacy = normalizeCapField(prev?.capital_cap_krw, 0);
+  const prevTotal = normalizeCapField(prev?.total_cap_krw, prevLegacy);
+
+  const totalCap = normalizeCapField(
+    next?.total_cap_krw ?? next?.capital_cap_krw,
+    prevTotal,
+  );
+  const upbitCap = normalizeCapField(next?.upbit_cap_krw, normalizeCapField(prev?.upbit_cap_krw, 0));
+  const bithumbCap = normalizeCapField(next?.bithumb_cap_krw, normalizeCapField(prev?.bithumb_cap_krw, 0));
+
   const merged = {
     ...prev,
     ...next,
-    capital_cap_krw: cap,
+    capital_cap_krw: totalCap,
+    total_cap_krw: totalCap,
+    upbit_cap_krw: upbitCap,
+    bithumb_cap_krw: bithumbCap,
   };
   await writeFile(UI_SETTINGS_PATH, JSON.stringify(merged, null, 2), 'utf8');
   return merged;
@@ -853,7 +884,7 @@ let overviewCache = {
     upbit: { status: 'unknown', detail: 'backend state unavailable' },
     bithumb: { status: 'unknown', detail: 'backend state unavailable' },
   },
-  uiSettings: { capital_cap_krw: null },
+  uiSettings: { capital_cap_krw: null, total_cap_krw: null, upbit_cap_krw: null, bithumb_cap_krw: null },
   usage: summarizeUsage([]),
   taskSignals: { inProgressWorkers: [], tasks: [], agentWork: {} },
   timeline: [],
@@ -1102,16 +1133,25 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = body ? JSON.parse(body) : {};
-          const capitalCap = normalizeCapitalCap(parsed?.capital_cap_krw, null);
-          if (!Number.isFinite(capitalCap)) {
-            return sendJson(res, 400, { ok: false, error: 'invalid_capital_cap_krw' }, ctx, 'route=/api/ui-settings invalid');
+          const totalCap = normalizeCapField(parsed?.total_cap_krw ?? parsed?.capital_cap_krw, null);
+          const upbitCap = normalizeCapField(parsed?.upbit_cap_krw, null);
+          const bithumbCap = normalizeCapField(parsed?.bithumb_cap_krw, null);
+          if (!Number.isFinite(totalCap) || !Number.isFinite(upbitCap) || !Number.isFinite(bithumbCap)) {
+            return sendJson(res, 400, { ok: false, error: 'invalid_cap_values' }, ctx, 'route=/api/ui-settings invalid');
           }
+
+          const payload = {
+            capital_cap_krw: totalCap,
+            total_cap_krw: totalCap,
+            upbit_cap_krw: upbitCap,
+            bithumb_cap_krw: bithumbCap,
+          };
 
           let backendResult = null;
           let backendRoute = null;
           const attempts = [
-            { route: 'control/settings', fn: () => workerClient.control('settings', { capital_cap_krw: capitalCap }) },
-            { route: 'control/config', fn: () => workerClient.control('config', { capital_cap_krw: capitalCap }) },
+            { route: 'control/settings', fn: () => workerClient.control('settings', payload) },
+            { route: 'control/config', fn: () => workerClient.control('config', payload) },
           ];
           for (const attempt of attempts) {
             try {
@@ -1123,7 +1163,7 @@ const server = http.createServer((req, res) => {
             }
           }
 
-          const saved = await writeUiSettings({ capital_cap_krw: capitalCap });
+          const saved = await writeUiSettings(payload);
           overviewCache = { ...overviewCache, uiSettings: saved };
           return sendJson(res, 200, {
             ok: true,

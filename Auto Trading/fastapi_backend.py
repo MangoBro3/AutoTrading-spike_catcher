@@ -166,6 +166,17 @@ class BackendService:
         except Exception:
             cap = None
 
+        def _f(v):
+            try:
+                return float(v) if v is not None else None
+            except Exception:
+                return None
+
+        total_cap = _f((vc or {}).get('total_cap_krw'))
+        upbit_cap = _f((vc or {}).get('upbit_cap_krw'))
+        bithumb_cap = _f((vc or {}).get('bithumb_cap_krw'))
+        selected_cap = _f((vc or {}).get('selected_cap_krw'))
+
         next_available = equity if not (cap is not None and cap > 0) else min(equity, cap)
         pnl = equity - seed
         pnl_pct = (pnl / seed * 100.0) if seed > 0 else 0.0
@@ -178,6 +189,11 @@ class BackendService:
             'pnl_virtual': pnl,
             'pnl_pct_virtual': pnl_pct,
             'cap_krw': cap,
+            'total_cap_krw': total_cap,
+            'upbit_cap_krw': upbit_cap,
+            'bithumb_cap_krw': bithumb_cap,
+            'selected_cap_krw': selected_cap if selected_cap is not None else cap,
+            'exchange': (vc or {}).get('exchange'),
         }
 
     def status(self):

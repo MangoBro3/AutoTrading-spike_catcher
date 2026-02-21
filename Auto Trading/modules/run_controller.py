@@ -49,7 +49,7 @@ class RunController:
         self.runtime_state = self._load_runtime_state()
         self._startup_reconciled = False
 
-        # Virtual capital cap (optional): loaded from UI settings (KRW)
+        # Virtual capital cap settings (optional): loaded from UI settings (KRW)
         self._capital_cap_cache = None
         self._capital_cap_loaded_ts = 0.0
 
@@ -203,12 +203,26 @@ class RunController:
             pass
         return None
 
-    def _load_capital_cap_krw(self, force: bool = False):
-        now = time.time()
-        if (not force) and (now - self._capital_cap_loaded_ts < 3.0):
-            return self._capital_cap_cache
+    def _normalize_cap_value(self, raw, fallback=None):
+        try:
+            n = float(raw)
+        except Exception:
+            return fallback
+        if n <= 0:
+            return None
+        return n
 
-        cap_value = None
+    def _load_cap_settings(self, force: bool = False):
+        now = time.time()
+        if (not force) and (now - self._capital_cap_loaded_ts < 3.0) and isinstance(self._capital_cap_cache, dict):
+            return dict(self._capital_cap_cache)
+
+        caps = {
+            "total_cap_krw": None,
+            "upbit_cap_krw": None,
+            "bithumb_cap_krw": None,
+            "legacy_capital_cap_krw": None,
+        }
         candidate_paths = [
             Path("Auto Trading/ui_settings.json"),
             Path("ui_settings.json"),
@@ -218,22 +232,56 @@ class RunController:
                 if not path.exists():
                     continue
                 payload = json.loads(path.read_text(encoding="utf-8"))
-                raw = payload.get("capital_cap_krw")
-                if raw is None:
-                    continue
-                cap = float(raw)
-                if cap > 0:
-                    cap_value = cap
-                    break
+                legacy = self._normalize_cap_value(payload.get("capital_cap_krw"), None)
+                total = self._normalize_cap_value(payload.get("total_cap_krw"), legacy)
+                upbit = self._normalize_cap_value(payload.get("upbit_cap_krw"), None)
+                bithumb = self._normalize_cap_value(payload.get("bithumb_cap_krw"), None)
+                caps = {
+                    "total_cap_krw": total,
+                    "upbit_cap_krw": upbit,
+                    "bithumb_cap_krw": bithumb,
+                    "legacy_capital_cap_krw": legacy,
+                }
+                break
             except Exception:
                 continue
 
-        self._capital_cap_cache = cap_value
+        self._capital_cap_cache = dict(caps)
         self._capital_cap_loaded_ts = now
-        return cap_value
+        return dict(caps)
 
-    def _compute_available_for_bot(self, exchange_balance_krw: float = None):
-        cap = self._load_capital_cap_krw(force=False)
+    def _load_capital_cap_krw(self, force: bool = False):
+        settings = self._load_cap_settings(force=force)
+        return settings.get("total_cap_krw")
+
+    def _infer_exchange_for_symbol(self, symbol: str = None):
+        sym = str(symbol or "").upper()
+        if sym.startswith("UPBIT_"):
+            return "UPBIT"
+        if sym.startswith("BITHUMB_"):
+            return "BITHUMB"
+        adapter_name = self.adapter.__class__.__name__.upper() if self.adapter is not None else ""
+        if "UPBIT" in adapter_name:
+            return "UPBIT"
+        if "BITHUMB" in adapter_name:
+            return "BITHUMB"
+        return None
+
+    def _compute_available_for_bot(self, exchange_balance_krw: float = None, symbol: str = None, exchange: str = None):
+        caps = self._load_cap_settings(force=False)
+        exchange_key = str(exchange or self._infer_exchange_for_symbol(symbol) or "").upper()
+
+        total_cap = caps.get("total_cap_krw")
+        upbit_cap = caps.get("upbit_cap_krw")
+        bithumb_cap = caps.get("bithumb_cap_krw")
+
+        selected_cap = None
+        if exchange_key == "UPBIT":
+            selected_cap = upbit_cap if upbit_cap is not None else total_cap
+        elif exchange_key == "BITHUMB":
+            selected_cap = bithumb_cap if bithumb_cap is not None else total_cap
+        else:
+            selected_cap = total_cap
 
         equity_virtual = 0.0
         baseline_seed = 0.0
@@ -244,13 +292,11 @@ class RunController:
         except Exception:
             pass
 
-        # Virtual capital rule: next available capital follows current virtual equity.
-        # Example: 100,000 -> 130,000 after gain, and decreases on loss.
         allocated = baseline_seed if baseline_seed > 0 else equity_virtual
 
         next_available = max(0.0, equity_virtual)
-        if cap is not None and cap > 0:
-            next_available = min(next_available, max(0.0, cap))
+        if selected_cap is not None and selected_cap > 0:
+            next_available = min(next_available, max(0.0, selected_cap))
 
         real_balance = None
         if exchange_balance_krw is not None:
@@ -262,7 +308,13 @@ class RunController:
 
         return {
             "rule": "next_available_capital = current_virtual_equity",
-            "cap_krw": cap,
+            "cap_krw": selected_cap,
+            "total_cap_krw": total_cap,
+            "upbit_cap_krw": upbit_cap,
+            "bithumb_cap_krw": bithumb_cap,
+            "legacy_capital_cap_krw": caps.get("legacy_capital_cap_krw"),
+            "exchange": exchange_key or None,
+            "selected_cap_krw": selected_cap,
             "allocated": max(0.0, allocated),
             "equity_virtual": max(0.0, equity_virtual),
             "pnl_virtual": pnl_virtual,
@@ -1104,16 +1156,19 @@ class RunController:
                     self.bot_cash = 0.0
                     self.controller = controller
 
-                def get_available_for_bot(self, current_real_krw=None):
+                def get_available_for_bot(self, current_real_krw=None, symbol=None):
                     try:
-                        info = self.controller._compute_available_for_bot(exchange_balance_krw=current_real_krw)
+                        info = self.controller._compute_available_for_bot(
+                            exchange_balance_krw=current_real_krw,
+                            symbol=symbol,
+                        )
                         return float(info.get("available_for_bot", 0.0) or 0.0)
                     except Exception:
                         return float(current_real_krw or 0.0)
 
-                def can_buy(self, required_krw, current_real_krw):
+                def can_buy(self, required_krw, current_real_krw, symbol=None):
                     try:
-                        available_for_bot = self.get_available_for_bot(current_real_krw)
+                        available_for_bot = self.get_available_for_bot(current_real_krw, symbol=symbol)
                         if float(required_krw) <= float(available_for_bot):
                             return True, "OK"
                         return False, f"AVAILABLE_FOR_BOT_INSUFFICIENT (Req:{required_krw:.0f} > Avail:{available_for_bot:.0f})"
@@ -1803,6 +1858,11 @@ class RunController:
                 'available_for_bot': virtual.get('available_for_bot', 0.0),
                 'rule': virtual.get('rule', 'next_available_capital = current_virtual_equity'),
                 'cap_krw': virtual.get('cap_krw', None),
+                'total_cap_krw': virtual.get('total_cap_krw', None),
+                'upbit_cap_krw': virtual.get('upbit_cap_krw', None),
+                'bithumb_cap_krw': virtual.get('bithumb_cap_krw', None),
+                'exchange': virtual.get('exchange', None),
+                'selected_cap_krw': virtual.get('selected_cap_krw', virtual.get('cap_krw', None)),
             },
             'last_tick_ts': self.last_tick_ts,
             'last_error': last_error,

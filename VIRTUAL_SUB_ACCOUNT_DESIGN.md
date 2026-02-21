@@ -10,11 +10,12 @@
 
 - **실계좌(Real Account):** 거래소의 실제 KRW/코인 잔고.
 - **가상 서브계좌(Virtual Sub-Account):** 전략 전용 내부 원장.
-- **전용 운용금(`capital_cap_krw`):** 전략이 사용할 수 있는 최대 KRW 한도.
+- **전용 운용금 한도(Cap):** 전략이 사용할 수 있는 KRW 한도. v1.2부터 `capital_cap_krw`(전체 기본), `upbit_cap_krw`, `bithumb_cap_krw`를 함께 사용.
 - **가상 순자산(`virtual_equity_krw`):**
   - `virtual_equity_krw = starting_capital_krw + cumulative_realized_pnl_krw + unrealized_pnl_krw - cumulative_fees_krw`
 - **주문 가능금액(`available_to_trade_krw`):**
-  - `min(capital_cap_krw, virtual_equity_krw) - reserved_margin_krw - open_order_hold_krw`
+  - `min(effective_cap_krw, virtual_equity_krw) - reserved_margin_krw - open_order_hold_krw`
+  - `effective_cap_krw`는 v1.2 우선순위 규칙으로 결정
 
 ---
 

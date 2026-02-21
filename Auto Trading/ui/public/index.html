@@ -96,9 +96,20 @@
 
     <div class="card">
       <h2>Settings</h2>
-      <div class="muted">capital_cap_krw (0=무제한)</div>
+      <div class="muted">total/upbit/bithumb cap (KRW, 0=무제한)</div>
+      <div class="inline" style="margin-top:8px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="totalCapInput" style="min-width:90px">total_cap_krw</label>
+        <input id="totalCapInput" type="text" placeholder="예: 1000000" />
+      </div>
+      <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="upbitCapInput" style="min-width:90px">upbit_cap_krw</label>
+        <input id="upbitCapInput" type="text" placeholder="예: 500000" />
+      </div>
+      <div class="inline" style="margin-top:6px;align-items:center;flex-wrap:wrap">
+        <label class="muted" for="bithumbCapInput" style="min-width:90px">bithumb_cap_krw</label>
+        <input id="bithumbCapInput" type="text" placeholder="예: 500000" />
+      </div>
       <div class="inline" style="margin-top:8px">
-        <input id="capitalCapInput" type="text" placeholder="예: 1000000" />
         <button id="capitalCapSaveBtn" class="btn">저장</button>
       </div>
       <div id="capitalCapStatus" class="muted" style="margin-top:8px">대기중</div>

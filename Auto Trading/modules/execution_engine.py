@@ -498,6 +498,8 @@ class ExecutionEngine:
             available_for_bot = balance
             if hasattr(self.budget_mgr, "get_available_for_bot"):
                 try:
+                    available_for_bot = self._safe_float(self.budget_mgr.get_available_for_bot(balance, symbol=symbol), balance)
+                except TypeError:
                     available_for_bot = self._safe_float(self.budget_mgr.get_available_for_bot(balance), balance)
                 except Exception:
                     available_for_bot = balance
@@ -506,7 +508,10 @@ class ExecutionEngine:
                 return self._compose_result(False, symbol, "buy", reason="BUDGET_FAIL:AVAILABLE_FOR_BOT_ZERO")
 
             if hasattr(self.budget_mgr, "can_buy"):
-                can_buy, budget_msg = self.budget_mgr.can_buy(target_money, balance)
+                try:
+                    can_buy, budget_msg = self.budget_mgr.can_buy(target_money, balance, symbol=symbol)
+                except TypeError:
+                    can_buy, budget_msg = self.budget_mgr.can_buy(target_money, balance)
                 if not can_buy:
                     return self._compose_result(False, symbol, "buy", reason=f"BUDGET_FAIL:{budget_msg}")
 
