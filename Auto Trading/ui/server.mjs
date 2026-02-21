@@ -1467,6 +1467,41 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = body ? JSON.parse(body) : {};
+          const isLockExistsResult = (obj) => {
+            if (!obj || typeof obj !== 'object') return false;
+            const err = String(obj?.error || '').toLowerCase();
+            const detail = String(obj?.detail || '').toLowerCase();
+            return detail.includes('lock-exists')
+              || err === 'lock-exists'
+              || (err === 'lock-failed' && (detail.includes('lock-exists') || detail.includes('lock-held')));
+          };
+
+          const runForceUnlockOnce = async (modePayload) => {
+            const mode = String(modePayload?.mode || overviewCache?.truth?.mode || 'PAPER').toUpperCase();
+            const exchange = String(modePayload?.exchange || overviewCache?.runtimeStatus?.exchange || 'UPBIT').toUpperCase();
+            const seed = Number(modePayload?.seed ?? overviewCache?.runtimeStatus?.seed_krw ?? 0) || 0;
+            const payload = { force_unlock: true, mode, exchange, seed };
+            const attempts = [
+              { route: '/api/v1/control/force-unlock', fn: () => workerClient.control('force-unlock', payload) },
+              { route: '/api/v1/control/unlock', fn: () => workerClient.control('unlock', payload) },
+              { route: '/api/v1/control/start(force_unlock=true)', fn: () => workerClient.control('start', payload) },
+            ];
+            let outUnlock = null;
+            let unlockRoute = null;
+            let lastErr = null;
+            for (const attempt of attempts) {
+              try {
+                outUnlock = await attempt.fn();
+                unlockRoute = attempt.route;
+                break;
+              } catch (e) {
+                lastErr = e;
+              }
+            }
+            if (!outUnlock) throw lastErr || new Error('force_unlock_failed');
+            return { payload, route: unlockRoute, result: outUnlock };
+          };
+
           let out = null;
           let backendRoute = `/api/v1/control/${action}`;
           if (action === 'stop') {
@@ -1479,6 +1514,44 @@ const server = http.createServer((req, res) => {
             }
           } else {
             out = await workerClient.control(action, parsed);
+          }
+
+          let autoUnlockRetry = null;
+          if (action === 'mode' && isLockExistsResult(out)) {
+            autoUnlockRetry = { attempted: true, status: 'in_progress', trigger: 'lock-exists' };
+            try {
+              const unlock = await runForceUnlockOnce(parsed);
+              const retried = await workerClient.control('mode', parsed);
+              autoUnlockRetry = {
+                attempted: true,
+                status: 'success',
+                trigger: 'lock-exists',
+                unlock_route: unlock.route,
+                unlock_result: unlock.result,
+              };
+              out = {
+                ...(retried || {}),
+                auto_unlock_retry: autoUnlockRetry,
+              };
+              backendRoute = '/api/v1/control/mode(auto-unlock-retry)';
+            } catch (eRetry) {
+              const retryDetail = eRetry?.data && typeof eRetry.data === 'object' ? eRetry.data : null;
+              autoUnlockRetry = {
+                attempted: true,
+                status: 'failed',
+                trigger: 'lock-exists',
+                error: String(eRetry?.message || eRetry || 'auto_unlock_retry_failed'),
+                detail: retryDetail,
+              };
+              out = {
+                ...(out || {}),
+                ok: false,
+                error: out?.error || 'lock-failed',
+                detail: out?.detail || 'lock-exists',
+                auto_unlock_retry: autoUnlockRetry,
+              };
+              backendRoute = '/api/v1/control/mode(auto-unlock-retry-failed)';
+            }
           }
 
           let finalOut = out;
@@ -1494,6 +1567,7 @@ const server = http.createServer((req, res) => {
                     phase: autoConfirm?.phase || 'RUNNING',
                     auto_confirmed: true,
                     auto_confirm_result: autoConfirm,
+                    auto_unlock_retry: out?.auto_unlock_retry || autoUnlockRetry,
                   };
                 }
               } catch (e2) {
@@ -1501,6 +1575,7 @@ const server = http.createServer((req, res) => {
                   ...out,
                   auto_confirmed: false,
                   auto_confirm_error: String(e2?.message || e2),
+                  auto_unlock_retry: out?.auto_unlock_retry || autoUnlockRetry,
                 };
               }
             }
