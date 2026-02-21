@@ -42,6 +42,7 @@
   <div class="inline"><button id="refreshConnBtn" class="btn">연결 상태 새로고침</button><span id="refreshConnState" class="muted">수동 갱신: -</span></div>
   <div id="stopBanner" class="banner danger"></div>
   <div id="blockedBanner" class="banner danger"></div>
+  <div id="runtimeStatusBanner" class="banner danger"></div>
   <div class="inline" id="nextActionWrap" style="display:none"><button id="nextActionBtn" class="btn btn-danger">다음 액션 실행</button><span id="nextActionHint" class="muted"></span></div>
   <div id="marketOneLiner" class="banner" style="display:none;background:#1e3a27;border:1px solid #3f7a58;color:#d7ffe6"></div>
 
@@ -211,6 +212,17 @@ const val = (obj, keys, fallback='-') => { for (const k of keys){const v=obj?.[k
 const fmtKrw = (v)=>{ const n=Number(v); return Number.isFinite(n) ? `${n.toLocaleString()} KRW` : '-'; };
 const fmtPct = (v)=>{ const n=Number(v); return Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(2)}%` : '-'; };
 
+function normalizeMode(v){ const m=String(v||'').trim().toUpperCase(); return (m==='LIVE'||m==='PAPER')?m:''; }
+function resolveDisplayMode(data){
+  const workerMode = normalizeMode(data?.worker?.state?.mode);
+  const topLevelMode = normalizeMode(data?.mode);
+  const controllerMode = normalizeMode(data?.controller_mode);
+  const runtimeStatusMode = normalizeMode(data?.runtimeStatus?.mode);
+  const mode = workerMode || topLevelMode || controllerMode || runtimeStatusMode || selectedMode || 'PAPER';
+  const source = workerMode ? 'worker.state.mode' : (topLevelMode ? 'mode' : (controllerMode ? 'controller_mode' : (runtimeStatusMode ? 'runtimeStatus.mode' : 'selectedMode')));
+  return { mode, source };
+}
+
 function setCapitalViewButtons(){
   $('capitalViewTotal')?.classList.toggle('btn-selected', capitalView==='total');
   $('capitalViewUpbit')?.classList.toggle('btn-selected', capitalView==='upbit');
@@ -365,10 +377,14 @@ function render(data){
   const lightClass=light==='GREEN'?'ok':(light==='YELLOW'?'warn':'bad');
   const banner=$('stopBanner');
   const market=$('marketOneLiner');
+  const staleBanner=$('runtimeStatusBanner');
   const marketLine=String(data?.marketOneLiner||'').trim();
-  const uiMode = String(data?.runtimeStatus?.mode || selectedMode || '').toUpperCase();
+  const resolvedMode = resolveDisplayMode(data);
+  const uiMode = resolvedMode.mode;
   if(uiMode==='PAPER' && marketLine){ market.classList.add('show'); market.style.display='block'; market.textContent=marketLine; } else { market.classList.remove('show'); market.style.display='none'; market.textContent=''; }
   if(worker.stopAll){ banner.className='banner danger show'; banner.textContent=worker.banner||`${light}: 전체 중단`; } else { banner.className='banner danger'; banner.textContent=''; }
+  if(data?.runtimeStatusStaleIgnored){ staleBanner.className='banner danger show'; staleBanner.textContent='runtimeStatus stale ignored'; }
+  else { staleBanner.className='banner danger'; staleBanner.textContent=''; }
 
   const phase = phaseFromOverview(data); syncToggleUI(phase);
   const workerState = data?.worker?.state || {};
@@ -376,9 +392,10 @@ function render(data){
   const statusExpectedPhrase = String(workerState?.expected_phrase || workerState?.pending?.expected_phrase || '').trim();
   if (requiresConfirm && statusExpectedPhrase) pendingExpectedPhrase = statusExpectedPhrase;
   if (phase !== 'WAITING_OPERATOR' && !requiresConfirm) pendingExpectedPhrase = '';
-  const backendMode = String(data?.runtimeStatus?.mode || workerState?.pending?.mode || selectedMode || 'PAPER').toUpperCase();
+  const backendMode = resolveDisplayMode(data).mode || String(workerState?.pending?.mode || selectedMode || 'PAPER').toUpperCase();
   if (backendMode==='PAPER' || backendMode==='LIVE') selectedMode = backendMode;
   setModeButtons();
+  $('modeStatus').textContent = `선택 모드: ${selectedMode} (source: ${resolvedMode.source}${data?.modeSource?`, api:${data.modeSource}`:''})`;
   setModeConfirmUI();
   setBlockedUI(data);
   const srvToggles = data?.exchangeToggles;

@@ -133,6 +133,77 @@ async function readRuntimeState() {
   return readJsonFile(RUNTIME_STATE_PATH, null);
 }
 
+const RUNTIME_STATUS_MAX_AGE_MS = process.env.AT_UI_RUNTIME_STATUS_MAX_AGE_MS
+  ? Number(process.env.AT_UI_RUNTIME_STATUS_MAX_AGE_MS)
+  : 15000;
+
+function normalizeMode(v) {
+  const m = String(v || '').trim().toUpperCase();
+  return (m === 'LIVE' || m === 'PAPER') ? m : null;
+}
+
+function runtimeStatusTsMs(runtimeStatus) {
+  const cands = [
+    runtimeStatus?.ts,
+    runtimeStatus?.timestamp,
+    runtimeStatus?.updated_at,
+    runtimeStatus?.updatedAt,
+    runtimeStatus?.time,
+  ];
+  for (const c of cands) {
+    if (c == null) continue;
+    const n = Number(c);
+    if (Number.isFinite(n) && n > 0) return n;
+    const t = Date.parse(String(c));
+    if (Number.isFinite(t) && t > 0) return t;
+  }
+  return null;
+}
+
+function sanitizeRuntimeStatus(runtimeStatus, workerSnap) {
+  if (!runtimeStatus || typeof runtimeStatus !== 'object') {
+    return { runtimeStatus: runtimeStatus || null, staleIgnored: false, staleReason: '' };
+  }
+  const now = Date.now();
+  const tsMs = runtimeStatusTsMs(runtimeStatus);
+  const maxAge = Math.max(1000, Number(RUNTIME_STATUS_MAX_AGE_MS) || 15000);
+  const isFresh = Number.isFinite(tsMs) ? ((now - tsMs) <= maxAge) : false;
+  const statusMode = normalizeMode(runtimeStatus?.mode);
+  const workerMode = normalizeMode(workerSnap?.state?.mode);
+  const modeMismatch = Boolean(statusMode && workerMode && statusMode !== workerMode);
+  const trustMode = Boolean(statusMode && isFresh && !modeMismatch);
+  if (trustMode) return { runtimeStatus, staleIgnored: false, staleReason: '' };
+
+  const staleReason = !isFresh
+    ? 'runtimeStatus stale ignored'
+    : (modeMismatch ? 'runtimeStatus stale ignored (mode mismatch)' : 'runtimeStatus stale ignored');
+  return {
+    runtimeStatus: { ...runtimeStatus, mode: null },
+    staleIgnored: Boolean(statusMode),
+    staleReason,
+  };
+}
+
+function deriveModeInfo({ workerSnap, runtimeState, statePoint, runtimeStatus }) {
+  const workerMode = normalizeMode(workerSnap?.state?.mode);
+  const statusMode = normalizeMode(
+    runtimeState?.mode
+    ?? runtimeState?.status?.mode
+    ?? statePoint?.mode
+    ?? statePoint?.status?.mode,
+  );
+  const runtimeMode = normalizeMode(runtimeStatus?.mode);
+  const controllerMode = normalizeMode(
+    runtimeState?.controller_mode
+    ?? statePoint?.controller_mode
+    ?? workerSnap?.state?.pending?.mode,
+  );
+
+  if (workerMode) return { mode: workerMode, modeSource: 'worker', controllerMode };
+  if (statusMode) return { mode: statusMode, modeSource: 'status', controllerMode };
+  if (runtimeMode) return { mode: runtimeMode, modeSource: 'runtimeStatus', controllerMode };
+  return { mode: controllerMode || null, modeSource: 'fallback', controllerMode };
+}
 
 function toNum(v, d = null) {
   const n = Number(v);
@@ -906,6 +977,11 @@ let overviewCache = {
   statePoint: null,
   runtimeStatus: null,
   runtimeState: null,
+  mode: null,
+  modeSource: 'fallback',
+  controller_mode: null,
+  runtimeStatusStaleIgnored: false,
+  runtimeStatusStaleReason: '',
   watchingSymbols: [],
   exchangeIndicators: {
     upbit: { status: 'unknown', detail: 'backend state unavailable' },
@@ -959,24 +1035,32 @@ async function rebuildOverviewCache() {
     const usage = summarizeUsage(await readSnapshots());
 
     const workerSnap = workerMonitor.stableSnapshotFallback();
+    const runtimeStatusCheck = sanitizeRuntimeStatus(runtimeStatus, workerSnap);
+    const runtimeStatusSafe = runtimeStatusCheck.runtimeStatus;
+    const modeInfo = deriveModeInfo({ workerSnap, runtimeState, statePoint, runtimeStatus: runtimeStatusSafe });
     exchangeTogglesCache = await readExchangeToggles();
-    const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
-    const capitalDailyGraph = await buildCapitalDailyGraph(runtimeStatus, runtimeState);
+    const virtualCapital = deriveVirtualCapital({ runtimeStatus: runtimeStatusSafe, runtimeState, workerSnap });
+    const capitalDailyGraph = await buildCapitalDailyGraph(runtimeStatusSafe, runtimeState);
     const ledgerReviews = await readLedgerDailySnapshots();
-    const yesterdayTradingReview = (ledgerReviews.length ? ledgerReviews : buildFallbackDailyReview(runtimeStatus, runtimeState, 7)).slice(0, 7);
+    const yesterdayTradingReview = (ledgerReviews.length ? ledgerReviews : buildFallbackDailyReview(runtimeStatusSafe, runtimeState, 7)).slice(0, 7);
     // Auto Trading UI split: keep only fields actually used by this UI.
     overviewCache = {
       now: new Date().toISOString(),
       sourceOk: Boolean(status && agents),
       worker: workerSnap,
       statePoint,
-      runtimeStatus,
+      runtimeStatus: runtimeStatusSafe,
       runtimeState,
-      watchingSymbols: deriveWatchingSymbols({ runtimeStatus, runtimeState, statePoint, workerSnap }),
-      exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
+      mode: modeInfo.mode,
+      modeSource: modeInfo.modeSource,
+      controller_mode: modeInfo.controllerMode,
+      runtimeStatusStaleIgnored: runtimeStatusCheck.staleIgnored,
+      runtimeStatusStaleReason: runtimeStatusCheck.staleReason,
+      watchingSymbols: deriveWatchingSymbols({ runtimeStatus: runtimeStatusSafe, runtimeState, statePoint, workerSnap }),
+      exchangeIndicators: deriveExchangeIndicators({ runtimeStatus: runtimeStatusSafe, workerSnap }),
       exchangeToggles: exchangeTogglesCache,
       uiSettings,
-      marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
+      marketOneLiner: deriveMarketOneLiner({ runtimeStatus: runtimeStatusSafe, runtimeState, statePoint, workerSnap }),
       virtualCapital,
       capitalDailyGraph,
       yesterdayTradingReview,
@@ -1029,8 +1113,10 @@ const server = http.createServer((req, res) => {
       const timelineView = buildTimelineView(overviewTimelineBase.length ? overviewTimelineBase : (overviewCache.timeline || []), { hours, limit });
 
       const workerSnap = workerMonitor.stableSnapshotFallback();
-      const runtimeStatus = overviewCache.runtimeStatus || null;
+      const runtimeStatusCheck = sanitizeRuntimeStatus(overviewCache.runtimeStatus || null, workerSnap);
+      const runtimeStatus = runtimeStatusCheck.runtimeStatus;
       const runtimeState = overviewCache.runtimeState || null;
+      const modeInfo = deriveModeInfo({ workerSnap, runtimeState, statePoint: overviewCache.statePoint || null, runtimeStatus });
       const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
       const capitalDailyGraph = overviewCache.capitalDailyGraph || {
         selected: 'total',
@@ -1047,6 +1133,12 @@ const server = http.createServer((req, res) => {
         {
           ...overviewCache,
           worker: workerSnap,
+          mode: modeInfo.mode,
+          modeSource: modeInfo.modeSource,
+          controller_mode: modeInfo.controllerMode,
+          runtimeStatusStaleIgnored: runtimeStatusCheck.staleIgnored,
+          runtimeStatusStaleReason: runtimeStatusCheck.staleReason,
+          runtimeStatus,
           watchingSymbols: deriveWatchingSymbols({
             runtimeStatus,
             runtimeState: overviewCache.runtimeState || null,
