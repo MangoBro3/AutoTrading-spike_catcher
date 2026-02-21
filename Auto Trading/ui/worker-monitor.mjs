@@ -1,17 +1,35 @@
-const DEFAULT_TIMEOUT_MS = 800;
+const DEFAULT_TIMEOUT_MS = Number(
+  process.env.AT_UI_WORKER_API_TIMEOUT_MS
+  || process.env.WORKER_API_TIMEOUT_MS
+  || 3000,
+);
 
-function withTimeout(promise, timeoutMs = DEFAULT_TIMEOUT_MS) {
+function withTimeout(taskFactory, timeoutMs = DEFAULT_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeout = Math.max(1, Number(timeoutMs) || DEFAULT_TIMEOUT_MS);
+  let timer = null;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort(new Error('timeout'));
+      reject(new Error('timeout'));
+    }, timeout);
+  });
+
   return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs)),
-  ]);
+    Promise.resolve().then(() => taskFactory(controller.signal)),
+    timeoutPromise,
+  ]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
 }
 
 async function fetchJson(url, { method = 'GET', body, timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
-  const res = await withTimeout(fetch(url, {
+  const res = await withTimeout((signal) => fetch(url, {
     method,
     headers: { 'content-type': 'application/json' },
     body: body == null ? undefined : JSON.stringify(body),
+    signal,
   }), timeoutMs);
 
   const text = await res.text();
@@ -29,7 +47,7 @@ async function fetchJson(url, { method = 'GET', body, timeoutMs = DEFAULT_TIMEOU
 export class WorkerApiClient {
   constructor(baseUrl, timeoutMs = DEFAULT_TIMEOUT_MS) {
     this.baseUrl = (baseUrl || '').replace(/\/$/, '');
-    this.timeoutMs = timeoutMs;
+    this.timeoutMs = Math.max(1, Number(timeoutMs) || DEFAULT_TIMEOUT_MS);
   }
 
   url(path) {
@@ -100,10 +118,10 @@ export function toBannerText(trafficLight) {
 }
 
 export class WorkerMonitor {
-  constructor({ client, pollMs = 1000, downDebounceMs = 1500 }) {
+  constructor({ client, pollMs = 1000, downDebounceMs = 4000 }) {
     this.client = client;
     this.pollMs = pollMs;
-    this.downDebounceMs = Math.max(0, Number(downDebounceMs) || 1500);
+    this.downDebounceMs = Math.max(0, Number(downDebounceMs) || 4000);
     this.last = {
       ts: 0,
       connected: false,
@@ -197,5 +215,18 @@ export class WorkerMonitor {
 
   snapshot() {
     return this.last;
+  }
+
+  stableSnapshotFallback() {
+    const snap = this.last;
+    if (snap?.connected === true || !this._stableSnap) return snap;
+    return {
+      ...this._stableSnap,
+      ts: snap?.ts || Date.now(),
+      errors: {
+        ...(snap?.errors || {}),
+        fallback: 'using_last_stable_snapshot',
+      },
+    };
   }
 }

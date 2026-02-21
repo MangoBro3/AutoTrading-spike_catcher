@@ -13,8 +13,10 @@ const SNAPSHOT_FILE = `${USAGE_DIR}/token_snapshots.jsonl`;
 const ACTIVITY_LOG_FILE = `${USAGE_DIR}/activity_log.jsonl`;
 const ACTIVITY_STATE_FILE = `${USAGE_DIR}/activity_state.json`;
 const PROJECT_NAME = 'openclaw-news-workspace';
-const WORKER_API_BASE_URL = process.env.WORKER_API_BASE_URL || 'http://127.0.0.1:8765/api/v1';
+const WORKER_API_BASE_URL = process.env.AT_UI_WORKER_API_BASE_URL || process.env.WORKER_API_BASE_URL || 'http://127.0.0.1:8765/api/v1';
+const WORKER_API_TIMEOUT_MS = process.env.AT_UI_WORKER_API_TIMEOUT_MS || process.env.WORKER_API_TIMEOUT_MS || 3000;
 const WORKER_POLL_MS = process.env.WORKER_POLL_MS ? Number(process.env.WORKER_POLL_MS) : 1000;
+const WORKER_DOWN_DEBOUNCE_MS = process.env.WORKER_DOWN_DEBOUNCE_MS ? Number(process.env.WORKER_DOWN_DEBOUNCE_MS) : 4000;
 
 function tryExecJson(cmd) {
   const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
@@ -295,8 +297,12 @@ function summarizeUsage(snapshots) {
   };
 }
 
-const workerClient = new WorkerApiClient(WORKER_API_BASE_URL);
-const workerMonitor = new WorkerMonitor({ client: workerClient, pollMs: WORKER_POLL_MS });
+const workerClient = new WorkerApiClient(WORKER_API_BASE_URL, Number(WORKER_API_TIMEOUT_MS));
+const workerMonitor = new WorkerMonitor({
+  client: workerClient,
+  pollMs: WORKER_POLL_MS,
+  downDebounceMs: WORKER_DOWN_DEBOUNCE_MS,
+});
 workerMonitor.start();
 
 function buildOverview() {
@@ -318,7 +324,7 @@ function buildOverview() {
   return {
     now: new Date().toISOString(),
     sourceOk: Boolean(status && agents),
-    worker: workerMonitor.snapshot(),
+    worker: workerMonitor.stableSnapshotFallback(),
     gateway: status?.gateway || null,
     channelSummary: status?.channelSummary || null,
     sessions: status?.sessions || null,
@@ -350,8 +356,15 @@ const server = http.createServer((req, res) => {
   }
 
   if (url.pathname === '/api/worker') {
+    // Never block API response on internal worker fetches.
+    // Refresh runs in background; response always returns immediately.
+    Promise.race([
+      workerMonitor.tick(),
+      new Promise((resolve) => setTimeout(resolve, 120)),
+    ]).catch(() => {});
+
     res.writeHead(200, { 'content-type': MIME['.json'] });
-    return res.end(JSON.stringify(workerMonitor.snapshot(), null, 2));
+    return res.end(JSON.stringify(workerMonitor.stableSnapshotFallback(), null, 2));
   }
 
   if (url.pathname.startsWith('/api/worker/control/')) {
