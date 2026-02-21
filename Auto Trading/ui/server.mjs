@@ -24,6 +24,9 @@ const WORKER_DOWN_DEBOUNCE_MS = process.env.WORKER_DOWN_DEBOUNCE_MS ? Number(pro
 const OVERVIEW_REFRESH_MS = process.env.AT_UI_OVERVIEW_REFRESH_MS ? Number(process.env.AT_UI_OVERVIEW_REFRESH_MS) : 2000;
 const OVERVIEW_CMD_TIMEOUT_MS = process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS ? Number(process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS) : 1200;
 const API_WORKER_KICK_TIMEOUT_MS = process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS ? Number(process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS) : 120;
+const DEFAULT_TIMELINE_LIMIT = process.env.AT_UI_TIMELINE_DEFAULT_LIMIT ? Number(process.env.AT_UI_TIMELINE_DEFAULT_LIMIT) : 30;
+const DEFAULT_TIMELINE_WINDOW_HOURS = process.env.AT_UI_TIMELINE_DEFAULT_HOURS ? Number(process.env.AT_UI_TIMELINE_DEFAULT_HOURS) : 24;
+const TIMELINE_MAX_CAP = process.env.AT_UI_TIMELINE_MAX_CAP ? Number(process.env.AT_UI_TIMELINE_MAX_CAP) : 300;
 
 let requestSeq = 0;
 
@@ -214,12 +217,79 @@ async function appendActivityEvents(events) {
   }
 }
 
-async function readActivityLog(limit = 600) {
+function toSafeInt(v, fallback) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.floor(n);
+}
+
+function clampTimelineLimit(v) {
+  const n = toSafeInt(v, DEFAULT_TIMELINE_LIMIT);
+  return Math.max(1, Math.min(TIMELINE_MAX_CAP, n));
+}
+
+function normalizeTimelineEvents(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .filter((x) => x && typeof x === 'object')
+    .map((x) => ({ ...x, ts: Number(x.ts || 0), count: Math.max(1, Number(x.count || 1) || 1) }))
+    .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+}
+
+function compressConsecutiveSessionUpdates(rows) {
+  const out = [];
+  for (const item of normalizeTimelineEvents(rows)) {
+    const prev = out[out.length - 1];
+    const sameSessionUpdate =
+      prev
+      && prev.work === 'session_update'
+      && item.work === 'session_update'
+      && prev.agent === item.agent
+      && prev.detail === item.detail;
+
+    if (sameSessionUpdate) {
+      prev.count = Math.max(1, Number(prev.count || 1)) + Math.max(1, Number(item.count || 1));
+      if ((item.ts || 0) > (prev.ts || 0)) {
+        prev.ts = item.ts;
+        prev.time = item.time;
+      }
+    } else {
+      out.push({ ...item, count: Math.max(1, Number(item.count || 1)) });
+    }
+  }
+  return out;
+}
+
+function applyTimelineWindow(rows, hours = DEFAULT_TIMELINE_WINDOW_HOURS) {
+  if (hours === 'all' || hours === 0) return [...rows];
+  const h = Math.max(1, toSafeInt(hours, DEFAULT_TIMELINE_WINDOW_HOURS));
+  const cutoff = Date.now() - h * 3600 * 1000;
+  return rows.filter((x) => Number(x.ts || 0) >= cutoff);
+}
+
+function buildTimelineView(rows, { hours = DEFAULT_TIMELINE_WINDOW_HOURS, limit = DEFAULT_TIMELINE_LIMIT } = {}) {
+  const compressed = compressConsecutiveSessionUpdates(rows);
+  const windowed = applyTimelineWindow(compressed, hours);
+  const safeLimit = clampTimelineLimit(limit);
+  return {
+    rows: windowed.slice(0, safeLimit),
+    meta: {
+      limit: safeLimit,
+      hours,
+      totalAfterCompress: compressed.length,
+      totalAfterWindow: windowed.length,
+      cap: TIMELINE_MAX_CAP,
+    },
+  };
+}
+
+async function readActivityLog(limit = TIMELINE_MAX_CAP) {
   try {
+    const safeLimit = clampTimelineLimit(limit);
     const raw = await readFile(ACTIVITY_LOG_FILE, 'utf8');
     const lines = raw.split('\n').filter(Boolean);
-    const rows = lines.slice(-limit).map((l) => JSON.parse(l));
-    return rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    const rows = lines.slice(-safeLimit).map((l) => JSON.parse(l));
+    return normalizeTimelineEvents(rows).slice(0, TIMELINE_MAX_CAP);
   } catch {
     return [];
   }
@@ -244,7 +314,7 @@ async function collectActivityEvents(status, taskSignals) {
         ts: updatedAt,
         time: new Date(updatedAt).toISOString(),
         agent: agentId,
-        work: 'run_update',
+        work: 'session_update',
         project: PROJECT_NAME,
         detail: `${key} updated`,
       });
@@ -366,14 +436,19 @@ async function rebuildOverviewCache() {
       readTaskSignals(),
     ]);
 
-    let timeline = [];
+    let rawTimeline = [];
     if (status) {
       const snap = computeTokenSnapshot(status, statePoint);
       await appendSnapshot(snap);
-      timeline = await collectActivityEvents(status, taskSignals);
+      rawTimeline = await collectActivityEvents(status, taskSignals);
     } else {
-      timeline = await readActivityLog();
+      rawTimeline = await readActivityLog(TIMELINE_MAX_CAP);
     }
+
+    const timelineView = buildTimelineView(rawTimeline, {
+      hours: DEFAULT_TIMELINE_WINDOW_HOURS,
+      limit: DEFAULT_TIMELINE_LIMIT,
+    });
 
     const usage = summarizeUsage(await readSnapshots());
 
@@ -385,7 +460,9 @@ async function rebuildOverviewCache() {
       statePoint,
       usage,
       taskSignals,
-      timeline,
+      timeline: timelineView.rows,
+      timelineMeta: timelineView.meta,
+      timelineAll: compressConsecutiveSessionUpdates(rawTimeline).slice(0, TIMELINE_MAX_CAP),
     };
   } catch {
     overviewCache = {
@@ -424,12 +501,23 @@ const server = http.createServer((req, res) => {
 
   try {
     if (url.pathname === '/api/overview') {
+      const qHoursRaw = url.searchParams.get('timelineHours');
+      const qLimitRaw = url.searchParams.get('timelineLimit');
+      const hours = (qHoursRaw === 'all' || qHoursRaw === '0') ? 'all' : toSafeInt(qHoursRaw, DEFAULT_TIMELINE_WINDOW_HOURS);
+      const limit = clampTimelineLimit(qLimitRaw || DEFAULT_TIMELINE_LIMIT);
+      const timelineView = buildTimelineView(overviewCache.timelineAll || overviewCache.timeline || [], { hours, limit });
+
       return sendJson(
         res,
         200,
-        { ...overviewCache, worker: workerMonitor.stableSnapshotFallback() },
+        {
+          ...overviewCache,
+          worker: workerMonitor.stableSnapshotFallback(),
+          timeline: timelineView.rows,
+          timelineMeta: timelineView.meta,
+        },
         ctx,
-        'route=/api/overview cache=immediate',
+        `route=/api/overview cache=immediate timelineLimit=${limit} timelineHours=${String(hours)}`,
       );
     }
 

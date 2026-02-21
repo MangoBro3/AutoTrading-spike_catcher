@@ -103,6 +103,27 @@
     <div id="positions" style="margin-top:10px"></div>
   </div>
 
+  <div class="card" style="margin-top:12px">
+    <h2>Timeline</h2>
+    <div class="inline">
+      <label class="muted">기간</label>
+      <select id="timelineHours" class="btn" style="padding:6px 8px">
+        <option value="24">최근 24시간 (기본)</option>
+        <option value="72">최근 72시간</option>
+        <option value="168">최근 7일</option>
+        <option value="all">전체</option>
+      </select>
+      <label class="muted">개수</label>
+      <select id="timelineLimit" class="btn" style="padding:6px 8px">
+        <option value="30">30 (기본)</option>
+        <option value="100">100</option>
+        <option value="300">300</option>
+      </select>
+      <span id="timelineMeta" class="muted"></span>
+    </div>
+    <div id="timeline" style="margin-top:8px"></div>
+  </div>
+
   <div id="confirmModal" class="modal">
     <div class="modal-card">
       <h2 style="margin-bottom:8px">2단 확인</h2>
@@ -132,6 +153,14 @@ let syncingToggle = false;
 let manualRefreshBusy = false;
 let lastManualRefreshAt = null;
 let lastManualRefreshError = '';
+let timelineHours = '24';
+let timelineLimit = '30';
+
+function formatTimelineDetail(item) {
+  const base = String(item?.detail || '-');
+  const count = Math.max(1, Number(item?.count || 1));
+  return count > 1 ? `${base} x${count}` : base;
+}
 
 function setManualRefreshState() {
   const btn = $('refreshConnBtn');
@@ -140,6 +169,10 @@ function setManualRefreshState() {
   btn.innerHTML = manualRefreshBusy ? '<span class="spinner"></span> 새로고침 중...' : '연결 상태 새로고침';
   const timeText = lastManualRefreshAt ? new Date(lastManualRefreshAt).toLocaleTimeString() : '-';
   label.textContent = lastManualRefreshError ? `수동 갱신 실패: ${lastManualRefreshError}` : `수동 갱신: ${timeText}`;
+}
+
+function overviewUrl() {
+  return `/api/overview?timelineHours=${encodeURIComponent(timelineHours)}&timelineLimit=${encodeURIComponent(timelineLimit)}`;
 }
 
 async function fetchJson(url) {
@@ -238,6 +271,23 @@ function render(data){
         <td>${esc(val(p,['mark','markPrice','lastPrice']))}</td>
         <td>${esc(val(p,['pnl','unrealizedPnl','uPnL']))}</td>
       </tr>`).join('')+
+      `</tbody></table>`;
+  }
+
+  const tlRows = Array.isArray(data.timeline) ? data.timeline : [];
+  const safeRows = tlRows.slice(0, Math.max(1, Number(timelineLimit || 30)));
+  const meta = data.timelineMeta || {};
+  $('timelineMeta').textContent = `표시 ${safeRows.length} / 필터후 ${meta.totalAfterWindow ?? '-'} / 압축후 ${meta.totalAfterCompress ?? '-'}`;
+  if (!safeRows.length) {
+    $('timeline').innerHTML = '<div class="muted">선택 조건의 이벤트 없음</div>';
+  } else {
+    $('timeline').innerHTML = `<table><thead><tr><th>Time</th><th>Agent</th><th>Work</th><th>Detail</th></tr></thead><tbody>` +
+      safeRows.map((t) => `<tr>
+        <td>${esc(new Date(t.ts || Date.now()).toLocaleString())}</td>
+        <td>${esc(t.agent || '-')}</td>
+        <td>${esc(t.work || '-')}</td>
+        <td>${esc(formatTimelineDetail(t))}</td>
+      </tr>`).join('') +
       `</tbody></table>`;
   }
 }
@@ -405,7 +455,7 @@ $('refreshConnBtn').addEventListener('click', async () => {
   try {
     const [workerPayload, overview] = await Promise.all([
       fetchJson('/api/worker'),
-      fetchJson('/api/overview'),
+      fetchJson(overviewUrl()),
     ]);
     const worker = normalizeWorkerPayload(workerPayload);
     if (worker) overview.worker = worker;
@@ -420,9 +470,19 @@ $('refreshConnBtn').addEventListener('click', async () => {
   }
 });
 
+$('timelineHours').addEventListener('change', async (ev) => {
+  timelineHours = String(ev.target.value || '24');
+  await tick();
+});
+
+$('timelineLimit').addEventListener('change', async (ev) => {
+  timelineLimit = String(ev.target.value || '30');
+  await tick();
+});
+
 async function tick(){
   try{
-    const j = await fetchJson('/api/overview');
+    const j = await fetchJson(overviewUrl());
     render(j);
   }catch(e){$('ts').textContent='fetch failed: '+e.message}
 }
