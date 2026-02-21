@@ -257,7 +257,7 @@ function phaseBadgeClass(phase){ if(phase==='RUNNING') return 'pill pill-run'; i
 function syncToggleUI(phase){ syncingToggle=true; const checked=isAutoOnByPhase(phase); $('autoToggle').checked=checked; $('autoToggle').disabled=controlBusy; $('autoToggleLabel').textContent=checked?'ON':'OFF'; const b=$('controlPhaseBadge'); b.className=phaseBadgeClass(phase); b.textContent=phase; syncingToggle=false; }
 function setModeButtons(){ $('modePaperBtn').classList.toggle('btn-selected', selectedMode==='PAPER'); $('modeLiveBtn').classList.toggle('btn-selected', selectedMode==='LIVE'); $('modeStatus').textContent = `선택 모드: ${selectedMode}`; }
 function setModeConfirmUI(){ const btn=$('modeConfirmBtn'); const has=!!pendingExpectedPhrase; btn.style.display=has?'inline-block':'none'; btn.disabled=controlBusy||!has; $('modeConfirmHint').textContent=has?'expected_phrase 수신됨. Confirm 버튼으로 최종 승인하세요.':''; }
-function setBlockedUI(data){ const banner=$('blockedBanner'); const wrap=$('nextActionWrap'); const why=String(data?.worker?.state?.why_blocked || data?.worker?.state?.safe_start?.details?.message || '').trim(); const nextAction=String(data?.worker?.state?.next_action || '').trim(); $('nextActionHint').textContent=nextAction?`next_action: ${nextAction}`:''; if(why){ banner.className='banner danger show'; banner.textContent=`BLOCKED: ${why}`; } else { banner.className='banner danger'; banner.textContent=''; }
+function setBlockedUI(data){ const banner=$('blockedBanner'); const wrap=$('nextActionWrap'); const why=String(data?.worker?.state?.why_blocked || data?.result?.why_blocked || data?.why_blocked || data?.worker?.state?.safe_start?.details?.message || '').trim(); const nextAction=String(data?.worker?.state?.next_action || data?.result?.next_action || data?.next_action || '').trim(); $('nextActionHint').textContent=nextAction?`next_action: ${nextAction}`:''; if(why){ banner.className='banner danger show'; banner.textContent=`BLOCKED: ${why}`; } else { banner.className='banner danger'; banner.textContent=''; }
   if(nextAction){ wrap.style.display='flex'; $('nextActionBtn').dataset.action=nextAction; } else { wrap.style.display='none'; $('nextActionBtn').dataset.action=''; }
 }
 
@@ -430,15 +430,15 @@ async function handleModeChange(nextMode){
   setModeButtons();
 }
 
-async function handleTurnOn(){ await runWithControlBusy(async()=>{ let phase=phaseFromOverview(latestOverview||{}); let expectedPhrase=pendingExpectedPhrase||latestOverview?.worker?.state?.expected_phrase||latestOverview?.worker?.state?.pending?.expected_phrase||null; if(phase==='STOPPED'){ $('controlStatus').textContent='시작 요청 중...'; const exchange=pickStartExchange(); if(!exchange) throw new Error('활성 거래소가 없습니다. Upbit/Bithumb 중 1개 이상 활성화하세요.'); const started=await postControl('mode',{mode:selectedMode, exchange}); expectedPhrase=started?.result?.expected_phrase||expectedPhrase||null; if(!expectedPhrase) throw new Error('expected_phrase 누락'); pendingExpectedPhrase=String(expectedPhrase); setModeConfirmUI(); } else if(phase==='WAITING_OPERATOR'){ if(!expectedPhrase) throw new Error('pending expected_phrase 없음'); } else if(phase==='RUNNING'){ $('controlStatus').textContent='이미 RUNNING 상태입니다.'; await tick(); return; } else throw new Error(`지원하지 않는 phase: ${phase}`);
+async function handleTurnOn(){ await runWithControlBusy(async()=>{ let phase=phaseFromOverview(latestOverview||{}); let expectedPhrase=pendingExpectedPhrase||latestOverview?.worker?.state?.expected_phrase||latestOverview?.worker?.state?.pending?.expected_phrase||null; if(phase==='STOPPED'){ $('controlStatus').textContent='시작 요청 중...'; const exchange=pickStartExchange(); if(!exchange) throw new Error('활성 거래소가 없습니다. Upbit/Bithumb 중 1개 이상 활성화하세요.'); const started=await postControl('mode',{mode:selectedMode, exchange}); const phaseAfter=String(started?.result?.phase||'').toUpperCase(); if(phaseAfter==='RUNNING'){ pendingExpectedPhrase=''; setModeConfirmUI(); $('controlStatus').textContent=`Auto Trading ON (${selectedMode})`; await tick(); return; } expectedPhrase=started?.result?.expected_phrase||expectedPhrase||null; if(!expectedPhrase) throw new Error('expected_phrase 누락'); pendingExpectedPhrase=String(expectedPhrase); setModeConfirmUI(); } else if(phase==='WAITING_OPERATOR'){ if(!expectedPhrase) throw new Error('pending expected_phrase 없음'); } else if(phase==='RUNNING'){ $('controlStatus').textContent='이미 RUNNING 상태입니다.'; await tick(); return; } else throw new Error(`지원하지 않는 phase: ${phase}`);
     const approved=await openConfirmModal('시작 최종 승인: backend expected_phrase로 confirm을 수행합니다.'); if(!approved){ $('controlStatus').textContent='취소됨'; await tick(); return; }
     $('controlStatus').textContent='승인됨: 시작 확정 중...'; await postControl('confirm',{phrase:expectedPhrase}); pendingExpectedPhrase=''; setModeConfirmUI(); $('controlStatus').textContent=`Auto Trading ON (${selectedMode})`; await tick();
   }); }
 async function handleTurnOff(){ await runWithControlBusy(async()=>{ $('controlStatus').textContent='정지 요청 중...'; await postControl('stop',{}); $('controlStatus').textContent='Auto Trading OFF (STOPPED)'; await tick(); }); }
 
-$('modePaperBtn').addEventListener('click', ()=>handleModeChange('PAPER'));
-$('modeLiveBtn').addEventListener('click', ()=>handleModeChange('LIVE'));
-$('modeConfirmBtn').addEventListener('click', async()=>{ try{ await runWithControlBusy(async()=>{ if(!pendingExpectedPhrase) throw new Error('expected_phrase 없음'); $('controlStatus').textContent='LIVE 최종 승인 중...'; await postControl('confirm',{phrase:pendingExpectedPhrase}); pendingExpectedPhrase=''; setModeConfirmUI(); await tick(); }); }catch(e){ $('controlStatus').textContent=`실패: ${e.message}`; } });
+$('modePaperBtn').addEventListener('click', ()=>handleModeChange('PAPER').catch(async(e)=>{ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));
+$('modeLiveBtn').addEventListener('click', ()=>handleModeChange('LIVE').catch(async(e)=>{ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));
+$('modeConfirmBtn').addEventListener('click', async()=>{ try{ await runWithControlBusy(async()=>{ if(!pendingExpectedPhrase) throw new Error('expected_phrase 없음'); $('controlStatus').textContent='LIVE 최종 승인 중...'; await postControl('confirm',{phrase:pendingExpectedPhrase}); pendingExpectedPhrase=''; setModeConfirmUI(); await tick(); }); }catch(e){ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; } });
 $('nextActionBtn').addEventListener('click', async()=>{
   const action=String($('nextActionBtn').dataset.action||'').trim();
   try{
@@ -452,12 +452,12 @@ $('nextActionBtn').addEventListener('click', async()=>{
       return;
     }
     $('controlStatus').textContent=`안내: 수동 조치 필요 (${action||'none'})`;
-  }catch(e){ $('controlStatus').textContent=`실패: ${e.message}`; }
+  }catch(e){ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; }
 });
 $('capitalViewTotal')?.addEventListener('click', ()=>{ capitalView='total'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
 $('capitalViewUpbit')?.addEventListener('click', ()=>{ capitalView='upbit'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
 $('capitalViewBithumb')?.addEventListener('click', ()=>{ capitalView='bithumb'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
-$('autoToggle').addEventListener('change', async(ev)=>{ if(syncingToggle) return; try{ if(ev.target.checked) await handleTurnOn(); else await handleTurnOff(); }catch(e){ $('controlStatus').textContent=`실패: ${e.message}`; await tick(); } });
+$('autoToggle').addEventListener('change', async(ev)=>{ if(syncingToggle) return; try{ if(ev.target.checked) await handleTurnOn(); else await handleTurnOff(); }catch(e){ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); } });
 
 
 async function handleExchangeToggleChange(){

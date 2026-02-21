@@ -1190,10 +1190,51 @@ const server = http.createServer((req, res) => {
         try {
           const parsed = body ? JSON.parse(body) : {};
           const out = await workerClient.control(action, parsed);
+
+          let finalOut = out;
+          let autoConfirm = null;
+          if (action === 'mode' && out?.requires_operator_confirm === true) {
+            const phrase = String(out?.expected_phrase || '').trim();
+            if (phrase) {
+              try {
+                autoConfirm = await workerClient.control('confirm', { phrase });
+                if (autoConfirm && autoConfirm.ok !== false) {
+                  finalOut = {
+                    ...out,
+                    phase: autoConfirm?.phase || 'RUNNING',
+                    auto_confirmed: true,
+                    auto_confirm_result: autoConfirm,
+                  };
+                }
+              } catch (e2) {
+                finalOut = {
+                  ...out,
+                  auto_confirmed: false,
+                  auto_confirm_error: String(e2?.message || e2),
+                };
+              }
+            }
+          }
+
           await workerMonitor.tick();
-          return sendJson(res, 200, { ok: true, action, result: out, worker: workerMonitor.snapshot() }, ctx, 'route=/api/worker/control');
+          return sendJson(res, 200, {
+            ok: true,
+            action,
+            result: finalOut,
+            autoConfirm,
+            worker: workerMonitor.snapshot(),
+          }, ctx, 'route=/api/worker/control');
         } catch (e) {
-          return sendApiError(res, ctx, e, '/api/worker/control');
+          const detail = e?.data && typeof e.data === 'object' ? e.data : null;
+          await workerMonitor.tick();
+          return sendJson(res, 500, {
+            ok: false,
+            route: '/api/worker/control',
+            action,
+            error: String(e?.message || e || 'control_failed'),
+            result: detail,
+            worker: workerMonitor.snapshot(),
+          }, ctx, `route=/api/worker/control error=${String(e?.message || e)}`);
         }
       });
       return;
