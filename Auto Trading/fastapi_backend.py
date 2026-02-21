@@ -97,6 +97,7 @@ class ManualRoundtripRequest(BaseModel):
     krw_notional: float = 5500
     buy_offset_ticks: int = 1
     hold_seconds: int = 30
+    bid_minus_ticks: int = 0
     confirm: str = ""
 
 
@@ -383,6 +384,22 @@ class BackendService:
         n = int(u) if (side == "sell" or abs(u - int(u)) < 1e-12) else int(u) + 1
         return max(float(tick), n * float(tick))
 
+    def _best_bid_snapshot(self, ex, ccxt_symbol: str):
+        ob = ex.fetch_order_book(ccxt_symbol, limit=5) or {}
+        bids = ob.get("bids") if isinstance(ob, dict) else None
+        asks = ob.get("asks") if isinstance(ob, dict) else None
+        best_bid = float(bids[0][0]) if bids and len(bids[0]) >= 1 else 0.0
+        best_ask = float(asks[0][0]) if asks and len(asks[0]) >= 1 else 0.0
+        if best_bid <= 0:
+            raise RuntimeError("orderbook best bid unavailable")
+        return {
+            "best_bid": best_bid,
+            "best_ask": best_ask,
+            "bid1": bids[0] if bids else None,
+            "ask1": asks[0] if asks else None,
+            "ts": ob.get("timestamp") if isinstance(ob, dict) else None,
+        }
+
     def _manual_roundtrip_worker(self, req: ManualRoundtripRequest):
         err = None
         result = None
@@ -428,12 +445,14 @@ class BackendService:
             sold = 0.0
             amount = 0.0
             sells = []
+            bid_snapshots = []
+            bid_minus_ticks = max(0, int(req.bid_minus_ticks))
             for _ in range(3):
                 if remaining <= 1e-12: break
-                tx = ex.fetch_ticker(ccxt_symbol) or {}
-                spx0 = float(tx.get("last") or tx.get("close") or px)
-                stk = self._tick_size_krw(spx0)
-                spx = self._round_tick(spx0, stk, "sell")
+                snap = self._best_bid_snapshot(ex, ccxt_symbol)
+                base_bid = float(snap.get("best_bid") or 0.0)
+                stk = self._tick_size_krw(base_bid)
+                spx = self._round_tick(base_bid - bid_minus_ticks * stk, stk, "sell")
                 so = ex.create_order(ccxt_symbol, "limit", "sell", remaining, spx)
                 sid = so.get("id")
                 if not sid: break
@@ -451,8 +470,9 @@ class BackendService:
                 sold += sq
                 amount += sq * (sav if sav>0 else spx)
                 remaining = max(0.0, remaining - sq)
-                sells.append({"order_id": sid, "filled": sq, "avg": sav if sav>0 else spx})
-            result = {"ok": sold>0, "symbol": symbol, "buy": {"order_id": bid, "filled_qty": bq, "avg": bav, "limit_price": buy_px}, "sell": {"orders": sells, "filled_qty": sold, "remaining_qty": remaining}, "hold_seconds": int(req.hold_seconds)}
+                bid_snapshots.append(snap)
+                sells.append({"order_id": sid, "filled": sq, "avg": sav if sav>0 else spx, "limit_price": spx, "bid_snapshot": snap})
+            result = {"ok": sold>0, "symbol": symbol, "buy": {"order_id": bid, "filled_qty": bq, "avg": bav, "limit_price": buy_px}, "sell": {"orders": sells, "filled_qty": sold, "remaining_qty": remaining, "pricing_basis": "orderbook_best_bid", "bid_minus_ticks": bid_minus_ticks, "bid_snapshot": bid_snapshots[-1] if bid_snapshots else None}, "sell_pricing_basis": "orderbook_best_bid", "bid_snapshot": bid_snapshots[-1] if bid_snapshots else None, "hold_seconds": int(req.hold_seconds)}
         except Exception as e:
             err = str(e)
         self.manual_roundtrip.update({"running": False, "stage": "DONE" if err is None else "ERROR", "last_result": result, "last_error": err})
