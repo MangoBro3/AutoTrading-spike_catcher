@@ -49,6 +49,10 @@ class RunController:
         self.runtime_state = self._load_runtime_state()
         self._startup_reconciled = False
 
+        # Virtual capital cap (optional): loaded from UI settings (KRW)
+        self._capital_cap_cache = None
+        self._capital_cap_loaded_ts = 0.0
+
         # Telemetry
         self.last_tick_ts = None
         self.last_error = None
@@ -198,6 +202,73 @@ class RunController:
         except Exception:
             pass
         return None
+
+    def _load_capital_cap_krw(self, force: bool = False):
+        now = time.time()
+        if (not force) and (now - self._capital_cap_loaded_ts < 3.0):
+            return self._capital_cap_cache
+
+        cap_value = None
+        candidate_paths = [
+            Path("Auto Trading/ui_settings.json"),
+            Path("ui_settings.json"),
+        ]
+        for path in candidate_paths:
+            try:
+                if not path.exists():
+                    continue
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                raw = payload.get("capital_cap_krw")
+                if raw is None:
+                    continue
+                cap = float(raw)
+                if cap > 0:
+                    cap_value = cap
+                    break
+            except Exception:
+                continue
+
+        self._capital_cap_cache = cap_value
+        self._capital_cap_loaded_ts = now
+        return cap_value
+
+    def _compute_available_for_bot(self, exchange_balance_krw: float = None):
+        cap = self._load_capital_cap_krw(force=False)
+
+        equity_virtual = 0.0
+        baseline_seed = 0.0
+        try:
+            ls = self.ledger.get_state() if self.ledger else {}
+            equity_virtual = self._safe_float(ls.get("equity"), 0.0)
+            baseline_seed = self._safe_float(ls.get("baseline_seed"), 0.0)
+        except Exception:
+            pass
+
+        allocated = cap if (cap is not None and cap > 0) else baseline_seed
+        if allocated <= 0:
+            allocated = equity_virtual
+
+        available = equity_virtual
+        if cap is not None and cap > 0:
+            available = min(max(0.0, cap), max(0.0, equity_virtual))
+
+        real_balance = None
+        if exchange_balance_krw is not None:
+            real_balance = self._safe_float(exchange_balance_krw, 0.0)
+            available = min(available, max(0.0, real_balance))
+
+        pnl_virtual = equity_virtual - allocated
+        pnl_pct_virtual = (pnl_virtual / allocated * 100.0) if allocated > 0 else 0.0
+
+        return {
+            "cap_krw": cap,
+            "allocated": max(0.0, allocated),
+            "equity_virtual": max(0.0, equity_virtual),
+            "pnl_virtual": pnl_virtual,
+            "pnl_pct_virtual": pnl_pct_virtual,
+            "available_for_bot": max(0.0, available),
+            "real_balance_krw": real_balance,
+        }
 
     def _rollover_daily_state_if_needed(self, equity_now):
         today = self._today_key_local()
@@ -1027,16 +1098,23 @@ class RunController:
             from .execution_engine import ExecutionEngine
 
             class _BudgetStub:
-                def __init__(self):
+                def __init__(self, controller):
                     self.bot_cash = 0.0
+                    self.controller = controller
+
+                def get_available_for_bot(self, current_real_krw=None):
+                    try:
+                        info = self.controller._compute_available_for_bot(exchange_balance_krw=current_real_krw)
+                        return float(info.get("available_for_bot", 0.0) or 0.0)
+                    except Exception:
+                        return float(current_real_krw or 0.0)
 
                 def can_buy(self, required_krw, current_real_krw):
                     try:
-                        if current_real_krw is None:
+                        available_for_bot = self.get_available_for_bot(current_real_krw)
+                        if float(required_krw) <= float(available_for_bot):
                             return True, "OK"
-                        if float(required_krw) <= float(current_real_krw):
-                            return True, "OK"
-                        return False, f"REAL_BALANCE_INSUFFICIENT (Req:{required_krw:.0f} > Real:{current_real_krw:.0f})"
+                        return False, f"AVAILABLE_FOR_BOT_INSUFFICIENT (Req:{required_krw:.0f} > Avail:{available_for_bot:.0f})"
                     except Exception:
                         return True, "OK"
 
