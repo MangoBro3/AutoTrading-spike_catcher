@@ -1,0 +1,10 @@
+2026-02-21T16:55:20+09:00,call=1,ERROR=curl: (28) Operation timed out after 1001 milliseconds with 0 bytes received |000|1.001552
+2026-02-21T16:55:21+09:00,call=2,ERROR=curl: (28) Operation timed out after 1001 milliseconds with 0 bytes received |000|1.001323
+2026-02-21T16:55:22+09:00,call=3,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|1.000935
+2026-02-21T16:55:23+09:00,call=4,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|1.000762
+2026-02-21T16:55:24+09:00,call=5,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|1.000656
+2026-02-21T16:55:25+09:00,call=6,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|1.000346
+2026-02-21T16:55:26+09:00,call=7,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|1.000173
+2026-02-21T16:55:27+09:00,call=8,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|1.000042
+2026-02-21T16:55:28+09:00,call=9,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|0.999891
+2026-02-21T16:55:29+09:00,call=10,ERROR=curl: (28) Operation timed out after 1000 milliseconds with 0 bytes received |000|0.999751
