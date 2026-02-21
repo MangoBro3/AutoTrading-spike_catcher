@@ -196,12 +196,46 @@ class BackendService:
             'exchange': (vc or {}).get('exchange'),
         }
 
+    def _status_guidance(self, state: dict):
+        phase = str((state or {}).get("phase") or "STOPPED").upper()
+        details = (state or {}).get("details") or {}
+        pending = self._pending_status()
+        expected_phrase = (pending or {}).get("expected_phrase")
+
+        why_blocked = None
+        next_action = None
+        requires_operator_confirm = False
+
+        if phase == PHASE_RUNNING:
+            pass
+        elif phase == PHASE_WAITING_OPERATOR:
+            why_blocked = str(details.get("message") or "Operator confirmation required")
+            next_action = "confirm_start"
+            requires_operator_confirm = True
+        elif phase == PHASE_WAITING_SYNC:
+            why_blocked = str(details.get("message") or "Sync check failed")
+            next_action = "resolve_sync_and_retry_start"
+        elif phase == PHASE_BOOTING_DEGRADED:
+            why_blocked = str(details.get("message") or "Booting in degraded mode")
+            next_action = "wait_boot_or_check_status"
+        else:
+            why_blocked = str(details.get("message") or "Stopped")
+            next_action = "start"
+
+        return {
+            "why_blocked": why_blocked,
+            "next_action": next_action,
+            "requires_operator_confirm": bool(requires_operator_confirm),
+            "expected_phrase": expected_phrase,
+        }
+
     def status(self):
         try:
             state = self.safe_start.read_state()
         except Exception as e:
             state = {"phase": "STOPPED", "details": {"error": f"safe_start_read_failed:{e.__class__.__name__}"}, "ts": None}
 
+        guidance = self._status_guidance(state)
         payload = {
             "ok": True,
             "running": self._is_running(),
@@ -210,6 +244,10 @@ class BackendService:
             "pending": self._pending_status(),
             "virtual_capital": self._build_virtual_capital(),
             "last_error": self.last_error,
+            "why_blocked": guidance["why_blocked"],
+            "next_action": guidance["next_action"],
+            "requires_operator_confirm": guidance["requires_operator_confirm"],
+            "expected_phrase": guidance["expected_phrase"],
         }
         return self._json_safe(payload)
 
@@ -284,6 +322,10 @@ class BackendService:
                 self.lock.release()
                 self.safe_start.mark_stopped(f"start-failed: {e}")
                 return {"ok": False, "error": "start-exception", "detail": str(e)}
+
+    def mode(self, req: StartRequest):
+        # alias endpoint for unified LIVE/PAPER transition flow
+        return self.start(req)
 
     def confirm_and_run(self, req: ConfirmRequest):
         with self._mtx:
@@ -479,6 +521,11 @@ def status():
 @app.post("/api/v1/control/start")
 def control_start(req: StartRequest):
     return service.start(req)
+
+
+@app.post("/api/v1/control/mode")
+def control_mode(req: StartRequest):
+    return service.mode(req)
 
 
 @app.post("/api/v1/control/confirm")
