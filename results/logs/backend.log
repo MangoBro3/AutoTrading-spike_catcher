@@ -27114,3 +27114,126 @@ asyncio.exceptions.CancelledError
 2026-02-21 16:39:50,893 INFO [uvicorn.access] 127.0.0.1:43588 - "GET /api/v1/health HTTP/1.1" 200
 2026-02-21 16:39:50,895 INFO [uvicorn.access] 127.0.0.1:43600 - "GET /api/v1/status HTTP/1.1" 200
 2026-02-21 16:39:50,896 INFO [uvicorn.access] 127.0.0.1:43614 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:40:11,602 INFO [uvicorn.error] Shutting down
+2026-02-21 16:40:11,703 INFO [uvicorn.error] Waiting for application shutdown.
+2026-02-21 16:40:11,703 INFO [uvicorn.error] Application shutdown complete.
+2026-02-21 16:40:11,704 INFO [uvicorn.error] Finished server process [55617]
+2026-02-21 16:41:30,031 INFO [uvicorn.error] Shutting down
+2026-02-21 16:41:30,141 INFO [uvicorn.error] Waiting for application shutdown.
+2026-02-21 16:41:30,146 INFO [uvicorn.error] Application shutdown complete.
+2026-02-21 16:41:30,146 INFO [uvicorn.error] Finished server process [6547]
+2026-02-21 16:42:04,845 INFO [uvicorn.error] Started server process [59567]
+2026-02-21 16:42:04,845 INFO [uvicorn.error] Waiting for application startup.
+2026-02-21 16:42:04,845 INFO [uvicorn.error] Application startup complete.
+2026-02-21 16:42:04,846 INFO [uvicorn.error] Uvicorn running on http://127.0.0.1:8765 (Press CTRL+C to quit)
+2026-02-21 16:42:06,022 INFO [uvicorn.access] 127.0.0.1:40786 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:09,669 INFO [uvicorn.access] 127.0.0.1:40776 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:09,671 INFO [uvicorn.access] 127.0.0.1:40784 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:09,672 INFO [uvicorn.access] 127.0.0.1:40778 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:13,371 INFO [uvicorn.access] 127.0.0.1:40798 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:13,376 INFO [uvicorn.access] 127.0.0.1:40800 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:13,376 INFO [uvicorn.access] 127.0.0.1:40804 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:17,162 INFO [uvicorn.access] 127.0.0.1:55962 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:17,164 INFO [uvicorn.access] 127.0.0.1:55970 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:17,165 INFO [uvicorn.access] 127.0.0.1:55984 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:24,683 INFO [uvicorn.access] 127.0.0.1:55998 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:24,685 INFO [uvicorn.access] 127.0.0.1:56016 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:24,686 INFO [uvicorn.access] 127.0.0.1:56010 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:28,458 INFO [uvicorn.access] 127.0.0.1:35114 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:28,460 INFO [uvicorn.access] 127.0.0.1:35126 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:28,461 INFO [uvicorn.access] 127.0.0.1:35138 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:39,487 INFO [uvicorn.access] 127.0.0.1:35142 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:39,491 INFO [uvicorn.access] 127.0.0.1:35158 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:39,491 INFO [uvicorn.access] 127.0.0.1:35164 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:58,159 INFO [uvicorn.access] 127.0.0.1:40748 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:42:58,162 INFO [uvicorn.access] 127.0.0.1:40758 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:42:58,162 INFO [uvicorn.access] 127.0.0.1:40752 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:01,808 INFO [uvicorn.access] 127.0.0.1:52152 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:01,810 INFO [uvicorn.access] 127.0.0.1:52166 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:01,810 INFO [uvicorn.access] 127.0.0.1:52172 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:05,362 INFO [uvicorn.access] 127.0.0.1:47584 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:05,364 INFO [uvicorn.access] 127.0.0.1:47604 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:05,364 INFO [uvicorn.access] 127.0.0.1:47590 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:12,669 INFO [uvicorn.access] 127.0.0.1:47610 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:12,671 INFO [uvicorn.access] 127.0.0.1:47622 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:12,671 INFO [uvicorn.access] 127.0.0.1:47630 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:16,427 INFO [uvicorn.access] 127.0.0.1:44706 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:16,429 INFO [uvicorn.access] 127.0.0.1:44720 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:16,430 INFO [uvicorn.access] 127.0.0.1:44736 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:20,300 INFO [uvicorn.access] 127.0.0.1:44744 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:20,303 INFO [uvicorn.access] 127.0.0.1:44750 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:20,303 INFO [uvicorn.access] 127.0.0.1:44760 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:27,757 INFO [uvicorn.access] 127.0.0.1:55700 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:27,759 INFO [uvicorn.access] 127.0.0.1:55718 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:27,759 INFO [uvicorn.access] 127.0.0.1:55714 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:31,518 INFO [uvicorn.access] 127.0.0.1:55720 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:31,520 INFO [uvicorn.access] 127.0.0.1:55732 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:31,520 INFO [uvicorn.access] 127.0.0.1:55734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:35,194 INFO [uvicorn.access] 127.0.0.1:46010 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:35,197 INFO [uvicorn.access] 127.0.0.1:46024 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:35,197 INFO [uvicorn.access] 127.0.0.1:46022 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:53,641 INFO [uvicorn.access] 127.0.0.1:55852 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:43:53,645 INFO [uvicorn.access] 127.0.0.1:55858 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:43:53,646 INFO [uvicorn.access] 127.0.0.1:55856 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:04,594 INFO [uvicorn.access] 127.0.0.1:46514 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:04,597 INFO [uvicorn.access] 127.0.0.1:46528 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:04,598 INFO [uvicorn.access] 127.0.0.1:46526 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:17,158 INFO [uvicorn.access] 127.0.0.1:36982 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:17,160 INFO [uvicorn.access] 127.0.0.1:36990 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:17,161 INFO [uvicorn.access] 127.0.0.1:36998 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:21,662 INFO [uvicorn.access] 127.0.0.1:36982 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:21,671 INFO [uvicorn.access] 127.0.0.1:36990 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:21,672 INFO [uvicorn.access] 127.0.0.1:36998 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:25,376 INFO [uvicorn.access] 127.0.0.1:36982 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:29,024 INFO [uvicorn.access] 127.0.0.1:36982 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:29,028 INFO [uvicorn.access] 127.0.0.1:60820 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:29,028 INFO [uvicorn.access] 127.0.0.1:60806 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:36,335 INFO [uvicorn.access] 127.0.0.1:48998 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:36,337 INFO [uvicorn.access] 127.0.0.1:49012 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:36,337 INFO [uvicorn.access] 127.0.0.1:49016 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:43,780 INFO [uvicorn.access] 127.0.0.1:49032 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:44:43,783 INFO [uvicorn.access] 127.0.0.1:49048 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:43,784 INFO [uvicorn.access] 127.0.0.1:49052 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:44:49,213 INFO [uvicorn.error] Shutting down
+2026-02-21 16:44:49,315 INFO [uvicorn.error] Finished server process [59567]
+2026-02-21 16:44:49,327 ERROR [uvicorn.error] Traceback (most recent call last):
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/server.py", line 78, in serve
+    with self.capture_signals():
+  File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/server.py", line 339, in capture_signals
+    signal.raise_signal(captured_signal)
+  File "/usr/lib/python3.12/asyncio/runners.py", line 157, in _on_sigint
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 701, in lifespan
+    await receive()
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/lifespan/on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2026-02-21 16:45:02,508 INFO [uvicorn.error] Started server process [62904]
+2026-02-21 16:45:02,508 INFO [uvicorn.error] Waiting for application startup.
+2026-02-21 16:45:02,509 INFO [uvicorn.error] Application startup complete.
+2026-02-21 16:45:02,509 INFO [uvicorn.error] Uvicorn running on http://127.0.0.1:8765 (Press CTRL+C to quit)
