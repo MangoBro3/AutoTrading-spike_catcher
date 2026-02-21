@@ -30,6 +30,10 @@
     .modal-card{width:min(460px,92vw);background:#161a22;border:1px solid #2f3745;border-radius:10px;padding:14px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.review-list{max-height:240px;overflow:auto;border:1px solid #262d38;border-radius:8px}.review-list table{font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
     .kv{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 10px}.kv b{font-size:14px}
     #capitalChart{width:100%;height:260px;background:#0f141d;border:1px solid #2a3140;border-radius:8px}
+    .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+    .kpi-card{background:#141924;border:1px solid #2b3343;border-radius:10px;padding:10px}
+    .kpi-title{font-size:12px;color:#9aa4b2}
+    .kpi-main{font-size:16px;font-weight:700;margin-top:4px}
   </style>
 </head>
 <body>
@@ -38,6 +42,12 @@
   <div class="inline"><button id="refreshConnBtn" class="btn">연결 상태 새로고침</button><span id="refreshConnState" class="muted">수동 갱신: -</span></div>
   <div id="stopBanner" class="banner danger"></div>
   <div id="marketOneLiner" class="banner" style="display:none;background:#1e3a27;border:1px solid #3f7a58;color:#d7ffe6"></div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-title">가용자금 TOTAL</div><div class="kpi-main" id="fundTotalEquity">-</div><div class="muted">available: <span id="fundTotalAvail">-</span> | 전일대비: <span id="fundTotalDelta">-</span></div></div>
+    <div class="kpi-card"><div class="kpi-title">가용자금 UPBIT</div><div class="kpi-main" id="fundUpbitEquity">-</div><div class="muted">available: <span id="fundUpbitAvail">-</span> | 전일대비: <span id="fundUpbitDelta">-</span></div></div>
+    <div class="kpi-card"><div class="kpi-title">가용자금 BITHUMB</div><div class="kpi-main" id="fundBithumbEquity">-</div><div class="muted">available: <span id="fundBithumbAvail">-</span> | 전일대비: <span id="fundBithumbDelta">-</span></div></div>
+  </div>
 
   <div class="grid">
     <div class="card">
@@ -82,6 +92,16 @@
     <div class="card">
       <h2>Watching 종목</h2>
       <div id="watchingList" class="muted">불러오는 중...</div>
+    </div>
+
+    <div class="card">
+      <h2>Settings</h2>
+      <div class="muted">capital_cap_krw (0=무제한)</div>
+      <div class="inline" style="margin-top:8px">
+        <input id="capitalCapInput" type="text" placeholder="예: 1000000" />
+        <button id="capitalCapSaveBtn" class="btn">저장</button>
+      </div>
+      <div id="capitalCapStatus" class="muted" style="margin-top:8px">대기중</div>
     </div>
 
 
@@ -243,6 +263,7 @@ function overviewUrl(){ return '/api/overview'; }
 async function fetchJson(url){ const r=await fetch(url); const j=await r.json(); if(!r.ok) throw new Error(`${url} ${r.status}`); return j; }
 async function postControl(action, body){ const r=await fetch(`/api/worker/control/${action}`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||`control_failed:${action}`); if(j?.result?.ok===false) throw new Error(j?.result?.detail||j?.result?.error||`worker_control_failed:${action}`); return j; }
 async function postExchangeToggles(body){ const r=await fetch('/api/worker/control/exchanges', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'control_failed:exchanges'); return j; }
+async function postUiSettings(body){ const r=await fetch('/api/ui-settings', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'save_failed:ui_settings'); return j; }
 
 function normalizeWorkerPayload(payload){ if(!payload||typeof payload!=='object') return null; if(payload.worker&&typeof payload.worker==='object') return payload.worker; if(payload.result?.worker&&typeof payload.result.worker==='object') return payload.result.worker; if(payload.state||payload.trafficLight||payload.connected!==undefined) return payload; return null; }
 
@@ -286,6 +307,24 @@ function render(data){
     : '<tr><td colspan="5" class="muted">리뷰 데이터 없음 (fallback)</td></tr>';
 
   renderCapitalChart(data?.capitalDailyGraph || null);
+
+  const g = data?.capitalDailyGraph || {};
+  const vcTotal = data?.virtualCapital || {};
+  const setFundCard = (prefix, graph, totalCard=false) => {
+    const hasData = Array.isArray(graph?.rows) && graph.rows.length > 0;
+    const equity = totalCard ? (vcTotal?.equity_virtual ?? graph?.current_equity) : graph?.current_equity;
+    const avail = totalCard ? (vcTotal?.available_for_bot ?? vcTotal?.next_available_capital ?? equity) : (Number.isFinite(Number(equity)) ? equity : null);
+    const delta = graph?.day_delta_krw;
+    $(prefix+'Equity').textContent = hasData || Number.isFinite(Number(equity)) ? fmtKrw(equity) : '데이터 없음';
+    $(prefix+'Avail').textContent = hasData || Number.isFinite(Number(avail)) ? fmtKrw(avail) : '데이터 없음';
+    $(prefix+'Delta').textContent = Number.isFinite(Number(delta)) ? `${Number(delta)>=0?'+':''}${Number(delta).toLocaleString()} KRW` : '데이터 없음';
+  };
+  setFundCard('fundTotal', g.total || {}, true);
+  setFundCard('fundUpbit', g.upbit || {}, false);
+  setFundCard('fundBithumb', g.bithumb || {}, false);
+
+  const capFromSettings = data?.uiSettings?.capital_cap_krw;
+  if (capFromSettings !== undefined && capFromSettings !== null) $('capitalCapInput').value = String(capFromSettings);
 
   const indicators = data?.exchangeIndicators || {};
   const renderIndicator = (name, obj) => {

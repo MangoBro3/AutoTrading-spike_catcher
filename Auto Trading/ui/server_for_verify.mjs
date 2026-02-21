@@ -27,6 +27,7 @@ const API_WORKER_KICK_TIMEOUT_MS = process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS 
 const RUNTIME_STATUS_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_status.json');
 const RUNTIME_STATE_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_state.json');
 const EXCHANGE_TOGGLES_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'ui_exchange_toggles.json');
+const UI_SETTINGS_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'ui_settings.json');
 const DEFAULT_TIMELINE_LIMIT = process.env.AT_UI_TIMELINE_DEFAULT_LIMIT ? Number(process.env.AT_UI_TIMELINE_DEFAULT_LIMIT) : 30;
 const DEFAULT_TIMELINE_WINDOW_HOURS = process.env.AT_UI_TIMELINE_DEFAULT_HOURS ? Number(process.env.AT_UI_TIMELINE_DEFAULT_HOURS) : 24;
 const TIMELINE_MAX_CAP = process.env.AT_UI_TIMELINE_MAX_CAP ? Number(process.env.AT_UI_TIMELINE_MAX_CAP) : 300;
@@ -168,6 +169,28 @@ async function writeExchangeToggles(next) {
     // ignore persistence failure
   }
   return normalized;
+}
+
+function normalizeCapitalCap(raw, fallback = null) {
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(0, Math.floor(n));
+}
+
+async function readUiSettings() {
+  const payload = await readJsonFile(UI_SETTINGS_PATH, {});
+  return {
+    ...payload,
+    capital_cap_krw: normalizeCapitalCap(payload?.capital_cap_krw, null),
+  };
+}
+
+async function writeUiSettings(next = {}) {
+  const prev = await readJsonFile(UI_SETTINGS_PATH, {});
+  const cap = normalizeCapitalCap(next?.capital_cap_krw, normalizeCapitalCap(prev?.capital_cap_krw, 0));
+  const merged = { ...prev, ...next, capital_cap_krw: cap };
+  await writeFile(UI_SETTINGS_PATH, JSON.stringify(merged, null, 2), 'utf8');
+  return merged;
 }
 
 function deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }) {
@@ -539,6 +562,7 @@ let overviewCache = {
     upbit: { status: 'unknown', detail: 'backend state unavailable' },
     bithumb: { status: 'unknown', detail: 'backend state unavailable' },
   },
+  uiSettings: { capital_cap_krw: null },
   usage: summarizeUsage([]),
   taskSignals: { inProgressWorkers: [], tasks: [], agentWork: {} },
   timeline: [],
@@ -558,13 +582,14 @@ async function rebuildOverviewCache() {
   if (overviewRefreshRunning) return;
   overviewRefreshRunning = true;
   try {
-    const [status, agents, statePoint, taskSignals, runtimeStatus, runtimeState] = await Promise.all([
+    const [status, agents, statePoint, taskSignals, runtimeStatus, runtimeState, uiSettings] = await Promise.all([
       safeRun('openclaw status --all --json', null),
       safeRun('openclaw agents list --json', null),
       readStatePoint(),
       readTaskSignals(),
       readRuntimeStatus(),
       readRuntimeState(),
+      readUiSettings(),
     ]);
 
     let rawTimeline = [];
@@ -597,6 +622,7 @@ async function rebuildOverviewCache() {
       watchingSymbols: deriveWatchingSymbols({ runtimeStatus, runtimeState, statePoint, workerSnap }),
       exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
       exchangeToggles: exchangeTogglesCache,
+      uiSettings,
       marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
       usage,
       taskSignals,
@@ -738,6 +764,34 @@ const server = http.createServer((req, res) => {
           }, ctx, 'route=/api/worker/control/exchanges');
         } catch (e) {
           return sendApiError(res, ctx, e, '/api/worker/control/exchanges');
+        }
+      });
+      return;
+    }
+
+    if (url.pathname === '/api/ui-settings') {
+      if ((req.method || 'GET').toUpperCase() === 'GET') {
+        const settings = await readUiSettings();
+        return sendJson(res, 200, { ok: true, settings }, ctx, 'route=/api/ui-settings get');
+      }
+      if ((req.method || 'GET').toUpperCase() !== 'POST') {
+        return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/ui-settings method_guard');
+      }
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('error', (e) => sendApiError(res, ctx, e, '/api/ui-settings'));
+      req.on('end', async () => {
+        try {
+          const parsed = body ? JSON.parse(body) : {};
+          const capitalCap = normalizeCapitalCap(parsed?.capital_cap_krw, null);
+          if (!Number.isFinite(capitalCap)) {
+            return sendJson(res, 400, { ok: false, error: 'invalid_capital_cap_krw' }, ctx, 'route=/api/ui-settings invalid');
+          }
+          const saved = await writeUiSettings({ capital_cap_krw: capitalCap });
+          overviewCache = { ...overviewCache, uiSettings: saved };
+          return sendJson(res, 200, { ok: true, settings: saved }, ctx, 'route=/api/ui-settings post');
+        } catch (e) {
+          return sendApiError(res, ctx, e, '/api/ui-settings');
         }
       });
       return;
