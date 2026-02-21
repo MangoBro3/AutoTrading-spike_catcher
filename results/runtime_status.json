@@ -1,1 +1,1 @@
-{"ts": 1771657805.0716748, "pid": 17125, "mode": "PAPER", "status": "RUNNING", "equity": 1000000.0, "pnl_pct": 0.0, "regime": "RISK_OFF", "btc_price": 99775000.0, "watchlist": [], "last_tick_ts": 1771657777.5152283, "last_error": null, "last_error_ts": null}
+{"ts": 1771657946.9421117, "pid": 17125, "mode": "PAPER", "status": "STOPPED", "equity": 1000000.0, "pnl_pct": 0.0, "regime": "RISK_OFF", "btc_price": 99721000.0, "watchlist": [], "last_tick_ts": 1771657900.3325953, "last_error": null, "last_error_ts": null}

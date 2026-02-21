@@ -1,0 +1,22 @@
+VERIFY: UI Toggle - Spark (2026-02-21)
+
+Result: FAIL
+Reason: UI page 'public/index.html' contains no ON/OFF toggle elements.
+Observed controls only include:
+- HOLD TO PANIC button
+- Cancel Order button
+- panic slider (0-100)
+
+Evidence:
+- existing screenshots:
+  - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/evidence/ui-final-1/01-dashboard-traffic-light.png
+  - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/evidence/ui-final-1/02-panic-safety.png
+  - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/evidence/ui-final-1/03-orders-cancel-flow.png
+- e2e run log:
+  - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/evidence/ui-final-1/run.log
+  (failed screenshot due missing libnspr4 dependency on this host)
+
+Additional API check via direct control endpoint (for reference, not UI-click):
+- POST /api/worker/control/stop -> returns phase STOPPED (HTTP 200)
+- POST /api/worker/control/start -> returns requires operator confirm (state transition not immediate)
+- ON/OFF strings are not implemented as UI buttons in current page.

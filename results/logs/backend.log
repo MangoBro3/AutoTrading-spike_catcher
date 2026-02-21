@@ -25876,3 +25876,1061 @@ ValueError: [TypeError("'_thread.RLock' object is not iterable"), TypeError('var
 2026-02-21 16:10:05,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
 2026-02-21 16:10:05,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
 2026-02-21 16:10:05,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:06,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:06,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:06,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:07,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:07,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:07,063 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:07,350 INFO [uvicorn.access] 127.0.0.1:49676 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:07,353 INFO [uvicorn.access] 127.0.0.1:49686 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:07,353 INFO [uvicorn.access] 127.0.0.1:49702 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:08,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:08,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:08,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:09,061 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:09,063 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:09,064 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:10,061 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:10,064 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:10,064 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:11,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:11,064 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:11,065 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:12,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:12,067 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:12,068 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:13,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:13,064 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:13,065 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:14,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:14,064 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:14,065 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:14,763 INFO [uvicorn.access] 127.0.0.1:49706 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:14,765 INFO [uvicorn.access] 127.0.0.1:49710 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:14,766 INFO [uvicorn.access] 127.0.0.1:49720 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:15,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:15,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:15,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:16,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:16,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:16,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:17,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:17,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:17,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:18,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:18,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:18,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:19,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:19,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:19,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:20,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:20,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:20,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:21,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:21,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:21,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:22,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:22,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:22,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:22,288 INFO [uvicorn.access] 127.0.0.1:43430 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:22,292 INFO [uvicorn.access] 127.0.0.1:43450 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:22,293 INFO [uvicorn.access] 127.0.0.1:43438 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:23,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:23,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:23,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:24,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:24,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:24,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:25,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:25,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:25,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:26,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:26,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:26,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:27,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:27,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:27,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:28,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:28,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:28,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:29,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:29,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:29,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:29,919 INFO [uvicorn.access] 127.0.0.1:52132 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:29,921 INFO [uvicorn.access] 127.0.0.1:52154 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:29,922 INFO [uvicorn.access] 127.0.0.1:52142 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:30,058 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:30,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:30,061 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:31,058 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:31,061 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:31,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:32,059 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:32,061 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:32,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:33,059 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:33,061 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:33,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:34,059 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:34,061 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:34,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:35,059 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:35,062 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:35,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:36,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:36,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:36,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:37,061 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:37,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:37,064 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:38,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:38,063 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:38,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:39,061 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:39,063 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:39,064 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:40,061 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:40,064 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:40,064 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:41,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:41,064 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:41,065 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:42,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:42,065 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:42,065 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:43,063 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:43,065 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:43,066 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:44,062 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:44,065 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:44,065 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:45,048 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:45,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:45,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:46,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:46,051 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:46,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:47,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:47,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:47,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:48,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:48,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:48,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:49,047 INFO [uvicorn.access] 127.0.0.1:38360 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:49,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:49,052 INFO [uvicorn.access] 127.0.0.1:38384 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:49,053 INFO [uvicorn.access] 127.0.0.1:38372 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:49,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:49,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:50,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:50,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:50,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:51,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:51,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:51,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:52,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:52,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:52,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:53,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:53,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:53,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:54,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:54,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:54,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:55,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:55,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:55,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:56,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:56,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:56,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:57,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:57,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:57,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:58,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:58,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:58,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:59,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:10:59,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:10:59,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:00,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:00,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:00,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:01,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:01,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:01,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:02,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:02,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:02,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:03,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:03,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:03,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:04,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:04,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:04,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:05,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:05,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:05,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:06,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:06,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:06,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:07,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:07,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:07,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:08,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:08,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:08,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:09,058 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:09,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:09,062 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:10,058 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:10,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:10,062 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:11,059 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:11,062 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:11,062 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:12,058 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:12,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:12,061 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:13,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:13,062 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:13,063 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:13,351 INFO [uvicorn.access] 127.0.0.1:45856 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:13,354 INFO [uvicorn.access] 127.0.0.1:45862 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:13,355 INFO [uvicorn.access] 127.0.0.1:45868 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:14,060 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:14,063 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:14,063 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:15,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:15,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:15,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:16,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:16,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:16,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:17,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:17,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:17,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:18,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:18,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:18,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:19,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:19,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:19,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:20,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:20,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:20,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:21,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:21,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:21,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:22,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:22,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:22,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:23,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:23,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:23,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:24,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:24,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:24,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:25,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:25,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:25,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:26,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:26,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:26,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:27,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:27,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:27,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:28,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:28,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:28,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:29,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:29,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:29,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:30,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:30,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:30,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:31,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:31,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:31,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:32,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:32,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:32,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:33,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:33,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:33,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:34,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:34,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:34,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:35,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:35,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:35,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:36,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:36,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:36,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:37,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:37,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:37,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:38,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:38,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:38,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:39,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:39,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:39,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:39,839 INFO [uvicorn.access] 127.0.0.1:36990 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:39,842 INFO [uvicorn.access] 127.0.0.1:37008 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:39,843 INFO [uvicorn.access] 127.0.0.1:36992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:40,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:40,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:40,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:41,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:41,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:41,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:42,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:42,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:42,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:43,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:43,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:43,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:44,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:44,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:44,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:45,046 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:45,048 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:45,049 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:46,047 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:46,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:46,050 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:47,048 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:47,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:47,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:48,048 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:48,050 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:48,051 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:49,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:49,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:49,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:50,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:50,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:50,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:51,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:51,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:51,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:52,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:52,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:52,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:53,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:53,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:53,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:54,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:54,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:54,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:55,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:55,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:55,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:56,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:56,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:56,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:57,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:57,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:57,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:58,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:58,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:58,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:59,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:11:59,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:11:59,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:00,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:00,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:00,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:01,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:01,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:01,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:02,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:02,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:02,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:03,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:03,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:03,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:04,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:04,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:04,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:04,202 INFO [uvicorn.access] 127.0.0.1:41026 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:04,205 INFO [uvicorn.access] 127.0.0.1:41042 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:04,205 INFO [uvicorn.access] 127.0.0.1:41040 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:05,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:05,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:05,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:06,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:06,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:06,058 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:07,056 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:07,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:07,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:08,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:08,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:08,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:09,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:09,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:09,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:10,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:10,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:10,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:11,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:11,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:11,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:12,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:12,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:12,062 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:13,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:13,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:13,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:14,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:14,059 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:14,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:15,048 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:15,051 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:15,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:16,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:16,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:16,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:17,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:17,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:17,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:18,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:18,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:18,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:19,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:19,051 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:19,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:20,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:20,051 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:20,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:21,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:21,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:21,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:22,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:22,051 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:22,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:23,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:23,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:23,052 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:24,050 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:24,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:24,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:25,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:25,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:25,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:25,423 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/start HTTP/1.1" 200
+2026-02-21 16:12:25,425 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:25,428 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:25,428 INFO [uvicorn.access] 127.0.0.1:34206 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:26,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:26,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:26,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:26,800 INFO [RunController] 🛑 **RUN STOPPED**
+2026-02-21 16:12:26,941 INFO [RunController] [RunController] Loop STOPPED.
+2026-02-21 16:12:26,948 ERROR [RunController] [LOCK] Error releasing lock: invalid literal for int() with base 10: '{"pid": 17125'
+2026-02-21 16:12:27,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:27,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:27,054 INFO [uvicorn.access] 127.0.0.1:34206 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:27,766 INFO [uvicorn.access] 127.0.0.1:57566 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:27,769 INFO [uvicorn.access] 127.0.0.1:57582 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:27,769 INFO [uvicorn.access] 127.0.0.1:57586 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:27,772 ERROR [RunController] [LOCK] Error releasing lock: invalid literal for int() with base 10: '{"pid": 17125'
+2026-02-21 16:12:27,780 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/stop HTTP/1.1" 200
+2026-02-21 16:12:28,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:28,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:28,053 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:29,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:29,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:29,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:30,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:30,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:30,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:31,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:31,053 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:31,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:32,051 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:32,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:32,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:33,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:33,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:33,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:34,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:34,054 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:34,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:35,052 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:35,054 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:35,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:36,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:36,055 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:36,055 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:37,053 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:37,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:37,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:38,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:38,056 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:38,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:39,054 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:39,056 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:39,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:40,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:40,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:40,057 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:41,055 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:41,057 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:41,058 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:42,058 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:42,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:42,061 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:43,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:43,060 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:43,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:44,057 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:44,059 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:44,060 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:45,044 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:45,047 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:45,048 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:46,045 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:46,047 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:46,048 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:47,045 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:47,047 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:47,048 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:48,045 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:48,048 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:48,050 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:49,045 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:49,048 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:49,048 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:50,045 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:50,048 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:50,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:51,046 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:51,048 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:51,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:51,509 INFO [uvicorn.access] 127.0.0.1:40302 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:51,512 INFO [uvicorn.access] 127.0.0.1:40318 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:51,512 INFO [uvicorn.access] 127.0.0.1:40330 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:52,046 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:52,048 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:52,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:53,046 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:53,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:53,049 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:54,046 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:54,049 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:54,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:55,047 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:55,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:55,049 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:56,047 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:56,049 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:56,050 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:57,048 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:57,050 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:57,050 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:57,102 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/on HTTP/1.1" 404
+2026-02-21 16:12:57,114 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/off HTTP/1.1" 404
+2026-02-21 16:12:57,144 INFO [NotifierTelegram] Loaded 163 events from outbox (schema=2).
+2026-02-21 16:12:57,152 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/start HTTP/1.1" 200
+2026-02-21 16:12:57,154 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:57,157 INFO [uvicorn.access] 127.0.0.1:52000 - "GET /api/v1/status HTTP/1.1" 500
+2026-02-21 16:12:57,158 ERROR [uvicorn.error] Exception in ASGI application
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 328, in jsonable_encoder
+    data = dict(obj)
+           ^^^^^^^^^
+TypeError: '_thread.RLock' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 333, in jsonable_encoder
+    data = vars(obj)
+           ^^^^^^^^^
+TypeError: vars() argument must have __dict__ attribute
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 446, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in serialize_response
+    return jsonable_encoder(response_content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 303, in jsonable_encoder
+    jsonable_encoder(
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 336, in jsonable_encoder
+    raise ValueError(errors) from e
+ValueError: [TypeError("'_thread.RLock' object is not iterable"), TypeError('vars() argument must have __dict__ attribute')]
+2026-02-21 16:12:57,176 INFO [uvicorn.access] 127.0.0.1:43722 - "GET /api/v1/status HTTP/1.1" 500
+2026-02-21 16:12:57,176 ERROR [uvicorn.error] Exception in ASGI application
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 328, in jsonable_encoder
+    data = dict(obj)
+           ^^^^^^^^^
+TypeError: '_thread.RLock' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 333, in jsonable_encoder
+    data = vars(obj)
+           ^^^^^^^^^
+TypeError: vars() argument must have __dict__ attribute
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 446, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in serialize_response
+    return jsonable_encoder(response_content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 303, in jsonable_encoder
+    jsonable_encoder(
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 336, in jsonable_encoder
+    raise ValueError(errors) from e
+ValueError: [TypeError("'_thread.RLock' object is not iterable"), TypeError('vars() argument must have __dict__ attribute')]
+2026-02-21 16:12:57,205 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/stop HTTP/1.1" 200
+2026-02-21 16:12:57,206 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:57,210 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:57,210 INFO [uvicorn.access] 127.0.0.1:43750 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:57,220 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/pause HTTP/1.1" 404
+2026-02-21 16:12:57,231 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/resume HTTP/1.1" 404
+2026-02-21 16:12:57,241 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/status HTTP/1.1" 404
+2026-02-21 16:12:57,251 INFO [uvicorn.access] 127.0.0.1:41698 - "POST /api/v1/control/unknown HTTP/1.1" 404
+2026-02-21 16:12:58,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:58,051 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:58,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:59,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:12:59,051 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:12:59,052 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:00,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:13:00,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:00,051 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:01,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:13:01,051 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:01,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:02,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:13:02,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:02,051 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:03,049 INFO [uvicorn.access] 127.0.0.1:41698 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:13:03,051 INFO [uvicorn.access] 127.0.0.1:51992 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:13:03,051 INFO [uvicorn.access] 127.0.0.1:43734 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:27,167 INFO [uvicorn.access] 127.0.0.1:43366 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:14:27,170 INFO [uvicorn.access] 127.0.0.1:43390 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:27,170 INFO [uvicorn.access] 127.0.0.1:43374 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:28,161 INFO [uvicorn.access] 127.0.0.1:43366 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:14:28,163 INFO [uvicorn.access] 127.0.0.1:43390 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:28,164 INFO [uvicorn.access] 127.0.0.1:43374 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:29,161 INFO [uvicorn.access] 127.0.0.1:43366 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:14:29,163 INFO [uvicorn.access] 127.0.0.1:43374 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:29,164 INFO [uvicorn.access] 127.0.0.1:43390 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:33,864 INFO [uvicorn.access] 127.0.0.1:43366 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:14:33,866 INFO [uvicorn.access] 127.0.0.1:43374 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:33,867 INFO [uvicorn.access] 127.0.0.1:43390 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:41,328 INFO [uvicorn.access] 127.0.0.1:58324 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:14:41,330 INFO [uvicorn.access] 127.0.0.1:58338 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:41,331 INFO [uvicorn.access] 127.0.0.1:58334 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 16:14:41,356 INFO [NotifierTelegram] Loaded 163 events from outbox (schema=2).
+2026-02-21 16:14:41,366 INFO [uvicorn.access] 127.0.0.1:58340 - "POST /api/v1/control/start HTTP/1.1" 200
+2026-02-21 16:14:48,912 INFO [uvicorn.access] 127.0.0.1:48318 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 16:14:48,914 INFO [uvicorn.access] 127.0.0.1:48328 - "GET /api/v1/status HTTP/1.1" 500
+2026-02-21 16:14:48,915 ERROR [uvicorn.error] Exception in ASGI application
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 328, in jsonable_encoder
+    data = dict(obj)
+           ^^^^^^^^^
+TypeError: '_thread.RLock' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 333, in jsonable_encoder
+    data = vars(obj)
+           ^^^^^^^^^
+TypeError: vars() argument must have __dict__ attribute
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 446, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in serialize_response
+    return jsonable_encoder(response_content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 303, in jsonable_encoder
+    jsonable_encoder(
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 336, in jsonable_encoder
+    raise ValueError(errors) from e
+ValueError: [TypeError("'_thread.RLock' object is not iterable"), TypeError('vars() argument must have __dict__ attribute')]
+2026-02-21 16:14:48,932 INFO [uvicorn.access] 127.0.0.1:48334 - "GET /api/v1/status HTTP/1.1" 500
+2026-02-21 16:14:48,933 ERROR [uvicorn.error] Exception in ASGI application
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 328, in jsonable_encoder
+    data = dict(obj)
+           ^^^^^^^^^
+TypeError: '_thread.RLock' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 333, in jsonable_encoder
+    data = vars(obj)
+           ^^^^^^^^^
+TypeError: vars() argument must have __dict__ attribute
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 446, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in serialize_response
+    return jsonable_encoder(response_content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 303, in jsonable_encoder
+    jsonable_encoder(
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 337, in jsonable_encoder
+    return jsonable_encoder(
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 289, in jsonable_encoder
+    encoded_value = jsonable_encoder(
+                    ^^^^^^^^^^^^^^^^^
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/fastapi/encoders.py", line 336, in jsonable_encoder
+    raise ValueError(errors) from e
+ValueError: [TypeError("'_thread.RLock' object is not iterable"), TypeError('vars() argument must have __dict__ attribute')]
+2026-02-21 16:14:52,262 INFO [uvicorn.error] Shutting down
+2026-02-21 16:14:52,370 INFO [uvicorn.error] Finished server process [17125]
+2026-02-21 16:14:52,380 ERROR [uvicorn.error] Traceback (most recent call last):
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/server.py", line 78, in serve
+    with self.capture_signals():
+  File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/server.py", line 339, in capture_signals
+    signal.raise_signal(captured_signal)
+  File "/usr/lib/python3.12/asyncio/runners.py", line 157, in _on_sigint
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/starlette/routing.py", line 701, in lifespan
+    await receive()
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/.venv/lib/python3.12/site-packages/uvicorn/lifespan/on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2026-02-21 16:14:52,384 ERROR [RunController] [LOCK] Error releasing lock: invalid literal for int() with base 10: '{"pid": 17125'
+2026-02-21 16:14:52,387 ERROR [RunController] [LOCK] Error releasing lock: invalid literal for int() with base 10: '{"pid": 17125'
+2026-02-21 16:14:52,390 ERROR [RunController] [LOCK] Error releasing lock: invalid literal for int() with base 10: '{"pid": 17125'

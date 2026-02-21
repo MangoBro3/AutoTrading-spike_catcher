@@ -17,10 +17,30 @@
     .banner.danger{background:#4a1318;border:1px solid #a8323d;color:#ffd7dc}
     .btn{background:#243047;border:1px solid #33425f;color:#e9edf1;padding:6px 10px;border-radius:6px;cursor:pointer}
     .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn-danger{background:#4a1f24;border-color:#7a2f39;color:#ffd7dc}
     input[type="text"]{flex:1;background:#111722;border:1px solid #2a3342;color:#e9edf1;border-radius:6px;padding:6px}
     table{width:100%;border-collapse:collapse;font-size:13px}
     th,td{padding:7px;border-bottom:1px solid #262d38;text-align:left;vertical-align:top}
     code{background:#1f2530;padding:1px 5px;border-radius:6px}
+
+    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid transparent}
+    .pill-stop{background:#3a2024;color:#ffb7c0;border-color:#6f303a}
+    .pill-wait{background:#3d3320;color:#ffd98e;border-color:#72603b}
+    .pill-run{background:#1f3a2a;color:#9ff1bc;border-color:#356a4a}
+
+    .switch-wrap{display:flex;align-items:center;gap:10px;margin:8px 0}
+    .switch{position:relative;display:inline-block;width:52px;height:30px}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#394253;transition:.2s;border-radius:999px}
+    .slider:before{position:absolute;content:"";height:22px;width:22px;left:4px;bottom:4px;background:white;transition:.2s;border-radius:50%}
+    input:checked + .slider{background:#2e6f43}
+    input:checked + .slider:before{transform:translateX(22px)}
+    input:disabled + .slider{opacity:.5;cursor:not-allowed}
+
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal.show{display:flex}
+    .modal-card{width:min(460px,92vw);background:#161a22;border:1px solid #2f3745;border-radius:10px;padding:14px}
+    .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
   </style>
 </head>
 <body>
@@ -32,6 +52,20 @@
     <div class="card">
       <h2>Worker Safety / Traffic Light</h2>
       <div id="worker"></div>
+    </div>
+
+    <div class="card">
+      <h2>Auto Trading ON/OFF</h2>
+      <div class="muted">LIVE 2단 확인 유지: ON 클릭 → 승인 모달 확인 후 시작 확정</div>
+      <div style="margin-top:8px">현재 상태: <span id="controlPhaseBadge" class="pill pill-stop">STOPPED</span></div>
+      <div class="switch-wrap">
+        <label class="switch" title="Auto Trading Toggle">
+          <input id="autoToggle" type="checkbox" />
+          <span class="slider"></span>
+        </label>
+        <span id="autoToggleLabel" style="font-weight:700">OFF</span>
+      </div>
+      <div id="controlStatus" class="muted">대기중</div>
     </div>
 
     <div class="card">
@@ -62,6 +96,17 @@
     <div id="positions" style="margin-top:10px"></div>
   </div>
 
+  <div id="confirmModal" class="modal">
+    <div class="modal-card">
+      <h2 style="margin-bottom:8px">2단 확인</h2>
+      <div id="confirmModalText" class="muted" style="font-size:13px"></div>
+      <div class="modal-actions">
+        <button id="confirmModalCancel" class="btn">취소</button>
+        <button id="confirmModalApprove" class="btn btn-danger">승인 후 진행</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 const $ = (id)=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]))}
@@ -74,7 +119,39 @@ function val(obj, keys, fallback='-') {
   return fallback;
 }
 
+let latestOverview = null;
+let controlBusy = false;
+let syncingToggle = false;
+
+function phaseFromOverview(data) {
+  const phaseRaw = data?.worker?.state?.phase || data?.worker?.phase || data?.phase || 'STOPPED';
+  return String(phaseRaw || 'STOPPED').toUpperCase();
+}
+
+function isAutoOnByPhase(phase) {
+  return phase === 'RUNNING' || phase === 'WAITING_OPERATOR';
+}
+
+function phaseBadgeClass(phase) {
+  if (phase === 'RUNNING') return 'pill pill-run';
+  if (phase === 'WAITING_OPERATOR') return 'pill pill-wait';
+  return 'pill pill-stop';
+}
+
+function syncToggleUI(phase) {
+  syncingToggle = true;
+  const checked = isAutoOnByPhase(phase);
+  $('autoToggle').checked = checked;
+  $('autoToggle').disabled = controlBusy;
+  $('autoToggleLabel').textContent = checked ? 'ON' : 'OFF';
+  const badge = $('controlPhaseBadge');
+  badge.className = phaseBadgeClass(phase);
+  badge.textContent = phase;
+  syncingToggle = false;
+}
+
 function render(data){
+  latestOverview = data;
   $('ts').textContent = `updated: ${new Date(data.now || Date.now()).toLocaleString()}${data.sourceOk?'':'  |  openclaw json source unavailable'}`;
 
   const worker = data.worker || {};
@@ -93,6 +170,9 @@ function render(data){
     banner.className = 'banner danger';
     banner.textContent = '';
   }
+
+  const phase = phaseFromOverview(data);
+  syncToggleUI(phase);
 
   const acc = data.account || data.balance || data.portfolio || data.trading?.account || {};
   const positions = data.positions || data.trading?.positions || [];
@@ -136,8 +216,103 @@ async function postControl(action, body){
   });
   const j = await r.json();
   if(!r.ok || j.ok===false) throw new Error(j.error || `control_failed:${action}`);
+  if (j?.result?.ok === false) {
+    throw new Error(j?.result?.detail || j?.result?.error || `worker_control_failed:${action}`);
+  }
   return j;
 }
+
+function openConfirmModal(text) {
+  return new Promise((resolve) => {
+    const modal = $('confirmModal');
+    const approve = $('confirmModalApprove');
+    const cancel = $('confirmModalCancel');
+    $('confirmModalText').textContent = text;
+    modal.classList.add('show');
+
+    const done = (ok) => {
+      modal.classList.remove('show');
+      approve.removeEventListener('click', onApprove);
+      cancel.removeEventListener('click', onCancel);
+      resolve(ok);
+    };
+    const onApprove = () => done(true);
+    const onCancel = () => done(false);
+
+    approve.addEventListener('click', onApprove);
+    cancel.addEventListener('click', onCancel);
+  });
+}
+
+async function runWithControlBusy(fn) {
+  if (controlBusy) return;
+  controlBusy = true;
+  $('autoToggle').disabled = true;
+  try {
+    await fn();
+  } finally {
+    controlBusy = false;
+    const currentPhase = phaseFromOverview(latestOverview || {});
+    syncToggleUI(currentPhase);
+  }
+}
+
+async function handleTurnOn() {
+  await runWithControlBusy(async () => {
+    const phase = phaseFromOverview(latestOverview || {});
+    let expectedPhrase = latestOverview?.worker?.state?.pending?.expected_phrase || null;
+
+    if (phase === 'STOPPED') {
+      $('controlStatus').textContent = '시작 요청 중...';
+      const started = await postControl('start', {});
+      expectedPhrase = started?.result?.expected_phrase || expectedPhrase;
+      if (!expectedPhrase) throw new Error('expected_phrase 누락');
+    } else if (phase === 'WAITING_OPERATOR') {
+      if (!expectedPhrase) throw new Error('pending expected_phrase 없음');
+    } else if (phase === 'RUNNING') {
+      $('controlStatus').textContent = '이미 RUNNING 상태입니다.';
+      await tick();
+      return;
+    } else {
+      throw new Error(`지원하지 않는 phase: ${phase}`);
+    }
+
+    const approved = await openConfirmModal('LIVE 2단 확인: 시작을 승인하면 backend expected_phrase로 최종 confirm을 수행합니다.');
+    if (!approved) {
+      $('controlStatus').textContent = '취소됨: 승인 전 단계에서 중단';
+      await tick();
+      return;
+    }
+
+    $('controlStatus').textContent = '승인됨: 시작 확정 중...';
+    await postControl('confirm', { phrase: expectedPhrase });
+    $('controlStatus').textContent = 'Auto Trading ON (RUNNING)';
+    await tick();
+  });
+}
+
+async function handleTurnOff() {
+  await runWithControlBusy(async () => {
+    $('controlStatus').textContent = '정지 요청 중...';
+    await postControl('stop', {});
+    $('controlStatus').textContent = 'Auto Trading OFF (STOPPED)';
+    await tick();
+  });
+}
+
+$('autoToggle').addEventListener('change', async (ev) => {
+  if (syncingToggle) return;
+  try {
+    if (ev.target.checked) {
+      await handleTurnOn();
+    } else {
+      await handleTurnOff();
+    }
+  } catch (e) {
+    $('controlStatus').textContent = `실패: ${e.message}`;
+    await tick();
+  }
+});
 
 const panicSlider = $('panicSlider');
 const panicValue = $('panicValue');
