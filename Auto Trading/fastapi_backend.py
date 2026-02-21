@@ -109,16 +109,46 @@ class BackendService:
     def _is_running(self) -> bool:
         return bool(self.worker and self.worker.is_alive() and self.controller and self.controller.running)
 
-    def status(self):
-        state = self.safe_start.read_state()
+    def _json_safe(self, value):
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        if isinstance(value, list):
+            return [self._json_safe(v) for v in value]
+        if isinstance(value, tuple):
+            return [self._json_safe(v) for v in value]
+        if isinstance(value, dict):
+            return {str(k): self._json_safe(v) for k, v in value.items()}
+        try:
+            return str(value)
+        except Exception:
+            return f"<{value.__class__.__name__}>"
+
+    def _pending_status(self):
+        if not isinstance(self.pending, dict):
+            return None
         return {
+            "mode": self.pending.get("mode"),
+            "exchange": self.pending.get("exchange"),
+            "seed": self.pending.get("seed"),
+            "expected_phrase": self.pending.get("expected_phrase"),
+            "has_controller": self.pending.get("controller") is not None,
+        }
+
+    def status(self):
+        try:
+            state = self.safe_start.read_state()
+        except Exception as e:
+            state = {"phase": "STOPPED", "details": {"error": f"safe_start_read_failed:{e.__class__.__name__}"}, "ts": None}
+
+        payload = {
             "ok": True,
             "running": self._is_running(),
             "phase": state.get("phase"),
             "safe_start": state,
-            "pending": self.pending,
+            "pending": self._pending_status(),
             "last_error": self.last_error,
         }
+        return self._json_safe(payload)
 
     def start(self, req: StartRequest):
         with self._mtx:

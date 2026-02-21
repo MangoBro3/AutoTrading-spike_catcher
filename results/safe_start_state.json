@@ -1,8 +1,8 @@
 {
-  "ts": 1771661737.0424318,
-  "phase": "STOPPED",
+  "ts": 1771664286.6259673,
+  "phase": "WAITING_OPERATOR",
   "details": {
-    "message": "Stopped by operator",
+    "message": "Sync check passed. Waiting for operator confirmation.",
     "running_blocked": true
   }
 }
