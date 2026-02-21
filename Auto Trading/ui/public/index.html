@@ -11,6 +11,14 @@
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:12px}
     .card{background:#161a22;border:1px solid #252b36;border-radius:10px;padding:12px}
     .banner{display:none;margin:12px 0 0;padding:10px 12px;border-radius:8px;font-weight:700}
+    .zone1{width:100%;margin:10px 0 12px;padding:12px 14px;border-radius:10px;font-weight:800;text-align:center}
+    .zone1.live{background:#b91c1c;color:#fff;border:1px solid #ef4444}
+    .zone1.paper{background:#166534;color:#dcfce7;border:1px solid #22c55e}
+    .traffic-fixed{position:fixed;top:10px;right:12px;z-index:100;font-weight:900;padding:6px 10px;border-radius:999px;background:#111827;border:1px solid #374151}
+    .debug-raw{display:none !important}
+    .zone2-top{max-width:1100px;margin:0 auto 12px}
+    .zone3-panel{border:1px solid #334155;border-radius:10px;padding:10px;background:#111827}
+    .advanced{margin-top:12px}
     .banner.show{display:block}.banner.danger{background:#4a1318;border:1px solid #a8323d;color:#ffd7dc}
     .btn{background:#243047;border:1px solid #33425f;color:#e9edf1;padding:6px 10px;border-radius:6px;cursor:pointer}
     .btn:disabled{opacity:.5;cursor:not-allowed}.btn-danger{background:#4a1f24;border-color:#7a2f39;color:#ffd7dc}
@@ -39,13 +47,17 @@
 <body>
   <h1>Auto Trading Cockpit</h1>
   <div class="muted" id="ts">loading...</div>
-  <div class="inline" style="margin-top:6px"><span id="truthBadge" class="pill pill-stop">TRUTH=-</span><span id="truthSource" class="muted"></span></div>
+  <div id="trafficFixed" class="traffic-fixed">● --</div>
+  <div id="modeTopBanner" class="zone1 paper">PAPER</div>
+  <div class="inline debug-raw" style="margin-top:6px"><span id="truthBadge" class="pill pill-stop">TRUTH=-</span><span id="truthSource" class="muted"></span></div>
   <div class="inline"><button id="refreshConnBtn" class="btn">연결 상태 새로고침</button><span id="refreshConnState" class="muted">수동 갱신: -</span></div>
   <div id="stopBanner" class="banner danger"></div>
   <div id="blockedBanner" class="banner danger"></div>
   <div id="runtimeStatusBanner" class="banner danger"></div>
   <div class="inline" id="nextActionWrap" style="display:none"><button id="nextActionBtn" class="btn btn-danger">다음 액션 실행</button><span id="nextActionHint" class="muted"></span></div>
   <div id="marketOneLiner" class="banner" style="display:none;background:#1e3a27;border:1px solid #3f7a58;color:#d7ffe6"></div>
+
+  <div class="zone2-top"><div class="card"><h2>계좌 / 포지션 / PnL</h2><div id="account"></div><div id="positions" style="margin-top:10px"></div></div></div>
 
   <div class="kpi-row">
     <div class="kpi-card"><div class="kpi-title">가용자금 TOTAL</div><div class="kpi-main" id="fundTotalEquity">-</div><div class="muted">available: <span id="fundTotalAvail">-</span> | 전일대비: <span id="fundTotalDelta">-</span></div></div>
@@ -54,12 +66,18 @@
   </div>
 
   <div class="grid">
-    <div class="card">
-      <h2>거래 모드</h2>
+    <div class="card zone3-panel">
+      <h2>운영 제어 패널</h2>
       <div class="muted">LIVE 전환은 2단 확인 필수</div>
       <div class="inline">
         <button id="modePaperBtn" class="btn">PAPER</button>
         <button id="modeLiveBtn" class="btn btn-danger">LIVE</button>
+      </div>
+      <div class="inline" style="margin-top:8px">
+        <button id="runBtn" class="btn">RUN</button>
+        <button id="pauseBtn" class="btn">PAUSE</button>
+        <button id="stopBtn" class="btn btn-danger">STOP</button>
+        <button id="panicInlineBtn" class="btn btn-danger">HOLD TO PANIC</button>
       </div>
       <div id="modeStatus" class="muted" style="margin-top:8px"></div>
       <div class="inline" style="margin-top:8px"><button id="modeConfirmBtn" class="btn btn-danger" style="display:none">LIVE 전환 Confirm</button><span id="modeConfirmHint" class="muted"></span></div>
@@ -79,7 +97,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="display:none">
       <h2>Auto Trading ON/OFF</h2>
       <div style="margin-top:8px">현재 상태: <span id="controlPhaseBadge" class="pill pill-stop">STOPPED</span></div>
       <div class="switch-wrap">
@@ -154,7 +172,7 @@
       <div id="capitalSource" class="muted" style="margin-top:6px">source: -</div>
     </div>
 
-    <div class="card">
+    <div class="card" style="display:none">
       <h2>Panic 안전장치</h2>
       <div class="muted">1) 슬라이더를 100으로 이동 2) HOLD 2초 유지</div>
       <div style="margin-top:8px"><input id="panicSlider" type="range" min="0" max="100" step="1" value="0" style="width:100%" /><div class="muted">value: <span id="panicValue">0</span></div></div>
@@ -168,7 +186,7 @@
       <div id="orderStatus" class="muted" style="margin-top:8px">대기중</div>
     </div>
 
-    <div class="card" id="manualRoundtripCard">
+    <details class="advanced"><summary>Advanced</summary><div class="card" id="manualRoundtripCard" style="margin-top:8px">
       <h2>Manual Roundtrip Test (1회 왕복)</h2>
       <div class="inline" style="margin-top:8px;align-items:center;flex-wrap:wrap">
         <label class="muted" for="manualRoundtripSymbol" style="min-width:120px">symbol</label>
@@ -199,10 +217,10 @@
       </div>
       <div id="manualRoundtripState" class="muted" style="margin-top:8px">-</div>
       <pre id="manualRoundtripResult" class="muted" style="margin-top:8px;white-space:pre-wrap;background:#111722;border:1px solid #2a3342;border-radius:6px;padding:8px;max-height:180px;overflow:auto">-</pre>
-    </div>
+    </div></details>
   </div>
 
-  <div class="card" style="margin-top:12px"><h2>계좌 / 포지션 / PnL</h2><div id="account"></div><div id="positions" style="margin-top:10px"></div></div>
+<!-- zone2 moved to top -->
 
   <div id="confirmModal" class="modal"><div class="modal-card"><h2 style="margin-bottom:8px">확인</h2><div id="confirmModalText" class="muted" style="font-size:13px"></div><div class="modal-actions"><button id="confirmModalCancel" class="btn">취소</button><button id="confirmModalApprove" class="btn btn-danger">승인</button></div></div></div>
 
@@ -375,12 +393,22 @@ function render(data){
   const worker=data.worker||{};
   const light=String(worker.trafficLight||'DISCONNECTED').toUpperCase();
   const lightClass=light==='GREEN'?'ok':(light==='YELLOW'?'warn':'bad');
+  const tf=$('trafficFixed');
+  if (tf){
+    const dot = light==='GREEN' ? '🟢' : (light==='YELLOW' ? '🟡' : '🔴');
+    tf.textContent = `${dot} ${light}`;
+  }
   const banner=$('stopBanner');
   const market=$('marketOneLiner');
   const staleBanner=$('runtimeStatusBanner');
   const marketLine=String(data?.marketOneLiner||'').trim();
   const resolvedMode = resolveDisplayMode(data);
   const uiMode = resolvedMode.mode;
+  const topBanner=$('modeTopBanner');
+  if (topBanner){
+    topBanner.textContent = uiMode === 'LIVE' ? 'LIVE' : 'PAPER';
+    topBanner.className = `zone1 ${uiMode === 'LIVE' ? 'live' : 'paper'}`;
+  }
   if(uiMode==='PAPER' && marketLine){ market.classList.add('show'); market.style.display='block'; market.textContent=marketLine; } else { market.classList.remove('show'); market.style.display='none'; market.textContent=''; }
   if(worker.stopAll){ banner.className='banner danger show'; banner.textContent=worker.banner||`${light}: 전체 중단`; } else { banner.className='banner danger'; banner.textContent=''; }
   if(data?.runtimeStatusStaleIgnored){ staleBanner.className='banner danger show'; staleBanner.textContent='runtimeStatus stale ignored'; }
@@ -540,6 +568,11 @@ $('capitalViewTotal')?.addEventListener('click', ()=>{ capitalView='total'; setC
 $('capitalViewUpbit')?.addEventListener('click', ()=>{ capitalView='upbit'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
 $('capitalViewBithumb')?.addEventListener('click', ()=>{ capitalView='bithumb'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
 $('autoToggle').addEventListener('change', async(ev)=>{ if(syncingToggle) return; try{ if(ev.target.checked) await handleTurnOn(); else await handleTurnOff(); }catch(e){ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); } });
+$('runBtn')?.addEventListener('click', ()=>handleTurnOn().catch(async(e)=>{ $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));
+$('pauseBtn')?.addEventListener('click', ()=>handleTurnOff().catch(async(e)=>{ $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));
+$('stopBtn')?.addEventListener('click', ()=>handleTurnOff().catch(async(e)=>{ $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));
+$('panicInlineBtn')?.addEventListener('mousedown', ()=>$('panicHoldBtn')?.dispatchEvent(new MouseEvent('mousedown')));
+['mouseup','mouseleave'].forEach((ev)=>$('panicInlineBtn')?.addEventListener(ev, ()=>$('panicHoldBtn')?.dispatchEvent(new MouseEvent(ev))));
 
 $('forceUnlockBtn')?.addEventListener('click', async()=>{
   try{

@@ -46,6 +46,21 @@ OWNER_TELEGRAM_CHAT_ID = "7024783360"
 MODE_ALERT_DEBOUNCE_SEC = 60
 
 
+class AccessHealthStatusMuteFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        try:
+            msg = record.getMessage()
+        except Exception:
+            return True
+        muted = (
+            ' /api/v1/health ' in msg
+            or ' /api/v1/status ' in msg
+            or ' /health ' in msg
+            or ' /status ' in msg
+        )
+        return not muted
+
+
 def configure_logging() -> dict:
     BACKEND_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     log_fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
@@ -55,6 +70,11 @@ def configure_logging() -> dict:
         "formatters": {
             "default": {
                 "format": log_fmt,
+            }
+        },
+        "filters": {
+            "mute_health_status": {
+                "()": AccessHealthStatusMuteFilter,
             }
         },
         "handlers": {
@@ -77,7 +97,7 @@ def configure_logging() -> dict:
         "loggers": {
             "uvicorn": {"handlers": ["stderr", "file"], "level": "INFO", "propagate": False},
             "uvicorn.error": {"handlers": ["stderr", "file"], "level": "INFO", "propagate": False},
-            "uvicorn.access": {"handlers": ["stderr", "file"], "level": "INFO", "propagate": False},
+            "uvicorn.access": {"handlers": ["stderr", "file"], "level": "INFO", "filters": ["mute_health_status"], "propagate": False},
         },
     }
     logging.config.dictConfig(uvicorn_log_config)
@@ -201,17 +221,64 @@ class BackendService:
             logging.getLogger("BackendService").warning(f"mode alert telegram send failed: {e}")
             return False
 
+    def _fmt_krw(self, v) -> str:
+        try:
+            return f"{int(float(v)):,} KRW"
+        except Exception:
+            return "-"
+
+    def _build_rich_snapshot_text(self, truth: dict, headline: str) -> str:
+        runtime = self._read_runtime_status() or {}
+        try:
+            state = json.loads(RUNTIME_STATE_PATH.read_text(encoding="utf-8")) if RUNTIME_STATE_PATH.exists() else {}
+        except Exception:
+            state = {}
+        vc = self._build_virtual_capital() or {}
+        mode = str((truth or {}).get("mode") or "PAPER").upper()
+        phase = str((truth or {}).get("phase") or "STOPPED").upper()
+        latency = runtime.get("latency_ms") or runtime.get("api_latency_ms") or "-"
+        try:
+            latency = f"{float(latency):.0f}ms"
+        except Exception:
+            latency = str(latency)
+
+        pnl_pct = runtime.get("pnl_pct")
+        try:
+            pnl_pct_txt = f"{float(pnl_pct)*100:.2f}%"
+        except Exception:
+            pnl_pct_txt = "-"
+
+        pos_symbol = state.get("symbol") or "-"
+        pos_qty = state.get("position_qty")
+        try:
+            pos_qty = f"{float(pos_qty):,.8f}".rstrip("0").rstrip(".")
+        except Exception:
+            pos_qty = "-"
+
+        watch = runtime.get("watching_symbols") or runtime.get("watchlist") or []
+        if not isinstance(watch, list):
+            watch = []
+        watch_txt = ", ".join([str(x) for x in watch[:12]]) if watch else "-"
+
+        return "\n".join([
+            headline,
+            f"자산: {self._fmt_krw(vc.get('equity_virtual'))}",
+            f"PnL: {self._fmt_krw(vc.get('pnl_virtual'))} ({pnl_pct_txt})",
+            f"포지션: {pos_symbol} qty={pos_qty}",
+            f"감시종목: {watch_txt}",
+            f"시스템상태: mode={mode} phase={phase} running={bool((truth or {}).get('running', False))}",
+            f"latency: {latency}",
+        ])
+
     def _build_mode_alert(self, truth: dict):
         mode = str((truth or {}).get("mode") or "PAPER").upper()
         phase = str((truth or {}).get("phase") or "STOPPED").upper()
         reason = _normalize_reason_code((truth or {}).get("reason_code"))
 
         if phase == PHASE_RUNNING and mode == "LIVE":
-            return f"mode:{mode}|phase:{phase}", "[SYSTEM] MODE LIVE ON"
-        if phase == PHASE_RUNNING and mode == "PAPER":
-            return f"mode:{mode}|phase:{phase}", "[SYSTEM] MODE PAPER ON"
+            return f"mode:{mode}|phase:{phase}", self._build_rich_snapshot_text(truth, "[SYSTEM] MODE LIVE ON")
         if phase == "STOPPED":
-            return f"phase:{phase}|reason:{reason}", f"[SYSTEM] STOPPED reason={reason}"
+            return f"phase:{phase}|reason:{reason}", self._build_rich_snapshot_text(truth, f"[SYSTEM] STOPPED reason={reason}")
         return None, None
 
     def _maybe_emit_mode_alert(self, truth: dict):
@@ -714,7 +781,7 @@ class BackendStatusTUI:
         canonical = self.backend_service._canonical_status(safe)
         mode = str((canonical.get("mode") or "PAPER")).upper()
         is_live = mode == "LIVE"
-        mode_badge = f"{mode} {'⚠️ LIVE REAL MONEY' if is_live else '🧪 PAPER'}"
+        mode_badge = f"{mode} {'LIVE REAL MONEY' if is_live else 'PAPER'}"
 
         running = bool(canonical.get("running", False))
         phase = str(canonical.get("phase") or "STOPPED")
@@ -739,13 +806,17 @@ class BackendStatusTUI:
 
         last_err = runtime.get("last_error") or self.backend_service.last_error
         if conn == "DISCONNECTED":
-            traffic = "🔴 RED"
+            traffic = "[FAIL]"
+            traffic_level = "FAIL"
         elif last_err:
-            traffic = "🟡 YELLOW"
+            traffic = "[WARN]"
+            traffic_level = "WARN"
         elif age_sec is not None and age_sec > 10:
-            traffic = "🟡 YELLOW"
+            traffic = "[WARN]"
+            traffic_level = "WARN"
         else:
-            traffic = "🟢 GREEN"
+            traffic = "[ OK ]"
+            traffic_level = "OK"
 
         pnl_txt = "-"
         if pnl_pct is not None:
@@ -753,6 +824,11 @@ class BackendStatusTUI:
                 pnl_txt = f"{float(pnl_pct) * 100:.2f}%"
             except Exception:
                 pnl_txt = "-"
+
+        try:
+            equity_txt = f"{float(equity):,.0f}" if equity is not None else "-"
+        except Exception:
+            equity_txt = "-"
 
         truth = canonical if isinstance(canonical, dict) else {}
         truth_line = (
@@ -769,14 +845,14 @@ class BackendStatusTUI:
             f" MODE           : {mode_badge}",
             f" TRUTH          : {truth_line}",
             f" PHASE/CONN     : {phase} / {conn} (lock={'ON' if lock_exists else 'OFF'})",
-            f" ACCOUNT        : equity={equity if equity is not None else '-'} KRW | PnL={pnl_txt}",
+            f" ACCOUNT        : equity={equity_txt} KRW | PnL={pnl_txt}",
             f" POSITION       : {pos_state} | {pos_symbol} qty={pos_qty}",
             f" OPEN ORDERS    : {open_orders} ({open_orders_state})",
             f" TRAFFIC LIGHT  : {traffic}",
             f" LAST UPDATE    : runtime={self._fmt_ts(last_tick_ts)} | tui={datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         ]
         if last_err:
-            lines.append(f" LAST ERROR     : {last_err}")
+            lines.append(f" LAST ERROR     : \033[31m{last_err}\033[0m")
         lines.append("=" * 78)
 
         panel = "\n".join(lines)
