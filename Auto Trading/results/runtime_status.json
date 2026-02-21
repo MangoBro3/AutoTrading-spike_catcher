@@ -1,1 +1,13 @@
-{"mode":"PAPER","exchange":"UPBIT","status":"OK","ts":1771665812084,"volatility":0.05,"riskLevel":"low"}
+{
+  "mode": "PAPER",
+  "exchange": "UPBIT",
+  "status": "OK",
+  "ts": 1771669441477,
+  "virtual_capital": {
+    "equity_virtual": 1200000,
+    "next_available_capital": 1180000,
+    "pnl_virtual": 200000,
+    "seed_krw": 1000000
+  },
+  "pnl_krw": 200000
+}

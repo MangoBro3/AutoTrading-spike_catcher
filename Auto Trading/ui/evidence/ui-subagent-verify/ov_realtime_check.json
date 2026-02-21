@@ -1,0 +1,614 @@
+{
+  "now": "2026-02-21T10:21:26.281Z",
+  "sourceOk": false,
+  "worker": {
+    "ts": 1771669288053,
+    "connected": false,
+    "health": null,
+    "state": null,
+    "orders": null,
+    "errors": {
+      "health": "timeout",
+      "state": "timeout",
+      "orders": "timeout"
+    },
+    "trafficLight": "DISCONNECTED",
+    "stopAll": true,
+    "banner": "DISCONNECTED: 워커 연결 끊김 · 전체 중단"
+  },
+  "statePoint": null,
+  "runtimeStatus": {
+    "mode": "PAPER",
+    "exchange": "UPBIT",
+    "status": "OK",
+    "ts": 1771669237555,
+    "virtual_capital": {
+      "equity_virtual": 1200000,
+      "next_available_capital": 1180000,
+      "pnl_virtual": 200000,
+      "seed_krw": 1000000
+    },
+    "pnl_krw": 200000
+  },
+  "runtimeState": null,
+  "watchingSymbols": [],
+  "exchangeIndicators": {
+    "upbit": {
+      "status": "disconnected",
+      "detail": "worker disconnected"
+    },
+    "bithumb": {
+      "status": "idle",
+      "detail": "active=UPBIT"
+    }
+  },
+  "exchangeToggles": {
+    "upbit": true,
+    "bithumb": true
+  },
+  "marketOneLiner": "시장 한줄 코멘트: 데이터 제한으로 추세 판별 보류 (fallback)",
+  "virtualCapital": {
+    "rule": "next_available_capital = current_virtual_equity",
+    "seed_krw": 0,
+    "equity_virtual": 1200000,
+    "pnl_virtual": 200000,
+    "pnl_pct_virtual": 0,
+    "next_available_capital": 1200000,
+    "available_for_bot": 1200000,
+    "cap_krw": null
+  },
+  "capitalDailyGraph": {
+    "source": "daily_virtual_snapshot",
+    "rows": [
+      {
+        "date": "2026-02-19",
+        "virtual_equity": 1000000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-20",
+        "virtual_equity": 1001000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-21",
+        "virtual_equity": 1002000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-22",
+        "virtual_equity": 1003000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-23",
+        "virtual_equity": 1004000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-24",
+        "virtual_equity": 1005000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-25",
+        "virtual_equity": 1006000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-26",
+        "virtual_equity": 1007000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-27",
+        "virtual_equity": 1008000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-28",
+        "virtual_equity": 1009000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-29",
+        "virtual_equity": 1010000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-30",
+        "virtual_equity": 1011000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-31",
+        "virtual_equity": 1012000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-32",
+        "virtual_equity": 1013000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-33",
+        "virtual_equity": 1014000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-34",
+        "virtual_equity": 1015000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-35",
+        "virtual_equity": 1016000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-36",
+        "virtual_equity": 1017000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-37",
+        "virtual_equity": 1018000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-38",
+        "virtual_equity": 1019000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-39",
+        "virtual_equity": 1020000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-40",
+        "virtual_equity": 1021000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-41",
+        "virtual_equity": 1022000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-42",
+        "virtual_equity": 1023000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-43",
+        "virtual_equity": 1024000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-44",
+        "virtual_equity": 1025000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-45",
+        "virtual_equity": 1026000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-46",
+        "virtual_equity": 1027000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-47",
+        "virtual_equity": 1028000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      },
+      {
+        "date": "2026-02-48",
+        "virtual_equity": 1029000,
+        "pnl_krw": 1000,
+        "trades": 0,
+        "source": "daily_virtual_snapshot"
+      }
+    ],
+    "current_equity": 1029000,
+    "prev_equity": 1028000,
+    "day_delta_krw": 1000,
+    "day_delta_pct": 0.09727626459143969,
+    "start_capital": 1000000,
+    "cumulative_return_pct": 2.9000000000000004,
+    "has_data": true
+  },
+  "yesterdayTradingReview": [
+    {
+      "date": "2026-02-20",
+      "pnl_krw": 200000,
+      "virtual_equity": 1200000,
+      "trades": 0,
+      "win_rate": null,
+      "source": "fallback"
+    }
+  ],
+  "usage": {
+    "daily": {
+      "total": 1921482,
+      "perAgent": {
+        "pm": 1473679,
+        "coder_b": 85848,
+        "tl": 182373,
+        "architect": 13044,
+        "coder_a": 107770,
+        "main": 58768
+      }
+    },
+    "weekly": {
+      "total": 5010210,
+      "perAgent": {
+        "pm": 2825699,
+        "main": 1144467,
+        "coder_b": 441463,
+        "tl": 356591,
+        "architect": 134220,
+        "coder_a": 107770
+      }
+    },
+    "byTask": {
+      "unassigned": 5010210
+    },
+    "warning": "warn",
+    "snapshotCount": 2015,
+    "deltaCount": 2015
+  },
+  "taskSignals": {
+    "inProgressWorkers": [],
+    "tasks": [
+      {
+        "taskId": "T-001",
+        "status": "DONE",
+        "owner": "pm",
+        "description": "Hybrid v1.2 core + backtest runner integration (Phase 1)",
+        "ownership": "a:engine/**,alloc/** b:guards/**,backtest/**,run_backtest.py"
+      }
+    ],
+    "agentWork": {}
+  },
+  "timeline": [
+    {
+      "ts": 1771660541172,
+      "time": "2026-02-21T07:55:41.172Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660536096,
+      "time": "2026-02-21T07:55:36.096Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660535853,
+      "time": "2026-02-21T07:55:35.853Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660460557,
+      "time": "2026-02-21T07:54:20.557Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660455946,
+      "time": "2026-02-21T07:54:15.946Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660455718,
+      "time": "2026-02-21T07:54:15.718Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660357810,
+      "time": "2026-02-21T07:52:37.810Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660353071,
+      "time": "2026-02-21T07:52:33.071Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660338159,
+      "time": "2026-02-21T07:52:18.159Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660332695,
+      "time": "2026-02-21T07:52:12.695Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660332608,
+      "time": "2026-02-21T07:52:12.608Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660300261,
+      "time": "2026-02-21T07:51:40.261Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660092345,
+      "time": "2026-02-21T07:48:12.345Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660089014,
+      "time": "2026-02-21T07:48:09.014Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660073920,
+      "time": "2026-02-21T07:47:53.920Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660018892,
+      "time": "2026-02-21T07:46:58.892Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660014856,
+      "time": "2026-02-21T07:46:54.856Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771660014629,
+      "time": "2026-02-21T07:46:54.629Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659970145,
+      "time": "2026-02-21T07:46:10.145Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659966294,
+      "time": "2026-02-21T07:46:06.294Z",
+      "agent": "tl",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659966174,
+      "time": "2026-02-21T07:46:06.174Z",
+      "agent": "coder_b",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659958988,
+      "time": "2026-02-21T07:45:58.988Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659958978,
+      "time": "2026-02-21T07:45:58.978Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659886693,
+      "time": "2026-02-21T07:44:46.693Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659878048,
+      "time": "2026-02-21T07:44:38.048Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659811079,
+      "time": "2026-02-21T07:43:31.079Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659802667,
+      "time": "2026-02-21T07:43:22.667Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659793144,
+      "time": "2026-02-21T07:43:13.144Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659745883,
+      "time": "2026-02-21T07:42:25.883Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    },
+    {
+      "ts": 1771659690325,
+      "time": "2026-02-21T07:41:30.325Z",
+      "agent": "pm",
+      "work": "run_update",
+      "project": "openclaw-news-workspace",
+      "detail": "agent:pm:main updated",
+      "count": 1
+    }
+  ],
+  "timelineMeta": {
+    "limit": 30,
+    "hours": 0,
+    "totalAfterCompress": 236,
+    "totalAfterWindow": 236,
+    "cap": 300
+  }
+}

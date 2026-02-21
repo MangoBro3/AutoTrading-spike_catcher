@@ -166,11 +166,24 @@ async function readLedgerDailySnapshots() {
   return [...dedup.values()].sort((a, b) => String(b.date).localeCompare(String(a.date)));
 }
 
-function normalizeDayPoint(raw = {}) {
+function normalizeExchange(v, fallback = 'total') {
+  const s = String(v || '').toLowerCase();
+  if (s.includes('upbit')) return 'upbit';
+  if (s.includes('bithumb')) return 'bithumb';
+  return fallback;
+}
+
+function exchangeHintFromName(name = '') {
+  return normalizeExchange(name, 'total');
+}
+
+function normalizeDayPoint(raw = {}, exchangeHint = 'total') {
   const date = String(raw.date || raw.day || dateKeyFromTs(raw.ts || raw.timestamp || raw.time) || '').trim();
   if (!date) return null;
+  const exchange = normalizeExchange(raw.exchange || raw.exchange_name || raw.venue, exchangeHint);
   return {
     date,
+    exchange,
     virtual_equity: toNum(raw.virtual_equity ?? raw.equity_virtual ?? raw.equity ?? raw.next_available_capital, null),
     pnl_krw: toNum(raw.pnl_krw ?? raw.pnl_virtual ?? raw.pnl ?? raw.daily_pnl_krw, null),
     trades: toNum(raw.trades ?? raw.trade_count, 0),
@@ -201,14 +214,14 @@ async function readDailyVirtualSnapshotRows() {
             let j = null;
             try { j = JSON.parse(line); } catch { j = null; }
             if (!j) continue;
-            const p = normalizeDayPoint(j);
+            const p = normalizeDayPoint(j, exchangeHintFromName(name));
             if (p) out.push({ ...p, source: p.source || 'daily_virtual_snapshot' });
           }
         } else if (low.endsWith('.json')) {
           const j = await readJsonFile(full, null);
           const rows = Array.isArray(j) ? j : (Array.isArray(j?.daily_virtual_snapshot) ? j.daily_virtual_snapshot : (Array.isArray(j?.daily) ? j.daily : (Array.isArray(j?.snapshots) ? j.snapshots : [j])));
           for (const row of rows) {
-            const p = normalizeDayPoint(row || {});
+            const p = normalizeDayPoint(row || {}, exchangeHintFromName(name));
             if (p) out.push({ ...p, source: p.source || 'daily_virtual_snapshot' });
           }
         }
@@ -222,15 +235,22 @@ async function readDailyVirtualSnapshotRows() {
   return [...dedup.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
 }
 
-function aggregateDailyRows(rows, limit = 30, source = 'runtime_ledger_aggregate') {
+function aggregateDailyRows(rows, limit = 30, source = 'runtime_ledger_aggregate', targetExchange = 'total') {
   const grouped = new Map();
   for (const raw of rows || []) {
-    const p = normalizeDayPoint(raw || {});
+    const hint = normalizeExchange(raw?.__exchange_hint || raw?.exchange || raw?.exchange_name || raw?.venue, 'total');
+    const p = normalizeDayPoint(raw || {}, hint);
     if (!p || !p.date) continue;
-    const prev = grouped.get(p.date) || { date: p.date, pnl_krw: 0, virtual_equity: null, trades: 0, source };
+
+    if (targetExchange !== 'total' && p.exchange !== targetExchange) continue;
+    if (targetExchange === 'total' && p.exchange === 'total') {
+      // total 전용 레코드는 그대로 사용
+    }
+
+    const prev = grouped.get(p.date) || { date: p.date, pnl_krw: 0, virtual_equity: 0, trades: 0, source, exchange: targetExchange };
     if (Number.isFinite(p.pnl_krw)) prev.pnl_krw += Number(p.pnl_krw);
     if (Number.isFinite(p.trades)) prev.trades += Number(p.trades);
-    if (Number.isFinite(p.virtual_equity)) prev.virtual_equity = Number(p.virtual_equity);
+    if (Number.isFinite(p.virtual_equity)) prev.virtual_equity += Number(p.virtual_equity);
     grouped.set(p.date, prev);
   }
   const sorted = [...grouped.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
@@ -243,7 +263,7 @@ function aggregateDailyRows(rows, limit = 30, source = 'runtime_ledger_aggregate
   return tail;
 }
 
-async function readRuntimeLedgerAggregate(limit = 30) {
+async function readRuntimeLedgerAggregatePoints() {
   const { readdir } = await import('node:fs/promises');
   const scanDirs = [join(WORKSPACE_ROOT, 'Auto Trading', 'runtime'), LEDGER_RUNTIME_DIR, RESULTS_RUNTIME_DIR];
   const points = [];
@@ -256,6 +276,7 @@ async function readRuntimeLedgerAggregate(limit = 30) {
       if (!(low.endsWith('.json') || low.endsWith('.jsonl'))) continue;
       if (!(low.includes('ledger') || low.includes('runtime') || low.includes('snapshot'))) continue;
       const full = join(dir, name);
+      const exHint = exchangeHintFromName(name);
       try {
         if (low.endsWith('.jsonl')) {
           const raw = await readFile(full, 'utf8');
@@ -263,18 +284,18 @@ async function readRuntimeLedgerAggregate(limit = 30) {
             let j = null;
             try { j = JSON.parse(line); } catch { j = null; }
             if (!j || typeof j !== 'object') continue;
-            points.push(j);
+            points.push({ ...j, __exchange_hint: exHint });
           }
         } else {
           const j = await readJsonFile(full, null);
           if (!j) continue;
-          if (Array.isArray(j)) points.push(...j);
+          if (Array.isArray(j)) points.push(...j.map((x) => ({ ...(x || {}), __exchange_hint: exHint })));
           else {
-            if (Array.isArray(j.daily_reviews)) points.push(...j.daily_reviews);
-            if (Array.isArray(j.daily)) points.push(...j.daily);
-            if (Array.isArray(j.reviews)) points.push(...j.reviews);
-            if (Array.isArray(j.snapshots)) points.push(...j.snapshots);
-            if (j.date || j.day || j.ts || j.timestamp) points.push(j);
+            if (Array.isArray(j.daily_reviews)) points.push(...j.daily_reviews.map((x) => ({ ...(x || {}), __exchange_hint: exHint })));
+            if (Array.isArray(j.daily)) points.push(...j.daily.map((x) => ({ ...(x || {}), __exchange_hint: exHint })));
+            if (Array.isArray(j.reviews)) points.push(...j.reviews.map((x) => ({ ...(x || {}), __exchange_hint: exHint })));
+            if (Array.isArray(j.snapshots)) points.push(...j.snapshots.map((x) => ({ ...(x || {}), __exchange_hint: exHint })));
+            if (j.date || j.day || j.ts || j.timestamp) points.push({ ...j, __exchange_hint: exHint });
           }
         }
       } catch {
@@ -283,22 +304,19 @@ async function readRuntimeLedgerAggregate(limit = 30) {
     }
   }
 
-  const fromLedgerDaily = await readLedgerDailySnapshots();
-  const merged = [...fromLedgerDaily, ...points];
-  return aggregateDailyRows(merged, limit, 'runtime_ledger_aggregate');
+  const fromLedgerDaily = (await readLedgerDailySnapshots()).map((x) => ({ ...(x || {}), __exchange_hint: normalizeExchange(x?.exchange, 'total') }));
+  return [...fromLedgerDaily, ...points];
 }
 
-async function buildCapitalDailyGraph(runtimeStatus, runtimeState) {
-  const fromSnapshot = await readDailyVirtualSnapshotRows();
-  const base = fromSnapshot.length ? fromSnapshot : await readRuntimeLedgerAggregate(30);
-  const rows = base.slice(-30);
+function finalizeCapitalGraph(rows, runtimeStatus, runtimeState, source, exchangeKey) {
+  const r = (rows || []).slice(-30);
   const seed = toNum(runtimeStatus?.virtual_capital?.allocated ?? runtimeStatus?.seed_krw ?? runtimeState?.seed_krw, null);
-  const initialEquity = Number.isFinite(rows[0]?.virtual_equity) ? Number(rows[0].virtual_equity) : toNum(runtimeStatus?.virtual_capital?.equity_virtual ?? runtimeStatus?.equity, null);
+  const initialEquity = Number.isFinite(r[0]?.virtual_equity) ? Number(r[0].virtual_equity) : toNum(runtimeStatus?.virtual_capital?.equity_virtual ?? runtimeStatus?.equity, null);
   const startBase = Number.isFinite(seed) && seed > 0 ? seed : initialEquity;
-  const currentEquity = Number.isFinite(rows[rows.length - 1]?.virtual_equity)
-    ? Number(rows[rows.length - 1].virtual_equity)
+  const currentEquity = Number.isFinite(r[r.length - 1]?.virtual_equity)
+    ? Number(r[r.length - 1].virtual_equity)
     : toNum(runtimeStatus?.virtual_capital?.equity_virtual ?? runtimeStatus?.equity, null);
-  const prevEquity = Number.isFinite(rows[rows.length - 2]?.virtual_equity) ? Number(rows[rows.length - 2].virtual_equity) : null;
+  const prevEquity = Number.isFinite(r[r.length - 2]?.virtual_equity) ? Number(r[r.length - 2].virtual_equity) : null;
   const dayDelta = Number.isFinite(currentEquity) && Number.isFinite(prevEquity) ? currentEquity - prevEquity : null;
   const dayDeltaPct = Number.isFinite(dayDelta) && Number.isFinite(prevEquity) && prevEquity !== 0 ? (dayDelta / prevEquity) * 100 : null;
   const cumulativeReturnPct = Number.isFinite(currentEquity) && Number.isFinite(startBase) && startBase > 0
@@ -306,15 +324,33 @@ async function buildCapitalDailyGraph(runtimeStatus, runtimeState) {
     : null;
 
   return {
-    source: fromSnapshot.length ? 'daily_virtual_snapshot' : 'runtime_ledger_aggregate',
-    rows,
+    exchange: exchangeKey,
+    source,
+    rows: r,
     current_equity: currentEquity,
     prev_equity: prevEquity,
     day_delta_krw: dayDelta,
     day_delta_pct: dayDeltaPct,
     start_capital: startBase,
     cumulative_return_pct: cumulativeReturnPct,
-    has_data: rows.length > 0,
+    has_data: r.length > 0,
+  };
+}
+
+async function buildCapitalDailyGraph(runtimeStatus, runtimeState) {
+  const fromSnapshot = await readDailyVirtualSnapshotRows();
+  const source = fromSnapshot.length ? 'daily_virtual_snapshot' : 'runtime_ledger_aggregate';
+  const points = fromSnapshot.length ? fromSnapshot : await readRuntimeLedgerAggregatePoints();
+
+  const totalRows = aggregateDailyRows(points, 30, source, 'total');
+  const upbitRows = aggregateDailyRows(points, 30, source, 'upbit');
+  const bithumbRows = aggregateDailyRows(points, 30, source, 'bithumb');
+
+  return {
+    selected: 'total',
+    total: finalizeCapitalGraph(totalRows, runtimeStatus, runtimeState, source, 'total'),
+    upbit: finalizeCapitalGraph(upbitRows, runtimeStatus, runtimeState, source, 'upbit'),
+    bithumb: finalizeCapitalGraph(bithumbRows, runtimeStatus, runtimeState, source, 'bithumb'),
   };
 }
 
@@ -907,7 +943,12 @@ const server = http.createServer((req, res) => {
       const runtimeStatus = overviewCache.runtimeStatus || null;
       const runtimeState = overviewCache.runtimeState || null;
       const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
-      const capitalDailyGraph = overviewCache.capitalDailyGraph || { source: 'fallback', rows: [], has_data: false };
+      const capitalDailyGraph = overviewCache.capitalDailyGraph || {
+        selected: 'total',
+        total: { source: 'fallback', rows: [], has_data: false },
+        upbit: { source: 'fallback', rows: [], has_data: false },
+        bithumb: { source: 'fallback', rows: [], has_data: false },
+      };
       const yesterdayTradingReview = Array.isArray(overviewCache.yesterdayTradingReview) && overviewCache.yesterdayTradingReview.length
         ? overviewCache.yesterdayTradingReview.slice(0, 7)
         : buildFallbackDailyReview(runtimeStatus, runtimeState, 7);

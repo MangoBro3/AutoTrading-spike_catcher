@@ -98,6 +98,11 @@
 
     <div class="card">
       <h2>운용자금 일일 그래프 (최근 30일)</h2>
+      <div class="inline" style="margin-bottom:6px">
+        <button id="capitalViewTotal" class="btn btn-selected">전체</button>
+        <button id="capitalViewUpbit" class="btn">업비트</button>
+        <button id="capitalViewBithumb" class="btn">빗썸</button>
+      </div>
       <div class="kv">
         <div>현재자산 <b id="capitalCurrent">-</b></div>
         <div>전일대비 <b id="capitalDelta">-</b></div>
@@ -132,8 +137,81 @@ const $ = (id)=>document.getElementById(id);
 const esc = (s)=>String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]));
 const val = (obj, keys, fallback='-') => { for (const k of keys){const v=obj?.[k]; if(v!==undefined&&v!==null&&v!=='') return v;} return fallback; };
 const fmtKrw = (v)=>{ const n=Number(v); return Number.isFinite(n) ? `${n.toLocaleString()} KRW` : '-'; };
+const fmtPct = (v)=>{ const n=Number(v); return Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(2)}%` : '-'; };
+
+function setCapitalViewButtons(){
+  $('capitalViewTotal')?.classList.toggle('btn-selected', capitalView==='total');
+  $('capitalViewUpbit')?.classList.toggle('btn-selected', capitalView==='upbit');
+  $('capitalViewBithumb')?.classList.toggle('btn-selected', capitalView==='bithumb');
+}
+
+function renderCapitalChart(graphPack){
+  const graph = graphPack?.[capitalView] || graphPack?.total || graphPack || {};
+  const rows = Array.isArray(graph?.rows) ? graph.rows : [];
+  $('capitalSource').textContent = `view: ${capitalView} | source: ${graph?.source || '-'}`;
+  $('capitalCurrent').textContent = fmtKrw(graph?.current_equity);
+  const dKrw = Number(graph?.day_delta_krw), dPct = Number(graph?.day_delta_pct);
+  $('capitalDelta').textContent = Number.isFinite(dKrw) ? `${dKrw>=0?'+':''}${dKrw.toLocaleString()} KRW (${fmtPct(dPct)})` : '-';
+  $('capitalCumRet').textContent = fmtPct(graph?.cumulative_return_pct);
+
+  const canvas = $('capitalChart');
+  const fallback = $('capitalFallback');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  if (!rows.length){
+    const label = capitalView==='upbit' ? '업비트' : (capitalView==='bithumb' ? '빗썸' : '전체');
+    fallback.textContent = `${label} 운용자금 일별 데이터가 없어 그래프를 표시할 수 없습니다. (daily_virtual_snapshot / runtime·ledger fallback 없음)`;
+    fallback.style.display='block';
+    return;
+  }
+  fallback.style.display='none';
+
+  const pad = {l:40,r:12,t:16,b:22};
+  const topH = Math.floor((H - pad.t - pad.b) * 0.62);
+  const botY = pad.t + topH + 8;
+  const botH = H - botY - pad.b;
+  const xs = rows.map((_,i)=> pad.l + (i * (W - pad.l - pad.r) / Math.max(1, rows.length-1)));
+
+  const equities = rows.map(r=>Number(r.virtual_equity)).filter(Number.isFinite);
+  if (!equities.length){
+    const label = capitalView==='upbit' ? '업비트' : (capitalView==='bithumb' ? '빗썸' : '전체');
+    fallback.textContent = `${label} equity 데이터가 부족하여 그래프를 표시할 수 없습니다.`;
+    fallback.style.display='block';
+    return;
+  }
+  const eqMin = Math.min(...equities), eqMax = Math.max(...equities);
+  const eqRange = Math.max(1, eqMax - eqMin);
+  const ey = (v)=> pad.t + (topH - ((v - eqMin) / eqRange) * topH);
+
+  const pnls = rows.map(r=>Number(r.pnl_krw)||0);
+  const pnlMaxAbs = Math.max(1, ...pnls.map(v=>Math.abs(v)));
+  const zeroY = botY + botH/2;
+
+  ctx.strokeStyle='#2c3546'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l, zeroY); ctx.lineTo(W-pad.r, zeroY); ctx.stroke();
+
+  for(let i=0;i<rows.length;i++){
+    const x=xs[i], p=pnls[i];
+    const h=Math.abs(p)/pnlMaxAbs*(botH/2-2);
+    ctx.fillStyle = p>=0 ? '#29c173' : '#e05d6f';
+    ctx.fillRect(x-4, p>=0?zeroY-h:zeroY, 8, h);
+  }
+
+  ctx.strokeStyle='#60a5fa'; ctx.lineWidth=2;
+  ctx.beginPath();
+  rows.forEach((r,i)=>{ const y=ey(Number(r.virtual_equity)||eqMin); if(i===0) ctx.moveTo(xs[i],y); else ctx.lineTo(xs[i],y); });
+  ctx.stroke();
+
+  ctx.fillStyle='#9aa4b2'; ctx.font='11px system-ui';
+  ctx.fillText(rows[0]?.date || '', pad.l, H-6);
+  ctx.fillText(rows[rows.length-1]?.date || '', W-90, H-6);
+}
 
 let latestOverview=null, controlBusy=false, syncingToggle=false, syncingExchangeToggle=false;
+let capitalView='total';
 let manualRefreshBusy=false, lastManualRefreshAt=null, lastManualRefreshError='';
 let selectedMode='PAPER';
 let exchangeToggles={upbit:true,bithumb:true};
@@ -207,6 +285,8 @@ function render(data){
     ? reviewRows.map((r)=>`<tr><td>${esc(r.date||'-')}</td><td>${esc(fmtKrw(r.pnl_krw))}</td><td>${esc(fmtKrw(r.virtual_equity))}</td><td>${esc(String(r.trades ?? '-'))}</td><td>${esc(String(r.source||'-'))}</td></tr>`).join('')
     : '<tr><td colspan="5" class="muted">리뷰 데이터 없음 (fallback)</td></tr>';
 
+  renderCapitalChart(data?.capitalDailyGraph || null);
+
   const indicators = data?.exchangeIndicators || {};
   const renderIndicator = (name, obj) => {
     const status = String(obj?.status || 'unknown').toLowerCase();
@@ -240,6 +320,9 @@ async function handleTurnOff(){ await runWithControlBusy(async()=>{ $('controlSt
 
 $('modePaperBtn').addEventListener('click', ()=>handleModeChange('PAPER'));
 $('modeLiveBtn').addEventListener('click', ()=>handleModeChange('LIVE'));
+$('capitalViewTotal')?.addEventListener('click', ()=>{ capitalView='total'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
+$('capitalViewUpbit')?.addEventListener('click', ()=>{ capitalView='upbit'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
+$('capitalViewBithumb')?.addEventListener('click', ()=>{ capitalView='bithumb'; setCapitalViewButtons(); renderCapitalChart(latestOverview?.capitalDailyGraph || null); });
 $('autoToggle').addEventListener('change', async(ev)=>{ if(syncingToggle) return; try{ if(ev.target.checked) await handleTurnOn(); else await handleTurnOff(); }catch(e){ $('controlStatus').textContent=`실패: ${e.message}`; await tick(); } });
 
 
@@ -274,7 +357,7 @@ function setManualRefreshState(){ const btn=$('refreshConnBtn'), label=$('refres
 $('refreshConnBtn').addEventListener('click', async()=>{ if(manualRefreshBusy) return; manualRefreshBusy=true; setManualRefreshState(); try{ const [workerPayload, overview] = await Promise.all([fetchJson('/api/worker'), fetchJson(overviewUrl())]); const worker = normalizeWorkerPayload(workerPayload); if(worker) overview.worker=worker; render(overview); lastManualRefreshAt=Date.now(); lastManualRefreshError=''; }catch(e){ lastManualRefreshError=e.message; } finally { manualRefreshBusy=false; setManualRefreshState(); }});
 
 async function tick(){ try{ render(await fetchJson(overviewUrl())); }catch(e){ $('ts').textContent='fetch failed: '+e.message; } }
-setModeButtons(); setManualRefreshState(); tick(); setInterval(tick, 1000);
+setModeButtons(); setCapitalViewButtons(); setManualRefreshState(); tick(); setInterval(tick, 1000);
 </script>
 </body>
 </html>
