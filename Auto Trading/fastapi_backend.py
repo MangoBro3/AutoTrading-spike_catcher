@@ -4,6 +4,8 @@ import os
 import sys
 import threading
 import time
+import logging
+import logging.config
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -38,6 +40,45 @@ LOCK_PATH = RESULTS_DIR / "locks" / "bot.lock"
 RUNTIME_STATUS_PATH = RESULTS_DIR / "runtime_status.json"
 RUNTIME_STATE_PATH = RESULTS_DIR / "runtime_state.json"
 SAFE_START_STATE_PATH = RESULTS_DIR / "safe_start_state.json"
+BACKEND_LOG_PATH = RESULTS_DIR / "logs" / "backend.log"
+
+
+def configure_logging() -> dict:
+    BACKEND_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    log_fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+    uvicorn_log_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "format": log_fmt,
+            }
+        },
+        "handlers": {
+            "stderr": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "stream": "ext://sys.stderr",
+            },
+            "file": {
+                "class": "logging.FileHandler",
+                "formatter": "default",
+                "filename": str(BACKEND_LOG_PATH),
+                "encoding": "utf-8",
+            },
+        },
+        "root": {
+            "handlers": ["stderr", "file"],
+            "level": "INFO",
+        },
+        "loggers": {
+            "uvicorn": {"handlers": ["stderr", "file"], "level": "INFO", "propagate": False},
+            "uvicorn.error": {"handlers": ["stderr", "file"], "level": "INFO", "propagate": False},
+            "uvicorn.access": {"handlers": ["stderr", "file"], "level": "INFO", "propagate": False},
+        },
+    }
+    logging.config.dictConfig(uvicorn_log_config)
+    return uvicorn_log_config
 
 
 class StartRequest(BaseModel):
@@ -196,11 +237,14 @@ class BackendService:
 
 
 class BackendStatusTUI:
+    _ANSI_CLEAR_HOME = "\x1b[2J\x1b[H"
+
     def __init__(self, backend_service: BackendService, interval_sec: float = 1.5):
         self.backend_service = backend_service
         self.interval_sec = max(1.0, float(interval_sec))
         self._stop_evt = threading.Event()
         self._thread: Optional[threading.Thread] = None
+        self._stdout_is_tty = bool(getattr(sys.stdout, "isatty", lambda: False)())
 
     def start(self):
         if self._thread and self._thread.is_alive():
@@ -212,6 +256,9 @@ class BackendStatusTUI:
         self._stop_evt.set()
         if self._thread and self._thread.is_alive():
             self._thread.join(timeout=1.0)
+        if self._stdout_is_tty:
+            sys.stdout.write("\n")
+            sys.stdout.flush()
 
     def _safe_json_read(self, path: Path):
         if not path.exists():
@@ -299,7 +346,7 @@ class BackendStatusTUI:
                 pnl_txt = "-"
 
         lines = [
-            "\n" + "=" * 78,
+            "=" * 78,
             " SafeBot Backend Status TUI (--tui)",
             "=" * 78,
             f" MODE           : {mode_badge}",
@@ -314,7 +361,12 @@ class BackendStatusTUI:
             lines.append(f" LAST ERROR     : {last_err}")
         lines.append("=" * 78)
 
-        print("\n".join(lines), flush=True)
+        panel = "\n".join(lines)
+        if self._stdout_is_tty:
+            sys.stdout.write(self._ANSI_CLEAR_HOME + panel + "\n")
+        else:
+            sys.stdout.write(panel + "\n")
+        sys.stdout.flush()
 
 
 service = BackendService()
@@ -355,6 +407,8 @@ if __name__ == "__main__":
     parser.add_argument("--tui-interval", type=float, default=1.5, help="TUI refresh interval seconds (default: 1.5)")
     args = parser.parse_args()
 
+    uvicorn_log_config = configure_logging()
+
     host = os.getenv("BACKEND_HOST", "127.0.0.1")
     port = int(os.getenv("BACKEND_PORT", "8765"))
 
@@ -364,7 +418,7 @@ if __name__ == "__main__":
         tui.start()
 
     try:
-        uvicorn.run(app, host=host, port=port)
+        uvicorn.run(app, host=host, port=port, log_config=uvicorn_log_config)
     finally:
         if tui:
             tui.stop()

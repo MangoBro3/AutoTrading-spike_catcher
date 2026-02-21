@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/fastapi_backend.py", line 13, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'

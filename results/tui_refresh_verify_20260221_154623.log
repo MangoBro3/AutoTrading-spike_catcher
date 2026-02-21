@@ -1,0 +1,7 @@
+Script started on 2026-02-21 15:46:23+09:00 [COMMAND="python3 fastapi_backend.py --tui" <not executed on terminal>]
+Traceback (most recent call last):
+  File "/mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/fastapi_backend.py", line 13, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'
+
+Script done on 2026-02-21 15:46:23+09:00 [COMMAND_EXIT_CODE="1"]

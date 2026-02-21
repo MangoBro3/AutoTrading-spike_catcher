@@ -1,0 +1,50 @@
+2026-02-21 15:49:29,021 INFO [uvicorn.error] Started server process [4986]
+2026-02-21 15:49:29,021 INFO [uvicorn.error] Waiting for application startup.
+2026-02-21 15:49:29,022 INFO [uvicorn.error] Application startup complete.
+2026-02-21 15:49:29,022 INFO [uvicorn.error] Uvicorn running on http://127.0.0.1:8765 (Press CTRL+C to quit)
+2026-02-21 15:49:38,636 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:38,638 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:38,639 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:39,602 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:39,605 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:39,606 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:40,602 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:40,605 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:40,606 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:41,603 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:41,606 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:41,606 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:42,602 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:42,606 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:42,606 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:43,602 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:43,605 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:43,605 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:44,604 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:44,608 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:44,609 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:45,606 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:45,608 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:45,609 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:46,606 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:46,607 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:46,608 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:47,606 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:47,609 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:47,609 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:48,605 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:48,608 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:48,608 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:50,802 INFO [uvicorn.error] Started server process [5083]
+2026-02-21 15:49:50,802 INFO [uvicorn.error] Waiting for application startup.
+2026-02-21 15:49:50,802 INFO [uvicorn.error] Application startup complete.
+2026-02-21 15:49:50,803 ERROR [uvicorn.error] [Errno 98] error while attempting to bind on address ('127.0.0.1', 8765): address already in use
+2026-02-21 15:49:50,803 INFO [uvicorn.error] Waiting for application shutdown.
+2026-02-21 15:49:50,803 INFO [uvicorn.error] Application shutdown complete.
+2026-02-21 15:49:52,789 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:49:52,791 INFO [uvicorn.access] 127.0.0.1:41870 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:52,792 INFO [uvicorn.access] 127.0.0.1:41878 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:49:57,339 INFO [uvicorn.access] 127.0.0.1:41868 - "GET /api/v1/health HTTP/1.1" 200
+2026-02-21 15:50:01,682 INFO [uvicorn.access] 127.0.0.1:60874 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:50:01,683 INFO [uvicorn.access] 127.0.0.1:60890 - "GET /api/v1/status HTTP/1.1" 200
+2026-02-21 15:50:01,686 INFO [uvicorn.access] 127.0.0.1:60902 - "GET /api/v1/status HTTP/1.1" 200
