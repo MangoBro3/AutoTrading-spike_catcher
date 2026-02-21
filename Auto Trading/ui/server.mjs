@@ -40,20 +40,20 @@ function safeRun(cmd, fallback = null) {
   try { return runJson(cmd); } catch { return fallback; }
 }
 
-function readCheckpoint() {
-  const p = join(WORKSPACE_ROOT, 'team', 'checkpoints', 'latest.json');
+function readStatePoint() {
+  const p = join(WORKSPACE_ROOT, 'team', 'statepoints', 'latest.json');
   if (!existsSync(p)) return null;
   try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; }
 }
 
 function readTaskSignals() {
   const p = join(WORKSPACE_ROOT, 'TASKS.md');
-  if (!existsSync(p)) return { inProgressAgents: [], tasks: [], agentWork: {} };
+  if (!existsSync(p)) return { inProgressWorkers: [], tasks: [], agentWork: {} };
   try {
     const lines = readFileSync(p, 'utf8').split('\n').filter((l) => l.trim().startsWith('|'));
     const rows = lines.slice(2); // skip header + separator
     const tasks = [];
-    const inProgressAgents = new Set();
+    const inProgressWorkers = new Set();
     const agentWork = {};
 
     for (const row of rows) {
@@ -69,42 +69,42 @@ function readTaskSignals() {
       tasks.push({ taskId, status, owner, description, ownership });
       if (status === 'IN_PROGRESS') {
         if (owner.includes('pm')) {
-          inProgressAgents.add('pm');
+          inProgressWorkers.add('pm');
           agentWork.pm = { taskId, description, status };
         }
         if (owner.includes('tl')) {
-          inProgressAgents.add('tl');
+          inProgressWorkers.add('tl');
           agentWork.tl = { taskId, description, status };
         }
         if (owner.includes('architect')) {
-          inProgressAgents.add('architect');
+          inProgressWorkers.add('architect');
           agentWork.architect = { taskId, description, status };
         }
         if (owner.includes('coder_a') || ownership.includes('a:')) {
-          inProgressAgents.add('coder_a');
+          inProgressWorkers.add('coder_a');
           agentWork.coder_a = { taskId, description, status };
         }
         if (owner.includes('coder_b') || ownership.includes('b:')) {
-          inProgressAgents.add('coder_b');
+          inProgressWorkers.add('coder_b');
           agentWork.coder_b = { taskId, description, status };
         }
       }
     }
 
-    return { inProgressAgents: [...inProgressAgents], tasks, agentWork };
+    return { inProgressWorkers: [...inProgressWorkers], tasks, agentWork };
   } catch {
-    return { inProgressAgents: [], tasks: [], agentWork: {} };
+    return { inProgressWorkers: [], tasks: [], agentWork: {} };
   }
 }
 
-function normalizeSessions(status) {
+function normalizeRuns(status) {
   return status?.sessions?.recent || status?.sessions?.list || status?.sessions?.sessions || [];
 }
 
 function computeTokenSnapshot(status, checkpoint) {
-  const sessions = normalizeSessions(status);
+  const runList = normalizeRuns(status);
   const perAgent = {};
-  for (const s of sessions) {
+  for (const s of runList) {
     const agentId = s.agentId || String(s.key || '').split(':')[1] || 'unknown';
     const used = Number(s.inputTokens || 0) + Number(s.outputTokens || 0);
     perAgent[agentId] = Math.max(perAgent[agentId] || 0, used);
@@ -139,15 +139,15 @@ function readSnapshots() {
 }
 
 function readActivityState() {
-  if (!existsSync(ACTIVITY_STATE_FILE)) return { sessions: {}, tasks: {} };
+  if (!existsSync(ACTIVITY_STATE_FILE)) return { runs: {}, tasks: {} };
   try {
     const parsed = JSON.parse(readFileSync(ACTIVITY_STATE_FILE, 'utf8'));
     return {
-      sessions: (parsed && typeof parsed.sessions === 'object' && !Array.isArray(parsed.sessions)) ? parsed.sessions : {},
+      runs: (parsed && typeof parsed.runs === 'object' && !Array.isArray(parsed.runs)) ? parsed.runs : {},
       tasks: (parsed && typeof parsed.tasks === 'object' && !Array.isArray(parsed.tasks)) ? parsed.tasks : {},
     };
   } catch {
-    return { sessions: {}, tasks: {} };
+    return { runs: {}, tasks: {} };
   }
 }
 
@@ -183,28 +183,28 @@ function readActivityLog(limit = 600) {
 
 function collectActivityEvents(status, taskSignals) {
   const state = readActivityState();
-  state.sessions = state.sessions || {};
+  state.runs = state.runs || {};
   state.tasks = state.tasks || {};
 
   const events = [];
-  const sessions = normalizeSessions(status);
+  const runList = normalizeRuns(status);
 
-  for (const s of sessions) {
+  for (const s of runList) {
     const key = s.key;
     const updatedAt = Number(s.updatedAt || 0);
     if (!key || !updatedAt) continue;
-    const prev = Number(state.sessions[key] || 0);
+    const prev = Number(state.runs[key] || 0);
     if (updatedAt > prev) {
       const agentId = s.agentId || String(key).split(':')[1] || 'unknown';
       events.push({
         ts: updatedAt,
         time: new Date(updatedAt).toISOString(),
         agent: agentId,
-        work: 'session_update',
+        work: 'run_update',
         project: PROJECT_NAME,
         detail: `${key} updated`,
       });
-      state.sessions[key] = updatedAt;
+      state.runs[key] = updatedAt;
     }
   }
 
@@ -302,12 +302,12 @@ workerMonitor.start();
 function buildOverview() {
   const status = safeRun('openclaw status --all --json', null);
   const agents = safeRun('openclaw agents list --json', null);
-  const checkpoint = readCheckpoint();
+  const statePoint = readStatePoint();
   const taskSignals = readTaskSignals();
 
   let timeline = [];
   if (status) {
-    const snap = computeTokenSnapshot(status, checkpoint);
+    const snap = computeTokenSnapshot(status, statePoint);
     appendSnapshot(snap);
     timeline = collectActivityEvents(status, taskSignals);
   } else {
@@ -326,7 +326,7 @@ function buildOverview() {
     agents: agents || [],
     heartbeat: status?.heartbeat || null,
     securityAudit: status?.securityAudit || null,
-    checkpoint,
+    statePoint,
     usage,
     taskSignals,
     timeline,

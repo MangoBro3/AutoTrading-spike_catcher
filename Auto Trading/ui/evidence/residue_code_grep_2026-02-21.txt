@@ -1,0 +1,13 @@
+UI_TEXT_CHECK_PASS=YES
+UI_TEXT_FAIL_PATTERNS=none
+GREP_Agent Status=1
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/COCKPIT_SPEC_v1.2.md
+GREP_AgentDashboard=1
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/COCKPIT_SPEC_v1.2.md
+GREP_Worker Queue=2
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/COCKPIT_SPEC_v1.2.md
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/COCKPIT_SPEC_v1.2.md
+GREP_agent_panel=1
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/COCKPIT_SPEC_v1.2.md
+GREP_legacy-panel=1
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/COCKPIT_SPEC_v1.2.md

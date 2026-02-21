@@ -1,0 +1,55 @@
+SMOKE_START 2026-02-21T16:01:38
+REQ1: GET / rc=0
+HTTP/1.1 200 OK
+content-type: text/html; charset=utf-8
+Date: Sat, 21 Feb 2026 07:01:38 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+REQ2: GET /api/overview rc=0
+{
+  "now": "2026-02-21T07:01:42.063Z",
+  "sourceOk": true,
+  "worker": {
+    "ts": 1771657297999,
+    "connected": true,
+    "health": {
+      "ok": true
+    },
+    "state": {
+      "ok": true,
+      "running": false,
+      "phase": "STOPPED",
+      "safe_star
+stderr=curl: (23) Failure writing output to destination
+REQ3: GET /api/worker rc=0
+{
+  "ts": 1771657302070,
+  "connected": true,
+  "health": {
+    "ok": true
+  },
+  "state": {
+    "ok": true,
+    "running": false,
+    "phase": "STOPPED",
+    "safe_start": {
+      "ts": 1771479340.3719535,
+      "phase"
+REQ4: POST /api/worker/control/panic rc=0
+{
+  "ok": false,
+  "action": "panic",
+  "error": "HTTP 404"
+}
+--- mock.log tail ---
+  address: '127.0.0.1',
+  port: 18080
+}
+
+Node.js v22.22.0
+--- ui.log tail ---
+  address: '127.0.0.1',
+  port: 18890
+}
+
+Node.js v22.22.0

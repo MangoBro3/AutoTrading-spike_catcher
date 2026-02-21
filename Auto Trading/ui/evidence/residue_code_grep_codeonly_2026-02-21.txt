@@ -1,0 +1,14 @@
+Agent Team Dashboard: 0
+Gateway: 0
+Channels: 0
+Worker Queue: 0
+Agent Status: 0
+legacy-panel: 0
+agent_panel: 0
+AgentDashboard: 0
+assistant: 0
+Worker: 4
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/e2e-ui-evidence.mjs
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/server.mjs
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/worker-monitor.mjs
+ - /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/public/index.html

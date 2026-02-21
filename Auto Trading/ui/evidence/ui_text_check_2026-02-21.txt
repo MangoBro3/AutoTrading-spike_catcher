@@ -1,0 +1,5 @@
+UI 텍스트 화면 기준 키워드 검사
+- 파일: Auto Trading/ui/public/index.html
+- 검사 키워드: "Agent Team Dashboard", "Gateway", "Channels", "Worker Queue", "Agent Status"
+- 결과: 모두 NOT FOUND (0건)
+근거: title='Auto Trading Dashboard', h1='Auto Trading Dashboard'으로만 노출, 잔재 문구 없음

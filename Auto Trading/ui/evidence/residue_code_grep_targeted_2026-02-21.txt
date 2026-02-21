@@ -1,0 +1,5 @@
+TARGET_TERMS=("Agent Team Dashboard|Gateway|Channels|AgentDashboard|Worker Queue|Worker Status|Agent Status|legacy-panel|agent_panel")
+
+검사 대상 파일: Auto Trading/ui/*.html, *.js, *.mjs (node_modules, .local-libs, .git 제외)
+결과: 0건 (grep exit code 1)
+근거 파일: 없음
