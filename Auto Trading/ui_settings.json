@@ -7,8 +7,8 @@
     "KRW-ETH"
   ],
   "watch_refresh_sec": 60,
-  "watch_score_min": 1.0,
-  "watch_alert_score": 2.0,
+  "watch_score_min": 1,
+  "watch_alert_score": 2,
   "watch_highlight_top": 3,
   "watch_alert_cooldown_min": 60,
   "auto_buy_score_min_100": 100,
@@ -33,7 +33,11 @@
   "tuning_oos_days": 28,
   "tuning_embargo_days": 2,
   "tuning_oos_min_trades": 20,
-  "tuning_delta_min": 0.0,
+  "tuning_delta_min": 0,
   "tuning_cadence_days": 7,
-  "trainer_cooldown_minutes_on_boot": 15
+  "trainer_cooldown_minutes_on_boot": 15,
+  "capital_cap_krw": 100000,
+  "total_cap_krw": 100000,
+  "upbit_cap_krw": 100000,
+  "bithumb_cap_krw": 0
 }
