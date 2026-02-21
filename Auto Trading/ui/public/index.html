@@ -311,7 +311,7 @@ function render(data){
   $('watchingList').innerHTML = watch.length ? watch.map((x)=>`<code>${esc(x)}</code>`).join(' ') : '<span class="muted">watchlist/symbols 데이터 없음 (fallback)</span>';
 
   const vc = data?.virtualCapital || data?.runtimeStatus?.virtual_capital || {};
-  $('virtualCapitalMeta').innerHTML = `규칙: <span class='mono'>current virtual_equity = next available capital</span><br/>현재 Virtual Equity: <b>${esc(fmtKrw(vc.equity_virtual ?? vc.next_available_capital))}</b> | 다음 가용자금: <b>${esc(fmtKrw(vc.next_available_capital ?? vc.available_for_bot))}</b>`;
+  $('virtualCapitalMeta').innerHTML = `규칙: <span class='mono'>current virtual_equity = next available capital</span><br/>현재 Virtual Equity: <b>${esc(fmtKrw(vc.equity_virtual ?? vc.next_available_capital))}</b> | 다음 가용자금: <b>${esc(fmtKrw(vc.next_available_capital ?? vc.available_for_bot))}</b><br/>Cap(total/upbit/bithumb): <b>${esc(fmtKrw(vc.total_cap_krw))}</b> / <b>${esc(fmtKrw(vc.upbit_cap_krw))}</b> / <b>${esc(fmtKrw(vc.bithumb_cap_krw))}</b>`;
   const reviewRows = Array.isArray(data?.yesterdayTradingReview) ? data.yesterdayTradingReview.slice(0,7) : [];
   $('reviewTable').innerHTML = reviewRows.length
     ? reviewRows.map((r)=>`<tr><td>${esc(r.date||'-')}</td><td>${esc(fmtKrw(r.pnl_krw))}</td><td>${esc(fmtKrw(r.virtual_equity))}</td><td>${esc(String(r.trades ?? '-'))}</td><td>${esc(String(r.source||'-'))}</td></tr>`).join('')
@@ -334,8 +334,12 @@ function render(data){
   setFundCard('fundUpbit', g.upbit || {}, false);
   setFundCard('fundBithumb', g.bithumb || {}, false);
 
-  const capFromSettings = data?.uiSettings?.capital_cap_krw;
-  if (capFromSettings !== undefined && capFromSettings !== null) $('capitalCapInput').value = String(capFromSettings);
+  const totalCap = data?.uiSettings?.total_cap_krw ?? data?.uiSettings?.capital_cap_krw;
+  const upbitCap = data?.uiSettings?.upbit_cap_krw;
+  const bithumbCap = data?.uiSettings?.bithumb_cap_krw;
+  if (totalCap !== undefined && totalCap !== null) $('totalCapInput').value = String(totalCap);
+  if (upbitCap !== undefined && upbitCap !== null) $('upbitCapInput').value = String(upbitCap);
+  if (bithumbCap !== undefined && bithumbCap !== null) $('bithumbCapInput').value = String(bithumbCap);
 
   const indicators = data?.exchangeIndicators || {};
   const renderIndicator = (name, obj) => {
@@ -397,13 +401,24 @@ async function handleExchangeToggleChange(){
 $('upbitToggle').addEventListener('change', handleExchangeToggleChange);
 $('bithumbToggle').addEventListener('change', handleExchangeToggleChange);
 $('capitalCapSaveBtn').addEventListener('click', async()=>{
-  const raw = String($('capitalCapInput').value || '').replace(/,/g,'').trim();
-  const n = Number(raw);
-  if(!Number.isFinite(n) || n < 0){ $('capitalCapStatus').textContent='실패: 0 이상의 숫자를 입력하세요.'; return; }
+  const parseCap = (id) => {
+    const raw = String($(id).value || '').replace(/,/g,'').trim();
+    const n = Number(raw === '' ? '0' : raw);
+    if(!Number.isFinite(n) || n < 0) throw new Error(`${id}: 0 이상의 숫자를 입력하세요.`);
+    return Math.floor(n);
+  };
   try{
-    const out = await postUiSettings({ capital_cap_krw: Math.floor(n) });
+    const total = parseCap('totalCapInput');
+    const upbit = parseCap('upbitCapInput');
+    const bithumb = parseCap('bithumbCapInput');
+    const out = await postUiSettings({
+      total_cap_krw: total,
+      capital_cap_krw: total,
+      upbit_cap_krw: upbit,
+      bithumb_cap_krw: bithumb,
+    });
     const route = out?.backendRoute ? ` (${out.backendRoute})` : ' (file-save)';
-    $('capitalCapStatus').textContent=`저장됨: capital_cap_krw=${Math.floor(n).toLocaleString()}${route}`;
+    $('capitalCapStatus').textContent=`저장됨: total=${total.toLocaleString()}, upbit=${upbit.toLocaleString()}, bithumb=${bithumb.toLocaleString()}${route}`;
     await tick();
   }catch(e){
     $('capitalCapStatus').textContent=`실패: ${e.message}`;
