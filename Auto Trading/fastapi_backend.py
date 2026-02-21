@@ -134,6 +134,52 @@ class BackendService:
             "has_controller": self.pending.get("controller") is not None,
         }
 
+    def _read_runtime_status(self):
+        try:
+            if RUNTIME_STATUS_PATH.exists():
+                return json.loads(RUNTIME_STATUS_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+        return {}
+
+    def _build_virtual_capital(self):
+        seed = 0.0
+        equity = 0.0
+        cap = None
+        try:
+            if self.controller and getattr(self.controller, 'ledger', None):
+                ls = self.controller.ledger.get_state() or {}
+                seed = float(ls.get('baseline_seed', 0.0) or 0.0)
+                equity = float(ls.get('equity', 0.0) or 0.0)
+        except Exception:
+            pass
+
+        runtime = self._read_runtime_status()
+        vc = runtime.get('virtual_capital') if isinstance(runtime, dict) else {}
+        if not equity:
+            equity = float((vc or {}).get('equity_virtual', 0.0) or runtime.get('equity', 0.0) or 0.0)
+        if not seed:
+            seed = float((vc or {}).get('allocated', 0.0) or runtime.get('seed_krw', 0.0) or 0.0)
+        cap_raw = (vc or {}).get('cap_krw', None)
+        try:
+            cap = float(cap_raw) if cap_raw is not None else None
+        except Exception:
+            cap = None
+
+        next_available = equity if not (cap is not None and cap > 0) else min(equity, cap)
+        pnl = equity - seed
+        pnl_pct = (pnl / seed * 100.0) if seed > 0 else 0.0
+        return {
+            'rule': 'next_available_capital = current_virtual_equity',
+            'seed_krw': seed,
+            'equity_virtual': equity,
+            'next_available_capital': max(0.0, next_available),
+            'available_for_bot': max(0.0, next_available),
+            'pnl_virtual': pnl,
+            'pnl_pct_virtual': pnl_pct,
+            'cap_krw': cap,
+        }
+
     def status(self):
         try:
             state = self.safe_start.read_state()
@@ -146,6 +192,7 @@ class BackendService:
             "phase": state.get("phase"),
             "safe_start": state,
             "pending": self._pending_status(),
+            "virtual_capital": self._build_virtual_capital(),
             "last_error": self.last_error,
         }
         return self._json_safe(payload)

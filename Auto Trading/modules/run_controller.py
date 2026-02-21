@@ -244,29 +244,31 @@ class RunController:
         except Exception:
             pass
 
-        allocated = cap if (cap is not None and cap > 0) else baseline_seed
-        if allocated <= 0:
-            allocated = equity_virtual
+        # Virtual capital rule: next available capital follows current virtual equity.
+        # Example: 100,000 -> 130,000 after gain, and decreases on loss.
+        allocated = baseline_seed if baseline_seed > 0 else equity_virtual
 
-        available = equity_virtual
+        next_available = max(0.0, equity_virtual)
         if cap is not None and cap > 0:
-            available = min(max(0.0, cap), max(0.0, equity_virtual))
+            next_available = min(next_available, max(0.0, cap))
 
         real_balance = None
         if exchange_balance_krw is not None:
             real_balance = self._safe_float(exchange_balance_krw, 0.0)
-            available = min(available, max(0.0, real_balance))
+            next_available = min(next_available, max(0.0, real_balance))
 
         pnl_virtual = equity_virtual - allocated
         pnl_pct_virtual = (pnl_virtual / allocated * 100.0) if allocated > 0 else 0.0
 
         return {
+            "rule": "next_available_capital = current_virtual_equity",
             "cap_krw": cap,
             "allocated": max(0.0, allocated),
             "equity_virtual": max(0.0, equity_virtual),
             "pnl_virtual": pnl_virtual,
             "pnl_pct_virtual": pnl_pct_virtual,
-            "available_for_bot": max(0.0, available),
+            "next_available_capital": max(0.0, next_available),
+            "available_for_bot": max(0.0, next_available),
             "real_balance_krw": real_balance,
         }
 
@@ -1797,7 +1799,9 @@ class RunController:
                 'equity_virtual': virtual.get('equity_virtual', 0.0),
                 'pnl_virtual': virtual.get('pnl_virtual', 0.0),
                 'pnl_pct_virtual': virtual.get('pnl_pct_virtual', 0.0),
+                'next_available_capital': virtual.get('next_available_capital', virtual.get('available_for_bot', 0.0)),
                 'available_for_bot': virtual.get('available_for_bot', 0.0),
+                'rule': virtual.get('rule', 'next_available_capital = current_virtual_equity'),
                 'cap_krw': virtual.get('cap_krw', None),
             },
             'last_tick_ts': self.last_tick_ts,

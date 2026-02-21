@@ -166,6 +166,158 @@ async function readLedgerDailySnapshots() {
   return [...dedup.values()].sort((a, b) => String(b.date).localeCompare(String(a.date)));
 }
 
+function normalizeDayPoint(raw = {}) {
+  const date = String(raw.date || raw.day || dateKeyFromTs(raw.ts || raw.timestamp || raw.time) || '').trim();
+  if (!date) return null;
+  return {
+    date,
+    virtual_equity: toNum(raw.virtual_equity ?? raw.equity_virtual ?? raw.equity ?? raw.next_available_capital, null),
+    pnl_krw: toNum(raw.pnl_krw ?? raw.pnl_virtual ?? raw.pnl ?? raw.daily_pnl_krw, null),
+    trades: toNum(raw.trades ?? raw.trade_count, 0),
+    source: String(raw.source || raw.kind || ''),
+  };
+}
+
+async function readDailyVirtualSnapshotRows() {
+  const { readdir } = await import('node:fs/promises');
+  const scanDirs = [
+    join(WORKSPACE_ROOT, 'Auto Trading', 'runtime'),
+    LEDGER_RUNTIME_DIR,
+    RESULTS_RUNTIME_DIR,
+    join(WORKSPACE_ROOT, 'Auto Trading', 'results'),
+  ];
+  const out = [];
+  for (const dir of scanDirs) {
+    let names = [];
+    try { names = await readdir(dir); } catch { continue; }
+    for (const name of names) {
+      const low = String(name || '').toLowerCase();
+      if (!low.includes('daily_virtual_snapshot')) continue;
+      const full = join(dir, name);
+      try {
+        if (low.endsWith('.jsonl')) {
+          const raw = await readFile(full, 'utf8');
+          for (const line of raw.split('\n').filter(Boolean)) {
+            let j = null;
+            try { j = JSON.parse(line); } catch { j = null; }
+            if (!j) continue;
+            const p = normalizeDayPoint(j);
+            if (p) out.push({ ...p, source: p.source || 'daily_virtual_snapshot' });
+          }
+        } else if (low.endsWith('.json')) {
+          const j = await readJsonFile(full, null);
+          const rows = Array.isArray(j) ? j : (Array.isArray(j?.daily_virtual_snapshot) ? j.daily_virtual_snapshot : (Array.isArray(j?.daily) ? j.daily : (Array.isArray(j?.snapshots) ? j.snapshots : [j])));
+          for (const row of rows) {
+            const p = normalizeDayPoint(row || {});
+            if (p) out.push({ ...p, source: p.source || 'daily_virtual_snapshot' });
+          }
+        }
+      } catch {
+        // ignore broken snapshot file
+      }
+    }
+  }
+  const dedup = new Map();
+  for (const r of out) dedup.set(r.date, r);
+  return [...dedup.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+}
+
+function aggregateDailyRows(rows, limit = 30, source = 'runtime_ledger_aggregate') {
+  const grouped = new Map();
+  for (const raw of rows || []) {
+    const p = normalizeDayPoint(raw || {});
+    if (!p || !p.date) continue;
+    const prev = grouped.get(p.date) || { date: p.date, pnl_krw: 0, virtual_equity: null, trades: 0, source };
+    if (Number.isFinite(p.pnl_krw)) prev.pnl_krw += Number(p.pnl_krw);
+    if (Number.isFinite(p.trades)) prev.trades += Number(p.trades);
+    if (Number.isFinite(p.virtual_equity)) prev.virtual_equity = Number(p.virtual_equity);
+    grouped.set(p.date, prev);
+  }
+  const sorted = [...grouped.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const tail = sorted.slice(-Math.max(1, Number(limit) || 30));
+  for (let i = 0; i < tail.length; i += 1) {
+    if (!Number.isFinite(tail[i].virtual_equity) && i > 0 && Number.isFinite(tail[i - 1].virtual_equity) && Number.isFinite(tail[i].pnl_krw)) {
+      tail[i].virtual_equity = Number(tail[i - 1].virtual_equity) + Number(tail[i].pnl_krw);
+    }
+  }
+  return tail;
+}
+
+async function readRuntimeLedgerAggregate(limit = 30) {
+  const { readdir } = await import('node:fs/promises');
+  const scanDirs = [join(WORKSPACE_ROOT, 'Auto Trading', 'runtime'), LEDGER_RUNTIME_DIR, RESULTS_RUNTIME_DIR];
+  const points = [];
+
+  for (const dir of scanDirs) {
+    let names = [];
+    try { names = await readdir(dir); } catch { continue; }
+    for (const name of names) {
+      const low = String(name || '').toLowerCase();
+      if (!(low.endsWith('.json') || low.endsWith('.jsonl'))) continue;
+      if (!(low.includes('ledger') || low.includes('runtime') || low.includes('snapshot'))) continue;
+      const full = join(dir, name);
+      try {
+        if (low.endsWith('.jsonl')) {
+          const raw = await readFile(full, 'utf8');
+          for (const line of raw.split('\n').filter(Boolean)) {
+            let j = null;
+            try { j = JSON.parse(line); } catch { j = null; }
+            if (!j || typeof j !== 'object') continue;
+            points.push(j);
+          }
+        } else {
+          const j = await readJsonFile(full, null);
+          if (!j) continue;
+          if (Array.isArray(j)) points.push(...j);
+          else {
+            if (Array.isArray(j.daily_reviews)) points.push(...j.daily_reviews);
+            if (Array.isArray(j.daily)) points.push(...j.daily);
+            if (Array.isArray(j.reviews)) points.push(...j.reviews);
+            if (Array.isArray(j.snapshots)) points.push(...j.snapshots);
+            if (j.date || j.day || j.ts || j.timestamp) points.push(j);
+          }
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }
+
+  const fromLedgerDaily = await readLedgerDailySnapshots();
+  const merged = [...fromLedgerDaily, ...points];
+  return aggregateDailyRows(merged, limit, 'runtime_ledger_aggregate');
+}
+
+async function buildCapitalDailyGraph(runtimeStatus, runtimeState) {
+  const fromSnapshot = await readDailyVirtualSnapshotRows();
+  const base = fromSnapshot.length ? fromSnapshot : await readRuntimeLedgerAggregate(30);
+  const rows = base.slice(-30);
+  const seed = toNum(runtimeStatus?.virtual_capital?.allocated ?? runtimeStatus?.seed_krw ?? runtimeState?.seed_krw, null);
+  const initialEquity = Number.isFinite(rows[0]?.virtual_equity) ? Number(rows[0].virtual_equity) : toNum(runtimeStatus?.virtual_capital?.equity_virtual ?? runtimeStatus?.equity, null);
+  const startBase = Number.isFinite(seed) && seed > 0 ? seed : initialEquity;
+  const currentEquity = Number.isFinite(rows[rows.length - 1]?.virtual_equity)
+    ? Number(rows[rows.length - 1].virtual_equity)
+    : toNum(runtimeStatus?.virtual_capital?.equity_virtual ?? runtimeStatus?.equity, null);
+  const prevEquity = Number.isFinite(rows[rows.length - 2]?.virtual_equity) ? Number(rows[rows.length - 2].virtual_equity) : null;
+  const dayDelta = Number.isFinite(currentEquity) && Number.isFinite(prevEquity) ? currentEquity - prevEquity : null;
+  const dayDeltaPct = Number.isFinite(dayDelta) && Number.isFinite(prevEquity) && prevEquity !== 0 ? (dayDelta / prevEquity) * 100 : null;
+  const cumulativeReturnPct = Number.isFinite(currentEquity) && Number.isFinite(startBase) && startBase > 0
+    ? ((currentEquity - startBase) / startBase) * 100
+    : null;
+
+  return {
+    source: fromSnapshot.length ? 'daily_virtual_snapshot' : 'runtime_ledger_aggregate',
+    rows,
+    current_equity: currentEquity,
+    prev_equity: prevEquity,
+    day_delta_krw: dayDelta,
+    day_delta_pct: dayDeltaPct,
+    start_capital: startBase,
+    cumulative_return_pct: cumulativeReturnPct,
+    has_data: rows.length > 0,
+  };
+}
+
 function buildFallbackDailyReview(runtimeStatus, runtimeState, days = 7) {
   const nowKey = dateKeyFromTs(Date.now());
   const yesterday = nowKey ? new Date(Date.now() - 24 * 3600 * 1000) : null;
@@ -685,6 +837,7 @@ async function rebuildOverviewCache() {
     const workerSnap = workerMonitor.stableSnapshotFallback();
     exchangeTogglesCache = await readExchangeToggles();
     const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
+    const capitalDailyGraph = await buildCapitalDailyGraph(runtimeStatus, runtimeState);
     const ledgerReviews = await readLedgerDailySnapshots();
     const yesterdayTradingReview = (ledgerReviews.length ? ledgerReviews : buildFallbackDailyReview(runtimeStatus, runtimeState, 7)).slice(0, 7);
     // Auto Trading UI split: keep only fields actually used by this UI.
@@ -700,6 +853,7 @@ async function rebuildOverviewCache() {
       exchangeToggles: exchangeTogglesCache,
       marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
       virtualCapital,
+      capitalDailyGraph,
       yesterdayTradingReview,
       usage,
       taskSignals,
@@ -753,6 +907,7 @@ const server = http.createServer((req, res) => {
       const runtimeStatus = overviewCache.runtimeStatus || null;
       const runtimeState = overviewCache.runtimeState || null;
       const virtualCapital = deriveVirtualCapital({ runtimeStatus, runtimeState, workerSnap });
+      const capitalDailyGraph = overviewCache.capitalDailyGraph || { source: 'fallback', rows: [], has_data: false };
       const yesterdayTradingReview = Array.isArray(overviewCache.yesterdayTradingReview) && overviewCache.yesterdayTradingReview.length
         ? overviewCache.yesterdayTradingReview.slice(0, 7)
         : buildFallbackDailyReview(runtimeStatus, runtimeState, 7);
@@ -777,6 +932,7 @@ const server = http.createServer((req, res) => {
             workerSnap,
           }),
           virtualCapital,
+          capitalDailyGraph,
           yesterdayTradingReview,
           timeline: timelineView.rows,
           timelineMeta: timelineView.meta,

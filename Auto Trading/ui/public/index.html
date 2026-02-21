@@ -28,6 +28,8 @@
     input:checked + .slider{background:#2e6f43} input:checked + .slider:before{transform:translateX(22px)} input:disabled + .slider{opacity:.5;cursor:not-allowed}
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50}.modal.show{display:flex}
     .modal-card{width:min(460px,92vw);background:#161a22;border:1px solid #2f3745;border-radius:10px;padding:14px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.review-list{max-height:240px;overflow:auto;border:1px solid #262d38;border-radius:8px}.review-list table{font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .kv{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 10px}.kv b{font-size:14px}
+    #capitalChart{width:100%;height:260px;background:#0f141d;border:1px solid #2a3140;border-radius:8px}
   </style>
 </head>
 <body>
@@ -92,6 +94,18 @@
           <tbody id="reviewTable"><tr><td colspan="5" class="muted">불러오는 중...</td></tr></tbody>
         </table>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>운용자금 일일 그래프 (최근 30일)</h2>
+      <div class="kv">
+        <div>현재자산 <b id="capitalCurrent">-</b></div>
+        <div>전일대비 <b id="capitalDelta">-</b></div>
+        <div>시작자금 대비 누적수익률 <b id="capitalCumRet">-</b></div>
+      </div>
+      <canvas id="capitalChart" width="800" height="260"></canvas>
+      <div id="capitalFallback" class="muted" style="margin-top:8px;display:none">운용자금 일별 데이터가 없어 그래프를 표시할 수 없습니다. (daily_virtual_snapshot / runtime·ledger fallback 없음)</div>
+      <div id="capitalSource" class="muted" style="margin-top:6px">source: -</div>
     </div>
 
     <div class="card">
