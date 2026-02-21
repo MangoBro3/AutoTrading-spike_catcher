@@ -280,7 +280,27 @@ function pickStartExchange(){
 
 function overviewUrl(){ return '/api/overview'; }
 async function fetchJson(url){ const r=await fetch(url); const j=await r.json(); if(!r.ok) throw new Error(`${url} ${r.status}`); return j; }
-async function postControl(action, body){ const r=await fetch(`/api/worker/control/${action}`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||`control_failed:${action}`); if(j?.result?.ok===false) throw new Error(j?.result?.detail||j?.result?.error||`worker_control_failed:${action}`); return j; }
+function toBlockedPayload(src){
+  const why = String(src?.why_blocked || src?.details?.message || src?.detail || src?.error || '').trim();
+  const next = String(src?.next_action || (src?.requires_operator_confirm ? 'confirm_start' : '') || '').trim();
+  return { worker: { state: { why_blocked: why, next_action: next } } };
+}
+
+async function postControl(action, body){
+  const r=await fetch(`/api/worker/control/${action}`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})});
+  const j=await r.json();
+  if(!r.ok||j.ok===false){
+    const e = new Error(j?.error||`control_failed:${action}`);
+    e.payload = j;
+    throw e;
+  }
+  if(j?.result?.ok===false){
+    const e = new Error(j?.result?.detail||j?.result?.error||`worker_control_failed:${action}`);
+    e.payload = j;
+    throw e;
+  }
+  return j;
+}
 async function postExchangeToggles(body){ const r=await fetch('/api/worker/control/exchanges', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'control_failed:exchanges'); return j; }
 async function postUiSettings(body){ const r=await fetch('/api/ui-settings', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'save_failed:ui_settings'); return j; }
 
@@ -338,12 +358,19 @@ function render(data){
   const vcTotal = data?.virtualCapital || {};
   const setFundCard = (prefix, graph, totalCard=false) => {
     const hasData = Array.isArray(graph?.rows) && graph.rows.length > 0;
-    const equity = totalCard ? (vcTotal?.equity_virtual ?? graph?.current_equity) : graph?.current_equity;
-    const avail = totalCard ? (vcTotal?.available_for_bot ?? vcTotal?.next_available_capital ?? equity) : (Number.isFinite(Number(equity)) ? equity : null);
+    const equityRaw = totalCard ? (vcTotal?.equity_virtual ?? graph?.current_equity) : graph?.current_equity;
+    const equityNum = Number(equityRaw);
+    const equity = Number.isFinite(equityNum) ? equityNum : null;
+    const availRaw = totalCard
+      ? (vcTotal?.available_for_bot ?? vcTotal?.next_available_capital ?? equity)
+      : (hasData ? equity : null);
+    const availNum = Number(availRaw);
+    const avail = Number.isFinite(availNum) ? availNum : null;
     const delta = graph?.day_delta_krw;
-    $(prefix+'Equity').textContent = hasData || Number.isFinite(Number(equity)) ? fmtKrw(equity) : '데이터 없음';
-    $(prefix+'Avail').textContent = hasData || Number.isFinite(Number(avail)) ? fmtKrw(avail) : '데이터 없음';
-    $(prefix+'Delta').textContent = Number.isFinite(Number(delta)) ? `${Number(delta)>=0?'+':''}${Number(delta).toLocaleString()} KRW` : '데이터 없음';
+    const noExchangeData = !totalCard && !hasData;
+    $(prefix+'Equity').textContent = noExchangeData ? '데이터 없음' : (Number.isFinite(Number(equity)) ? fmtKrw(equity) : '0 KRW');
+    $(prefix+'Avail').textContent = noExchangeData ? '데이터 없음' : (Number.isFinite(Number(avail)) ? fmtKrw(avail) : '0 KRW');
+    $(prefix+'Delta').textContent = Number.isFinite(Number(delta)) ? `${Number(delta)>=0?'+':''}${Number(delta).toLocaleString()} KRW` : (noExchangeData ? '데이터 없음' : '0 KRW');
   };
   setFundCard('fundTotal', g.total || {}, true);
   setFundCard('fundUpbit', g.upbit || {}, false);
@@ -384,6 +411,14 @@ async function handleModeChange(nextMode){
       if(!exchange) throw new Error('활성 거래소가 없습니다.');
       $('controlStatus').textContent='LIVE 모드 준비 요청 중...';
       const started=await postControl('mode',{mode:'LIVE', exchange});
+      const phaseAfter = String(started?.result?.phase || '').toUpperCase();
+      if (phaseAfter === 'RUNNING') {
+        pendingExpectedPhrase='';
+        setModeConfirmUI();
+        $('controlStatus').textContent='LIVE 전환 완료 (mode→confirm 자동 수행).';
+        await tick();
+        return;
+      }
       pendingExpectedPhrase=String(started?.result?.expected_phrase || '').trim();
       setModeConfirmUI();
       if(!pendingExpectedPhrase) throw new Error('expected_phrase 누락');
