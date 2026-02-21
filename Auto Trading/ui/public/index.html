@@ -566,13 +566,15 @@ $('manualRoundtripRunBtn')?.addEventListener('click', async()=>{
     const krw_notional=Math.floor(Number(String($('manualRoundtripNotional')?.value||'').replace(/,/g,'')));
     const buy_offset_ticks=Math.floor(Number(String($('manualRoundtripBuyOffsetTicks')?.value||'').replace(/,/g,'')));
     const hold_seconds=Math.floor(Number(String($('manualRoundtripHoldSeconds')?.value||'').replace(/,/g,'')));
+    const bid_minus_ticks=Math.floor(Number(String($('manualRoundtripBidMinusTicks')?.value||'').replace(/,/g,'')));
     const confirm=String($('manualRoundtripConfirm')?.value||'').trim();
     if(!Number.isFinite(krw_notional)||krw_notional<=0) throw new Error('krw_notional은 0보다 큰 숫자 필요');
     if(!Number.isFinite(buy_offset_ticks)) throw new Error('buy_offset_ticks 숫자 필요');
     if(!Number.isFinite(hold_seconds)||hold_seconds<=0) throw new Error('hold_seconds는 0보다 큰 숫자 필요');
+    if(!Number.isFinite(bid_minus_ticks)||bid_minus_ticks<0) throw new Error('bid_minus_ticks는 0 이상의 숫자 필요');
 
     stateEl.textContent='요청 중...';
-    const payload={ symbol, krw_notional, buy_offset_ticks, hold_seconds, confirm };
+    const payload={ symbol, krw_notional, buy_offset_ticks, hold_seconds, bid_minus_ticks, confirm };
     const out=await postManualRoundtrip(payload);
     stateEl.textContent=out?.message || 'accepted';
     resultEl.textContent=JSON.stringify(out?.manual_roundtrip || out?.result || out, null, 2);
