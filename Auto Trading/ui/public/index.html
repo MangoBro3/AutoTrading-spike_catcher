@@ -385,6 +385,19 @@ async function handleExchangeToggleChange(){
 }
 $('upbitToggle').addEventListener('change', handleExchangeToggleChange);
 $('bithumbToggle').addEventListener('change', handleExchangeToggleChange);
+$('capitalCapSaveBtn').addEventListener('click', async()=>{
+  const raw = String($('capitalCapInput').value || '').replace(/,/g,'').trim();
+  const n = Number(raw);
+  if(!Number.isFinite(n) || n < 0){ $('capitalCapStatus').textContent='실패: 0 이상의 숫자를 입력하세요.'; return; }
+  try{
+    const out = await postUiSettings({ capital_cap_krw: Math.floor(n) });
+    const route = out?.backendRoute ? ` (${out.backendRoute})` : ' (file-save)';
+    $('capitalCapStatus').textContent=`저장됨: capital_cap_krw=${Math.floor(n).toLocaleString()}${route}`;
+    await tick();
+  }catch(e){
+    $('capitalCapStatus').textContent=`실패: ${e.message}`;
+  }
+});
 const panicSlider=$('panicSlider'), panicValue=$('panicValue'), panicStatus=$('panicStatus'), panicHoldBtn=$('panicHoldBtn'); let holdTimer=null, holdStart=0;
 panicSlider.addEventListener('input',()=>{panicValue.textContent=panicSlider.value;});
 panicHoldBtn.addEventListener('mousedown',()=>{ if(Number(panicSlider.value)<100){panicStatus.textContent='실패: 슬라이더를 100으로 올리세요'; return;} holdStart=Date.now(); panicStatus.textContent='홀드 중...'; holdTimer=setTimeout(async()=>{ try{const out=await postControl('panic',{armed:true,holdMs:Date.now()-holdStart,slider:Number(panicSlider.value)}); panicStatus.textContent=`PANIC 실행됨 (${out?.result?.status||'ok'})`; await tick();}catch(e){panicStatus.textContent=`실패: ${e.message}`;} },2000);});

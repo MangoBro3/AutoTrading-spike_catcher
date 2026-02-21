@@ -771,8 +771,10 @@ const server = http.createServer((req, res) => {
 
     if (url.pathname === '/api/ui-settings') {
       if ((req.method || 'GET').toUpperCase() === 'GET') {
-        const settings = await readUiSettings();
-        return sendJson(res, 200, { ok: true, settings }, ctx, 'route=/api/ui-settings get');
+        readUiSettings()
+          .then((settings) => sendJson(res, 200, { ok: true, settings }, ctx, 'route=/api/ui-settings get'))
+          .catch((e) => sendApiError(res, ctx, e, '/api/ui-settings'));
+        return;
       }
       if ((req.method || 'GET').toUpperCase() !== 'POST') {
         return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/ui-settings method_guard');
