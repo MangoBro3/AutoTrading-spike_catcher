@@ -1,0 +1,12 @@
+근거 캡처: /mnt/f/SafeBot/openclaw-news-workspace/python/Auto Trading/ui/public/index.html
+
+검출 항목:
+- <title> at line 6: Agent Team Dashboard
+- <h1> at line 34: Agent Team Dashboard
+- Gateway 섹션: line 39
+- Channels 섹션: line 40
+- token 관련 텍스트: line 143, 147, 150, 197, 206 등 다수 존재
+
+요약:
+현재 UI(파일 기준)에는 'Agent Team Dashboard' 제목/H1가 남아 있으며 Gateway, Channels, token 문구가 명시적으로 존재합니다.
+요구사항(해당 항목 부재) 미충족 → FAIL

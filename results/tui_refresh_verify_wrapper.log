@@ -1,0 +1,16 @@
+==============================================================================
+ SafeBot Backend Status TUI (--tui)
+==============================================================================
+ MODE           : PAPER 🧪 PAPER
+ PHASE/CONN     : STOPPED / DISCONNECTED (lock=OFF)
+ ACCOUNT        : equity=100000.0 KRW | PnL=0.00%
+ POSITION       : - | - qty=0.0
+ OPEN ORDERS    : 0 (-)
+ TRAFFIC LIGHT  : 🔴 RED
+ LAST UPDATE    : runtime=2026-02-19 20:32:06 | tui=2026-02-21 15:50:30
+==============================================================================
+2026-02-21 15:50:30,782 INFO [uvicorn.error] Started server process [5735]
+2026-02-21 15:50:30,783 INFO [uvicorn.error] Waiting for application startup.
+2026-02-21 15:50:30,783 INFO [uvicorn.error] Application startup complete.
+2026-02-21 15:50:30,783 INFO [uvicorn.error] Uvicorn running on http://127.0.0.1:8877 (Press CTRL+C to quit)
+==============================================================================

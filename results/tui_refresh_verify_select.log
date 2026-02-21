@@ -1,0 +1,17 @@
+==============================================================================
+ SafeBot Backend Status TUI (--tui)
+==============================================================================
+ MODE           : PAPER 🧪 PAPER
+ PHASE/CONN     : STOPPED / DISCONNECTED (lock=OFF)
+ ACCOUNT        : equity=100000.0 KRW | PnL=0.00%
+ POSITION       : - | - qty=0.0
+ OPEN ORDERS    : 0 (-)
+ TRAFFIC LIGHT  : 🔴 RED
+ LAST UPDATE    : runtime=2026-02-19 20:32:06 | tui=2026-02-21 15:52:22
+==============================================================================
+2026-02-21 15:52:23,099 INFO [uvicorn.error] Started server process [8050]
+2026-02-21 15:52:23,100 INFO [uvicorn.error] Waiting for application startup.
+2026-02-21 15:52:23,100 INFO [uvicorn.error] Application startup complete.
+2026-02-21 15:52:23,100 ERROR [uvicorn.error] [Errno 98] error while attempting to bind on address ('127.0.0.1', 8877): address already in use
+2026-02-21 15:52:23,100 INFO [uvicorn.error] Waiting for application shutdown.
+2026-02-21 15:52:23,101 INFO [uvicorn.error] Application shutdown complete.
