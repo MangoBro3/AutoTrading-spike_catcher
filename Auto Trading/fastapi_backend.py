@@ -785,7 +785,7 @@ class BackendStatusTUI:
 
         running = bool(canonical.get("running", False))
         phase = str(canonical.get("phase") or "STOPPED")
-        lock_exists = bool((backend.get("lock") or {}).get("exists"))
+        lock_exists = bool(canonical.get("lock_exists", False))
         conn = "CONNECTED" if running else ("WAITING" if phase in {PHASE_BOOTING_DEGRADED, PHASE_WAITING_OPERATOR, PHASE_WAITING_SYNC} else "DISCONNECTED")
 
         equity = runtime.get("equity")
@@ -852,7 +852,10 @@ class BackendStatusTUI:
             f" LAST UPDATE    : runtime={self._fmt_ts(last_tick_ts)} | tui={datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         ]
         if last_err:
-            lines.append(f" LAST ERROR     : \033[31m{last_err}\033[0m")
+            if self._stdout_is_tty:
+                lines.append(f" LAST ERROR     : \033[31m{last_err}\033[0m")
+            else:
+                lines.append(f" LAST ERROR     : {last_err}")
         lines.append("=" * 78)
 
         panel = "\n".join(lines)
