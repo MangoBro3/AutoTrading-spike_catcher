@@ -2310,7 +2310,35 @@
             "retry_count": 0,
             "next_retry_ts": 1771664592.648557,
             "last_error": null
+        },
+        {
+            "id": "1771682712154_ALL_RISK",
+            "ts": "2026-02-21T23:05:12.154541",
+            "event_type": "RISK",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [RISK] Regime Change",
+            "message": "Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 100265000, SMA20: 102475200)",
+            "dedupe_key": "REGIME_RISK_OFF_2026022123",
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771682712.1545148,
+            "last_error": null
+        },
+        {
+            "id": "1771682713169_SYSTEM_RISK",
+            "ts": "2026-02-21T23:05:13.169751",
+            "event_type": "RISK",
+            "exchange": "SYSTEM",
+            "severity": "CRITICAL",
+            "title": "[SYSTEM] [RISK] STOP LOSS",
+            "message": "📉 **EMERGENCY STOP**\nReason: [RISK] Daily DD hard limit triggered! eq=100,000, start=1,000,000, peak=1,000,000, dd_start=-90.00%, dd_peak=-90.00%\nAction: cancel_open_orders=0, flatten_attempt=False, mode=PAPER",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771682713.1697311,
+            "last_error": null
         }
     ],
-    "updated_at": 1771664593.605365
+    "updated_at": 1771682714.113277
 }
