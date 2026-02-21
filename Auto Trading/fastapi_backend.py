@@ -720,6 +720,7 @@ class BackendStatusTUI:
         self._stop_evt = threading.Event()
         self._thread: Optional[threading.Thread] = None
         self._stdout_is_tty = bool(getattr(sys.stdout, "isatty", lambda: False)())
+        self._last_panel = ""
 
     def start(self):
         if self._thread and self._thread.is_alive():
@@ -861,9 +862,15 @@ class BackendStatusTUI:
         panel = "\n".join(lines)
         if self._stdout_is_tty:
             sys.stdout.write(self._ANSI_CLEAR_HOME + panel + "\n")
-        else:
+            sys.stdout.flush()
+            self._last_panel = panel
+            return
+
+        # Non-TTY output (logs/pipes): print only on changes to avoid broken/reversed spam.
+        if panel != self._last_panel:
             sys.stdout.write(panel + "\n")
-        sys.stdout.flush()
+            sys.stdout.flush()
+            self._last_panel = panel
 
 
 service = BackendService()

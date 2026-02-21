@@ -2548,7 +2548,21 @@
             "retry_count": 0,
             "next_retry_ts": 1771692059.8225148,
             "last_error": null
+        },
+        {
+            "id": "1771693460564_ALL_RISK",
+            "ts": "2026-02-22T02:04:20.564214",
+            "event_type": "RISK",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [RISK] Regime Change",
+            "message": "Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 100448000, SMA20: 102484350)",
+            "dedupe_key": "REGIME_RISK_OFF_2026022202",
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771693460.5641897,
+            "last_error": null
         }
     ],
-    "updated_at": 1771692061.2824917
+    "updated_at": 1771693461.5246167
 }

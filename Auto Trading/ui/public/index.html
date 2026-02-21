@@ -319,7 +319,11 @@ let selectedMode='PAPER';
 let exchangeToggles={upbit:true,bithumb:true};
 let pendingExpectedPhrase='';
 
-function phaseFromOverview(data){ return String(data?.worker?.state?.phase || data?.worker?.phase || data?.phase || 'STOPPED').toUpperCase(); }
+function phaseFromOverview(data){
+  const truthPhase = String(data?.truth?.phase || data?.worker?.state?.truth?.phase || '').toUpperCase();
+  if (truthPhase) return truthPhase;
+  return String(data?.worker?.state?.phase || data?.worker?.phase || data?.phase || 'STOPPED').toUpperCase();
+}
 function isAutoOnByPhase(phase){ return phase==='RUNNING'||phase==='WAITING_OPERATOR'; }
 function phaseBadgeClass(phase){ if(phase==='RUNNING') return 'pill pill-run'; if(phase==='WAITING_OPERATOR') return 'pill pill-wait'; return 'pill pill-stop'; }
 function syncToggleUI(phase){ syncingToggle=true; const checked=isAutoOnByPhase(phase); $('autoToggle').checked=checked; $('autoToggle').disabled=controlBusy; $('autoToggleLabel').textContent=checked?'ON':'OFF'; const b=$('controlPhaseBadge'); b.className=phaseBadgeClass(phase); b.textContent=phase; syncingToggle=false; }
@@ -336,6 +340,29 @@ function syncExchangeToggleUI(){
   $('upbitToggleLabel').textContent=exchangeToggles.upbit?'활성':'비활성';
   $('bithumbToggleLabel').textContent=exchangeToggles.bithumb?'활성':'비활성';
   syncingExchangeToggle=false;
+}
+
+function applyLocalStoppedState(stopResp){
+  const reason = String(stopResp?.result?.reason_code || 'manual_stop');
+  if(!latestOverview || typeof latestOverview!=='object') latestOverview={};
+  latestOverview.truth = {
+    ...(latestOverview.truth||{}),
+    mode: String(latestOverview.truth?.mode || selectedMode || 'PAPER').toUpperCase(),
+    phase: 'STOPPED',
+    running: false,
+    lock_exists: false,
+    reason_code: reason,
+    source: 'ui-local-stop-ack',
+  };
+  latestOverview.worker = latestOverview.worker || {};
+  latestOverview.worker.state = {
+    ...(latestOverview.worker.state||{}),
+    phase: 'STOPPED',
+    running: false,
+    lock_exists: false,
+    reason_code: reason,
+    truth: latestOverview.truth,
+  };
 }
 function pickStartExchange(){
   const runtimeExchange=String(latestOverview?.truth?.exchange || latestOverview?.runtimeStatus?.exchange || '').toUpperCase();
@@ -544,7 +571,7 @@ async function handleTurnOn(){ await runWithControlBusy(async()=>{ let phase=pha
     const approved=await openConfirmModal('시작 최종 승인: backend expected_phrase로 confirm을 수행합니다.'); if(!approved){ $('controlStatus').textContent='취소됨'; await tick(); return; }
     $('controlStatus').textContent='승인됨: 시작 확정 중...'; await postControl('confirm',{phrase:expectedPhrase}); pendingExpectedPhrase=''; setModeConfirmUI(); $('controlStatus').textContent=`Auto Trading ON (${selectedMode})`; await tick();
   }); }
-async function handleTurnOff(){ await runWithControlBusy(async()=>{ $('controlStatus').textContent='정지 요청 중...'; await postControl('stop',{}); $('controlStatus').textContent='Auto Trading OFF (STOPPED)'; await tick(); }); }
+async function handleTurnOff(){ await runWithControlBusy(async()=>{ $('controlStatus').textContent='정지 요청 중...'; const out=await postControl('stop',{}); applyLocalStoppedState(out); render(latestOverview); syncToggleUI('STOPPED'); $('controlStatus').textContent='Auto Trading OFF (STOPPED)'; await tick(); }); }
 
 $('modePaperBtn').addEventListener('click', ()=>handleModeChange('PAPER').catch(async(e)=>{ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));
 $('modeLiveBtn').addEventListener('click', ()=>handleModeChange('LIVE').catch(async(e)=>{ setBlockedUI(e?.payload || toBlockedPayload(e?.payload?.result || {})); $('controlStatus').textContent=`실패: ${e.message}`; await tick(); }));

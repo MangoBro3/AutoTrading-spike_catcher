@@ -1467,7 +1467,19 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = body ? JSON.parse(body) : {};
-          const out = await workerClient.control(action, parsed);
+          let out = null;
+          let backendRoute = `/api/v1/control/${action}`;
+          if (action === 'stop') {
+            try {
+              out = await postWorkerApi('/control/stop', {});
+              backendRoute = '/api/v1/control/stop';
+            } catch {
+              out = await workerClient.control('stop', {});
+              backendRoute = '/api/v1/control/stop(fallback-client)';
+            }
+          } else {
+            out = await workerClient.control(action, parsed);
+          }
 
           let finalOut = out;
           let autoConfirm = null;
@@ -1498,10 +1510,11 @@ const server = http.createServer((req, res) => {
           return sendJson(res, 200, {
             ok: true,
             action,
+            backendRoute,
             result: finalOut,
             autoConfirm,
             worker: workerMonitor.snapshot(),
-          }, ctx, 'route=/api/worker/control');
+          }, ctx, `route=/api/worker/control backend=${backendRoute}`);
         } catch (e) {
           const detail = e?.data && typeof e.data === 'object' ? e.data : null;
           await workerMonitor.tick();
