@@ -1,8 +1,9 @@
 {
-  "ts": 1771693460.2443132,
-  "phase": "RUNNING",
+  "ts": 1771693733.2046895,
+  "phase": "STOPPED",
   "details": {
-    "message": "Operator confirmed. RUNNING enabled.",
-    "running_blocked": false
+    "message": "Stopped by operator",
+    "running_blocked": true,
+    "reason_code": "manual_stop"
   }
 }

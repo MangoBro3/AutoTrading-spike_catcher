@@ -465,10 +465,23 @@ class BackendService:
         }
         return self._json_safe(payload)
 
+    def _control_result(self, ok: bool, phase: Optional[str] = None, running: Optional[bool] = None, reason_code: Optional[str] = None, **extra):
+        safe_state = self.safe_start.read_state()
+        truth = self._canonical_status(safe_state)
+        out = {
+            "ok": bool(ok),
+            "phase": str(phase or truth.get("phase") or "STOPPED").upper(),
+            "running": bool(truth.get("running") if running is None else running),
+            "reason_code": _normalize_reason_code(reason_code or truth.get("reason_code") or "unknown"),
+            "truth": truth,
+        }
+        out.update(extra)
+        return self._json_safe(out)
+
     def start(self, req: StartRequest):
         with self._mtx:
             if self._is_running():
-                return {"ok": False, "error": "already-running"}
+                return self._control_result(False, phase=PHASE_RUNNING, running=True, reason_code="unknown", error="already-running")
 
             mode = str(req.mode or "PAPER").upper()
             exchange = str(req.exchange or "UPBIT").upper()
@@ -511,12 +524,7 @@ class BackendService:
                     }
                     self.controller = None
                     self.worker = None
-                    return {
-                        "ok": False,
-                        "error": "sync-check-failed",
-                        "phase": sync_result.phase,
-                        "details": sync_result.details,
-                    }
+                    return self._control_result(False, phase=sync_result.phase, running=False, reason_code="sync_block", error="sync-check-failed", details=sync_result.details)
 
                 self.pending = {
                     "mode": mode,
@@ -525,17 +533,12 @@ class BackendService:
                     "controller": controller,
                     "expected_phrase": f"CONFIRM START {exchange} {mode} SEED={seed}",
                 }
-                return {
-                    "ok": True,
-                    "phase": PHASE_WAITING_OPERATOR,
-                    "requires_operator_confirm": True,
-                    "expected_phrase": self.pending["expected_phrase"],
-                }
+                return self._control_result(True, phase=PHASE_WAITING_OPERATOR, running=False, reason_code="unknown", requires_operator_confirm=True, expected_phrase=self.pending["expected_phrase"])
             except Exception as e:
                 self.last_error = str(e)
                 self.lock.release()
                 self.safe_start.mark_stopped(f"start-failed: {e}")
-                return {"ok": False, "error": "start-exception", "detail": str(e)}
+                return self._control_result(False, phase="STOPPED", running=False, reason_code="unknown", error="start-exception", detail=str(e))
 
     def mode(self, req: StartRequest):
         # alias endpoint for unified LIVE/PAPER transition flow
@@ -545,18 +548,18 @@ class BackendService:
         with self._mtx:
             state = self.safe_start.read_state()
             if state.get("phase") != PHASE_WAITING_OPERATOR:
-                return {"ok": False, "error": "not-waiting-operator", "phase": state.get("phase")}
+                return self._control_result(False, phase=state.get("phase") or "STOPPED", running=self._is_running(), reason_code=_normalize_reason_code(state.get("reason_code") or "unknown"), error="not-waiting-operator")
 
             if not self.pending:
-                return {"ok": False, "error": "no-pending-start"}
+                return self._control_result(False, error="no-pending-start")
 
             expected = self.pending.get("expected_phrase")
             if str(req.phrase or "").strip() != expected:
-                return {"ok": False, "error": "bad-confirm-phrase", "expected_phrase": expected}
+                return self._control_result(False, phase=PHASE_WAITING_OPERATOR, running=False, error="bad-confirm-phrase", expected_phrase=expected)
 
             controller = self.pending.get("controller")
             if controller is None:
-                return {"ok": False, "error": "pending-controller-missing"}
+                return self._control_result(False, phase=PHASE_WAITING_OPERATOR, running=False, error="pending-controller-missing")
 
             worker = threading.Thread(target=controller.run, daemon=True)
             worker.start()
@@ -565,7 +568,14 @@ class BackendService:
             self.worker = worker
             self.pending = None
             self.safe_start.mark_running()
-            return {"ok": True, "phase": PHASE_RUNNING}
+            if not worker.is_alive():
+                self.pending = None
+                self.controller = None
+                self.worker = None
+                self.lock.release()
+                self.safe_start.mark_stopped("confirm-timeout", reason_code="unknown")
+                return self._control_result(False, phase="STOPPED", running=False, reason_code="unknown", error="confirm-timeout")
+            return self._control_result(True, phase=PHASE_RUNNING, running=True, reason_code="unknown")
 
     def _tick_size_krw(self, price: float) -> float:
         p = float(price or 0.0)
@@ -702,13 +712,19 @@ class BackendService:
                     self.last_error = str(e)
             if self.worker is not None and self.worker.is_alive():
                 self.worker.join(timeout=5)
+            still_alive = bool(self.worker is not None and self.worker.is_alive())
+
+            if still_alive:
+                self.last_error = "stop-timeout"
+                self.safe_start.mark_stopped("Stop timeout", reason_code="unknown")
+                return self._control_result(False, phase=PHASE_RUNNING, running=True, reason_code="unknown", error="stop-timeout")
 
             self.controller = None
             self.worker = None
             self.pending = None
             self.lock.release()
             self.safe_start.mark_stopped("Stopped by operator", reason_code=reason_code)
-            return {"ok": True, "reason_code": reason_code}
+            return self._control_result(True, phase="STOPPED", running=False, reason_code=reason_code)
 
 
 class BackendStatusTUI:
@@ -879,7 +895,9 @@ app = FastAPI(title="SafeBot Backend API", version="0.1.0")
 
 @app.get("/api/v1/health")
 def health():
-    return {"ok": True}
+    safe_state = service.safe_start.read_state()
+    truth = service._canonical_status(safe_state)
+    return {"ok": True, "phase": truth.get("phase"), "running": truth.get("running"), "reason_code": truth.get("reason_code"), "truth": truth}
 
 
 @app.get("/api/v1/status")

@@ -3,6 +3,7 @@ const DEFAULT_TIMEOUT_MS = Number(
   || process.env.WORKER_API_TIMEOUT_MS
   || 3000,
 );
+const WORKER_STALE_MS = Number(process.env.AT_UI_WORKER_STALE_MS || 10000);
 
 function withTimeout(taskFactory, timeoutMs = DEFAULT_TIMEOUT_MS) {
   const controller = new AbortController();
@@ -91,8 +92,35 @@ export class WorkerApiClient {
   }
 }
 
+function extractWorkerStateTsMs(snapshot) {
+  const s = snapshot?.state || {};
+  const cands = [
+    s.ts,
+    s.updated_at,
+    s.updatedAt,
+    s.timestamp,
+    s.last_tick_ts != null ? Number(s.last_tick_ts) * 1000 : null,
+    s.safe_start?.ts,
+  ];
+  for (const c of cands) {
+    if (c == null) continue;
+    const n = Number(c);
+    if (Number.isFinite(n) && n > 0) return n < 1e12 ? n * 1000 : n;
+    const t = Date.parse(String(c));
+    if (Number.isFinite(t) && t > 0) return t;
+  }
+  return null;
+}
+
+function isWorkerStateStale(snapshot) {
+  const tsMs = extractWorkerStateTsMs(snapshot);
+  if (!Number.isFinite(tsMs)) return false;
+  return (Date.now() - tsMs) > Math.max(1000, Number(WORKER_STALE_MS) || 10000);
+}
+
 export function computeTrafficLight(snapshot) {
   if (!snapshot || snapshot.connected !== true) return 'DISCONNECTED';
+  if (isWorkerStateStale(snapshot)) return 'DISCONNECTED';
 
   const h = snapshot.health || {};
   const s = snapshot.state || {};
@@ -115,7 +143,8 @@ export function shouldStopAll(trafficLight) {
   return trafficLight === 'DISCONNECTED' || trafficLight === 'RED';
 }
 
-export function toBannerText(trafficLight) {
+export function toBannerText(trafficLight, snapshot = null) {
+  if (trafficLight === 'DISCONNECTED' && isWorkerStateStale(snapshot)) return '⚠️ WORKER STALE (>10s): DISCONNECTED 강제 전환 · 전체 중단';
   if (trafficLight === 'DISCONNECTED') return 'DISCONNECTED: 워커 연결 끊김 · 전체 중단';
   if (trafficLight === 'RED') return 'RED: 위험 상태 · 전체 중단';
   return '';
@@ -135,7 +164,7 @@ export class WorkerMonitor {
       errors: { health: 'not_started', state: 'not_started', orders: 'not_started' },
       trafficLight: 'DISCONNECTED',
       stopAll: true,
-      banner: toBannerText('DISCONNECTED'),
+      banner: toBannerText('DISCONNECTED', null),
     };
     this.timer = null;
     this._workerDownSince = null;
@@ -162,7 +191,7 @@ export class WorkerMonitor {
         connected: base.connected,
         trafficLight: base.trafficLight || 'GREEN',
         stopAll: base.stopAll,
-        banner: base.banner || toBannerText(base.trafficLight),
+        banner: toBannerText(base.trafficLight, base),
         errors: {
           ...(base.errors || {}),
           poll: `debouncing_worker_down:${Math.max(0, now - this._workerDownSince)}ms`,
@@ -177,7 +206,7 @@ export class WorkerMonitor {
     try {
       const snap = await this.client.pollOnce();
       const debounced = this._applyWorkerDownDebounce(snap);
-      this.last = { ...debounced, banner: toBannerText(debounced.trafficLight) };
+      this.last = { ...debounced, banner: toBannerText(debounced.trafficLight, debounced) };
     } catch (e) {
       const now = Date.now();
       if (this._workerDownSince == null) this._workerDownSince = now;
@@ -198,7 +227,7 @@ export class WorkerMonitor {
           stopAll: true,
           errors: { ...(base.errors || {}), poll: String(e?.message || e) },
         };
-        next.banner = toBannerText(next.trafficLight);
+        next.banner = toBannerText(next.trafficLight, next);
       }
       this.last = next;
     }
@@ -222,15 +251,6 @@ export class WorkerMonitor {
   }
 
   stableSnapshotFallback() {
-    const snap = this.last;
-    if (snap?.connected === true || !this._stableSnap) return snap;
-    return {
-      ...this._stableSnap,
-      ts: snap?.ts || Date.now(),
-      errors: {
-        ...(snap?.errors || {}),
-        fallback: 'using_last_stable_snapshot',
-      },
-    };
+    return this.last;
   }
 }
