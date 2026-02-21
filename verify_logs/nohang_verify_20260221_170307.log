@@ -1,0 +1,35 @@
+[START] Sat Feb 21 17:03:07 KST 2026
+Checking worker endpoint 10 times (timeout threshold: 3s)
+worker[1]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000170
+worker[2]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000101
+worker[3]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000134
+worker[4]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000167
+worker[5]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000100
+worker[6]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000117
+worker[7]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000098
+worker[8]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000098
+worker[9]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000106
+worker[10]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000122
+worker_timeout_count=10
+\nChecking overview endpoint 5 times (collect response times)
+overview[1]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000096
+overview[2]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000098
+overview[3]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000095
+overview[4]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000102
+overview[5]: FAIL rc=7 out=curl: (7) Failed to connect to 127.0.0.1 port 18891 after 0 ms: Couldn't connect to server
+000 0.000094
+[END] Sat Feb 21 17:03:10 KST 2026

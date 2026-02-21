@@ -1,9 +1,13 @@
 import http from 'node:http';
-import { execSync } from 'node:child_process';
-import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs';
+import { exec as execCb } from 'node:child_process';
+import { promisify } from 'node:util';
+import { readFileSync, existsSync } from 'node:fs';
+import { readFile, mkdir, appendFile, writeFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WorkerApiClient, WorkerMonitor } from './worker-monitor.mjs';
+
+const exec = promisify(execCb);
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 18890;
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
@@ -17,50 +21,64 @@ const WORKER_API_BASE_URL = process.env.AT_UI_WORKER_API_BASE_URL || process.env
 const WORKER_API_TIMEOUT_MS = process.env.AT_UI_WORKER_API_TIMEOUT_MS || process.env.WORKER_API_TIMEOUT_MS || 3000;
 const WORKER_POLL_MS = process.env.WORKER_POLL_MS ? Number(process.env.WORKER_POLL_MS) : 1000;
 const WORKER_DOWN_DEBOUNCE_MS = process.env.WORKER_DOWN_DEBOUNCE_MS ? Number(process.env.WORKER_DOWN_DEBOUNCE_MS) : 4000;
+const OVERVIEW_REFRESH_MS = process.env.AT_UI_OVERVIEW_REFRESH_MS ? Number(process.env.AT_UI_OVERVIEW_REFRESH_MS) : 2000;
+const OVERVIEW_CMD_TIMEOUT_MS = process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS ? Number(process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS) : 1200;
 
-function tryExecJson(cmd) {
-  const out = execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-  return JSON.parse(out);
+async function tryExecJson(cmd, timeoutMs = OVERVIEW_CMD_TIMEOUT_MS) {
+  const { stdout } = await exec(cmd, {
+    encoding: 'utf8',
+    timeout: Math.max(100, Number(timeoutMs) || OVERVIEW_CMD_TIMEOUT_MS),
+    windowsHide: true,
+    maxBuffer: 1024 * 1024,
+  });
+  return JSON.parse(stdout || 'null');
 }
 
-function runJson(cmd) {
-  // 1) native shell (WSL/Linux)
+async function runJson(cmd) {
   try {
-    return tryExecJson(cmd);
+    return await tryExecJson(cmd);
   } catch {
-    // 2) Windows PowerShell -> WSL fallback
-    try {
-      const escaped = cmd.replace(/"/g, '\\"');
-      return tryExecJson(`wsl -e bash -lc "${escaped}"`);
-    } catch (err) {
-      throw err;
-    }
+    const escaped = cmd.replace(/"/g, '\\"');
+    return tryExecJson(`wsl -e bash -lc "${escaped}"`);
   }
 }
 
-function safeRun(cmd, fallback = null) {
-  try { return runJson(cmd); } catch { return fallback; }
+async function safeRun(cmd, fallback = null) {
+  try { return await runJson(cmd); } catch { return fallback; }
 }
 
-function readStatePoint() {
-  const p = join(WORKSPACE_ROOT, 'team', 'statepoints', 'latest.json');
-  if (!existsSync(p)) return null;
-  try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; }
-}
-
-function readTaskSignals() {
-  const p = join(WORKSPACE_ROOT, 'TASKS.md');
-  if (!existsSync(p)) return { inProgressWorkers: [], tasks: [], agentWork: {} };
+async function readJsonFile(path, fallback = null) {
   try {
-    const lines = readFileSync(p, 'utf8').split('\n').filter((l) => l.trim().startsWith('|'));
-    const rows = lines.slice(2); // skip header + separator
+    const raw = await readFile(path, 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+async function readStatePoint() {
+  const p = join(WORKSPACE_ROOT, 'team', 'statepoints', 'latest.json');
+  return readJsonFile(p, null);
+}
+
+async function readTaskSignals() {
+  const p = join(WORKSPACE_ROOT, 'TASKS.md');
+  let raw;
+  try {
+    raw = await readFile(p, 'utf8');
+  } catch {
+    return { inProgressWorkers: [], tasks: [], agentWork: {} };
+  }
+
+  try {
+    const lines = raw.split('\n').filter((l) => l.trim().startsWith('|'));
+    const rows = lines.slice(2);
     const tasks = [];
     const inProgressWorkers = new Set();
     const agentWork = {};
 
     for (const row of rows) {
       const cols = row.split('|').map((c) => c.trim());
-      // | ID | Status | Owner | Description | Dependency | Ownership | Contract Ref | Blocker | Fail Count |
       if (cols.length < 10) continue;
       const taskId = cols[1];
       const status = (cols[2] || '').toUpperCase();
@@ -121,61 +139,57 @@ function computeTokenSnapshot(status, checkpoint) {
   };
 }
 
-function appendSnapshot(snapshot) {
+async function appendSnapshot(snapshot) {
   try {
-    mkdirSync(USAGE_DIR, { recursive: true });
-    appendFileSync(SNAPSHOT_FILE, JSON.stringify(snapshot) + '\n', 'utf8');
+    await mkdir(USAGE_DIR, { recursive: true });
+    await appendFile(SNAPSHOT_FILE, `${JSON.stringify(snapshot)}\n`, 'utf8');
   } catch {
-    // ignore write errors for dashboard availability
+    // ignore
   }
 }
 
-function readSnapshots() {
-  if (!existsSync(SNAPSHOT_FILE)) return [];
+async function readSnapshots() {
   try {
-    const lines = readFileSync(SNAPSHOT_FILE, 'utf8').split('\n').filter(Boolean);
+    const raw = await readFile(SNAPSHOT_FILE, 'utf8');
+    const lines = raw.split('\n').filter(Boolean);
     return lines.map((l) => JSON.parse(l)).filter((x) => x && x.ts);
   } catch {
     return [];
   }
 }
 
-function readActivityState() {
-  if (!existsSync(ACTIVITY_STATE_FILE)) return { runs: {}, tasks: {} };
-  try {
-    const parsed = JSON.parse(readFileSync(ACTIVITY_STATE_FILE, 'utf8'));
-    return {
-      runs: (parsed && typeof parsed.runs === 'object' && !Array.isArray(parsed.runs)) ? parsed.runs : {},
-      tasks: (parsed && typeof parsed.tasks === 'object' && !Array.isArray(parsed.tasks)) ? parsed.tasks : {},
-    };
-  } catch {
-    return { runs: {}, tasks: {} };
-  }
+async function readActivityState() {
+  const parsed = await readJsonFile(ACTIVITY_STATE_FILE, { runs: {}, tasks: {} });
+  return {
+    runs: (parsed && typeof parsed.runs === 'object' && !Array.isArray(parsed.runs)) ? parsed.runs : {},
+    tasks: (parsed && typeof parsed.tasks === 'object' && !Array.isArray(parsed.tasks)) ? parsed.tasks : {},
+  };
 }
 
-function writeActivityState(state) {
+async function writeActivityState(state) {
   try {
-    mkdirSync(USAGE_DIR, { recursive: true });
-    writeFileSync(ACTIVITY_STATE_FILE, JSON.stringify(state), 'utf8');
+    await mkdir(USAGE_DIR, { recursive: true });
+    await writeFile(ACTIVITY_STATE_FILE, JSON.stringify(state), 'utf8');
   } catch {
     // ignore
   }
 }
 
-function appendActivityEvents(events) {
+async function appendActivityEvents(events) {
   if (!events?.length) return;
   try {
-    mkdirSync(USAGE_DIR, { recursive: true });
-    for (const e of events) appendFileSync(ACTIVITY_LOG_FILE, JSON.stringify(e) + '\n', 'utf8');
+    await mkdir(USAGE_DIR, { recursive: true });
+    const payload = events.map((e) => JSON.stringify(e)).join('\n') + '\n';
+    await appendFile(ACTIVITY_LOG_FILE, payload, 'utf8');
   } catch {
     // ignore
   }
 }
 
-function readActivityLog(limit = 600) {
-  if (!existsSync(ACTIVITY_LOG_FILE)) return [];
+async function readActivityLog(limit = 600) {
   try {
-    const lines = readFileSync(ACTIVITY_LOG_FILE, 'utf8').split('\n').filter(Boolean);
+    const raw = await readFile(ACTIVITY_LOG_FILE, 'utf8');
+    const lines = raw.split('\n').filter(Boolean);
     const rows = lines.slice(-limit).map((l) => JSON.parse(l));
     return rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
   } catch {
@@ -183,8 +197,8 @@ function readActivityLog(limit = 600) {
   }
 }
 
-function collectActivityEvents(status, taskSignals) {
-  const state = readActivityState();
+async function collectActivityEvents(status, taskSignals) {
+  const state = await readActivityState();
   state.runs = state.runs || {};
   state.tasks = state.tasks || {};
 
@@ -227,8 +241,8 @@ function collectActivityEvents(status, taskSignals) {
     }
   }
 
-  appendActivityEvents(events);
-  writeActivityState(state);
+  await appendActivityEvents(events);
+  await writeActivityState(state);
   return readActivityLog();
 }
 
@@ -237,7 +251,6 @@ function summarizeUsage(snapshots) {
   const dayAgo = now - 24 * 3600 * 1000;
   const weekAgo = now - 7 * 24 * 3600 * 1000;
 
-  // Convert absolute session-token snapshots -> delta usage snapshots
   const ordered = [...snapshots].sort((a, b) => a.ts - b.ts);
   const prevByAgent = {};
   const deltas = [];
@@ -247,12 +260,10 @@ function summarizeUsage(snapshots) {
     for (const [agent, absRaw] of Object.entries(s.per_agent || {})) {
       const abs = Number(absRaw || 0);
       if (!(agent in prevByAgent)) {
-        // first observation is baseline, not usage
         prevByAgent[agent] = abs;
         continue;
       }
       const prev = Number(prevByAgent[agent] || 0);
-      // If counter drops (session reset/compaction), treat as fresh baseline (no negative usage)
       const delta = abs >= prev ? (abs - prev) : 0;
       prevByAgent[agent] = abs;
       if (delta > 0) {
@@ -305,39 +316,65 @@ const workerMonitor = new WorkerMonitor({
 });
 workerMonitor.start();
 
-function buildOverview() {
-  const status = safeRun('openclaw status --all --json', null);
-  const agents = safeRun('openclaw agents list --json', null);
-  const statePoint = readStatePoint();
-  const taskSignals = readTaskSignals();
+let overviewCache = {
+  now: new Date().toISOString(),
+  sourceOk: false,
+  worker: workerMonitor.stableSnapshotFallback(),
+  statePoint: null,
+  usage: summarizeUsage([]),
+  taskSignals: { inProgressWorkers: [], tasks: [], agentWork: {} },
+  timeline: [],
+};
+let overviewRefreshRunning = false;
 
-  let timeline = [];
-  if (status) {
-    const snap = computeTokenSnapshot(status, statePoint);
-    appendSnapshot(snap);
-    timeline = collectActivityEvents(status, taskSignals);
-  } else {
-    timeline = readActivityLog();
+async function rebuildOverviewCache() {
+  if (overviewRefreshRunning) return;
+  overviewRefreshRunning = true;
+  try {
+    const [status, agents, statePoint, taskSignals] = await Promise.all([
+      safeRun('openclaw status --all --json', null),
+      safeRun('openclaw agents list --json', null),
+      readStatePoint(),
+      readTaskSignals(),
+    ]);
+
+    let timeline = [];
+    if (status) {
+      const snap = computeTokenSnapshot(status, statePoint);
+      await appendSnapshot(snap);
+      timeline = await collectActivityEvents(status, taskSignals);
+    } else {
+      timeline = await readActivityLog();
+    }
+
+    const usage = summarizeUsage(await readSnapshots());
+
+    // Auto Trading UI split: keep only fields actually used by this UI.
+    overviewCache = {
+      now: new Date().toISOString(),
+      sourceOk: Boolean(status && agents),
+      worker: workerMonitor.stableSnapshotFallback(),
+      statePoint,
+      usage,
+      taskSignals,
+      timeline,
+    };
+  } catch {
+    overviewCache = {
+      ...overviewCache,
+      now: new Date().toISOString(),
+      sourceOk: false,
+      worker: workerMonitor.stableSnapshotFallback(),
+    };
+  } finally {
+    overviewRefreshRunning = false;
   }
-  const usage = summarizeUsage(readSnapshots());
-
-  return {
-    now: new Date().toISOString(),
-    sourceOk: Boolean(status && agents),
-    worker: workerMonitor.stableSnapshotFallback(),
-    gateway: status?.gateway || null,
-    channelSummary: status?.channelSummary || null,
-    sessions: status?.sessions || null,
-    agentsMeta: status?.agents || null,
-    agents: agents || [],
-    heartbeat: status?.heartbeat || null,
-    securityAudit: status?.securityAudit || null,
-    statePoint,
-    usage,
-    taskSignals,
-    timeline,
-  };
 }
+
+rebuildOverviewCache();
+setInterval(() => {
+  rebuildOverviewCache().catch(() => {});
+}, Math.max(500, OVERVIEW_REFRESH_MS));
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -350,14 +387,11 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
   if (url.pathname === '/api/overview') {
-    const payload = buildOverview();
     res.writeHead(200, { 'content-type': MIME['.json'] });
-    return res.end(JSON.stringify(payload, null, 2));
+    return res.end(JSON.stringify({ ...overviewCache, worker: workerMonitor.stableSnapshotFallback() }, null, 2));
   }
 
   if (url.pathname === '/api/worker') {
-    // Never block API response on internal worker fetches.
-    // Refresh runs in background; response always returns immediately.
     Promise.race([
       workerMonitor.tick(),
       new Promise((resolve) => setTimeout(resolve, 120)),
