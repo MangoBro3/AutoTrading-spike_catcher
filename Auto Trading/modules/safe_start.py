@@ -20,6 +20,12 @@ class SafeStartResult:
 
 
 class SafeStartManager:
+    @staticmethod
+    def _normalize_reason_code(value: str) -> str:
+        allowed = {"manual_stop", "risk_hard_stop", "sync_block", "crash", "unknown"}
+        v = str(value or "").strip().lower()
+        return v if v in allowed else "unknown"
+
     def __init__(self, state_path: Path, runtime_state_path: Path, runtime_status_path: Path):
         self.state_path = Path(state_path)
         self.runtime_state_path = Path(runtime_state_path)
@@ -78,6 +84,7 @@ class SafeStartManager:
                 "message": "Sync check failed. RUNNING is blocked.",
                 "errors": errors,
                 "running_blocked": True,
+                "reason_code": "sync_block",
             }
             self._write_state(PHASE_WAITING_SYNC, details)
             return SafeStartResult(ok=False, phase=PHASE_WAITING_SYNC, details=details)
@@ -97,10 +104,11 @@ class SafeStartManager:
         self._write_state(PHASE_RUNNING, details)
         return SafeStartResult(ok=True, phase=PHASE_RUNNING, details=details)
 
-    def mark_stopped(self, reason: str = "stopped") -> SafeStartResult:
+    def mark_stopped(self, reason: str = "stopped", reason_code: str = "unknown") -> SafeStartResult:
         details = {
             "message": reason,
             "running_blocked": True,
+            "reason_code": self._normalize_reason_code(reason_code),
         }
         self._write_state(PHASE_STOPPED, details)
         return SafeStartResult(ok=True, phase=PHASE_STOPPED, details=details)

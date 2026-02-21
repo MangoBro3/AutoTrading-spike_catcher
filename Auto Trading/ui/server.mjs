@@ -142,6 +142,18 @@ function normalizeMode(v) {
   return (m === 'LIVE' || m === 'PAPER') ? m : null;
 }
 
+function normalizeTruth(truth, fallback = {}) {
+  const t = (truth && typeof truth === 'object') ? truth : {};
+  return {
+    mode: normalizeMode(t.mode) || normalizeMode(fallback.mode) || null,
+    phase: String(t.phase || fallback.phase || 'STOPPED').toUpperCase(),
+    running: Boolean(t.running ?? fallback.running ?? false),
+    lock_exists: Boolean(t.lock_exists ?? fallback.lock_exists ?? false),
+    reason_code: String(t.reason_code || fallback.reason_code || 'unknown').toLowerCase(),
+    source: String(t.source || fallback.source || 'canonical:/api/v1/status+lock'),
+  };
+}
+
 function runtimeStatusTsMs(runtimeStatus) {
   const cands = [
     runtimeStatus?.ts,
@@ -185,24 +197,28 @@ function sanitizeRuntimeStatus(runtimeStatus, workerSnap) {
 }
 
 function deriveModeInfo({ workerSnap, runtimeState, statePoint, runtimeStatus }) {
-  const workerMode = normalizeMode(workerSnap?.state?.mode);
+  const truth = normalizeTruth(workerSnap?.state?.truth, {
+    mode: workerSnap?.state?.mode,
+    phase: workerSnap?.state?.phase,
+    running: workerSnap?.state?.running,
+    lock_exists: workerSnap?.state?.lock_exists,
+    reason_code: workerSnap?.state?.reason_code,
+  });
   const statusMode = normalizeMode(
     runtimeState?.mode
     ?? runtimeState?.status?.mode
     ?? statePoint?.mode
     ?? statePoint?.status?.mode,
   );
-  const runtimeMode = normalizeMode(runtimeStatus?.mode);
   const controllerMode = normalizeMode(
     runtimeState?.controller_mode
     ?? statePoint?.controller_mode
     ?? workerSnap?.state?.pending?.mode,
   );
 
-  if (workerMode) return { mode: workerMode, modeSource: 'worker', controllerMode };
-  if (statusMode) return { mode: statusMode, modeSource: 'status', controllerMode };
-  if (runtimeMode) return { mode: runtimeMode, modeSource: 'runtimeStatus', controllerMode };
-  return { mode: controllerMode || null, modeSource: 'fallback', controllerMode };
+  if (truth.mode) return { mode: truth.mode, modeSource: 'truth', controllerMode, truth };
+  if (statusMode) return { mode: statusMode, modeSource: 'status', controllerMode, truth };
+  return { mode: controllerMode || null, modeSource: 'fallback', controllerMode, truth };
 }
 
 function toNum(v, d = null) {
@@ -615,7 +631,7 @@ async function writeUiSettings(next = {}) {
 }
 
 function deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }) {
-  const mode = String(runtimeStatus?.mode || workerSnap?.state?.pending?.mode || '').toUpperCase();
+  const mode = String(workerSnap?.state?.truth?.mode || workerSnap?.state?.pending?.mode || '').toUpperCase();
   if (mode !== 'PAPER') return '';
 
   const riskRaw = String(
@@ -980,6 +996,7 @@ let overviewCache = {
   mode: null,
   modeSource: 'fallback',
   controller_mode: null,
+  truth: normalizeTruth(null),
   runtimeStatusStaleIgnored: false,
   runtimeStatusStaleReason: '',
   watchingSymbols: [],
@@ -1054,6 +1071,7 @@ async function rebuildOverviewCache() {
       mode: modeInfo.mode,
       modeSource: modeInfo.modeSource,
       controller_mode: modeInfo.controllerMode,
+      truth: modeInfo.truth,
       runtimeStatusStaleIgnored: runtimeStatusCheck.staleIgnored,
       runtimeStatusStaleReason: runtimeStatusCheck.staleReason,
       watchingSymbols: deriveWatchingSymbols({ runtimeStatus: runtimeStatusSafe, runtimeState, statePoint, workerSnap }),
@@ -1136,6 +1154,7 @@ const server = http.createServer((req, res) => {
           mode: modeInfo.mode,
           modeSource: modeInfo.modeSource,
           controller_mode: modeInfo.controllerMode,
+          truth: modeInfo.truth,
           runtimeStatusStaleIgnored: runtimeStatusCheck.staleIgnored,
           runtimeStatusStaleReason: runtimeStatusCheck.staleReason,
           runtimeStatus,

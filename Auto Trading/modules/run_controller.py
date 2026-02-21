@@ -29,6 +29,12 @@ class RunController:
     RUNTIME_STATE_SCHEMA_VERSION = 2
     DAILY_RISK_STATE_SCHEMA_VERSION = 2
 
+    @staticmethod
+    def _normalize_reason_code(value):
+        allowed = {"manual_stop", "risk_hard_stop", "sync_block", "crash", "unknown"}
+        v = str(value or "").strip().lower()
+        return v if v in allowed else "unknown"
+
     def __init__(self, adapter, ledger, watch_engine, notifier, mode=MODE_PAPER, disable_strategy: bool = False, execution_engine=None):
         self.adapter = adapter
         self.ledger = ledger
@@ -607,9 +613,10 @@ class RunController:
         # Main Loop would go here...
         # STAGE 10: Ensure check_risk_limits() is called in loop
 
-    def stop(self):
+    def stop(self, reason_code: str = "manual_stop"):
         self.running = False
-        msg = "🛑 **RUN STOPPED**"
+        rc = self._normalize_reason_code(reason_code)
+        msg = f"🛑 **RUN STOPPED**\nreason_code: {rc}"
         logger.info(msg)
         if self.notifier:
             self.notifier.emit_event("SYSTEM", "ALL", "BOT STOPPED", msg)

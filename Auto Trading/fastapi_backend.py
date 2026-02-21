@@ -101,6 +101,14 @@ class ManualRoundtripRequest(BaseModel):
     confirm: str = ""
 
 
+
+
+def _normalize_reason_code(value: str) -> str:
+    allowed = {"manual_stop", "risk_hard_stop", "sync_block", "crash", "unknown"}
+    v = str(value or "").strip().lower()
+    return v if v in allowed else "unknown"
+
+
 class BackendService:
     def __init__(self):
         self._mtx = threading.Lock()
@@ -142,11 +150,31 @@ class BackendService:
         elif phase == PHASE_RUNNING:
             # stale safe-start RUNNING flag; worker is not actually running
             phase = "STOPPED"
-        return {
+
+        lock_info = None
+        try:
+            lock_info = self.lock.read()
+        except Exception:
+            lock_info = None
+
+        reason_code = _normalize_reason_code(
+            (safe_state or {}).get("reason_code")
+            or (safe_state or {}).get("reason")
+            or (safe_state or {}).get("details", {}).get("reason_code")
+            or (safe_state or {}).get("details", {}).get("reason")
+        )
+        if not running and reason_code == "unknown" and str(phase).upper() == PHASE_WAITING_SYNC:
+            reason_code = "sync_block"
+
+        truth = {
             "mode": self._resolve_mode(),
-            "running": bool(running),
             "phase": phase,
+            "running": bool(running),
+            "lock_exists": bool(lock_info is not None),
+            "reason_code": reason_code,
+            "source": "canonical:/api/v1/status+lock",
         }
+        return truth
 
     def _json_safe(self, value):
         if value is None or isinstance(value, (str, int, float, bool)):
@@ -285,6 +313,9 @@ class BackendService:
             "manual_roundtrip": self.manual_roundtrip,
 
             "phase": canonical["phase"],
+            "truth": canonical,
+            "lock_exists": canonical["lock_exists"],
+            "reason_code": canonical["reason_code"],
             "safe_start": state,
             "pending": self._pending_status(),
             "virtual_capital": self._build_virtual_capital(),
@@ -523,8 +554,11 @@ class BackendService:
 
     def stop(self):
         with self._mtx:
+            reason_code = "manual_stop"
             if self.controller is not None:
                 try:
+                    self.controller.stop(reason_code=reason_code)
+                except TypeError:
                     self.controller.stop()
                 except Exception as e:
                     self.last_error = str(e)
@@ -535,8 +569,8 @@ class BackendService:
             self.worker = None
             self.pending = None
             self.lock.release()
-            self.safe_start.mark_stopped("Stopped by operator")
-            return {"ok": True}
+            self.safe_start.mark_stopped("Stopped by operator", reason_code=reason_code)
+            return {"ok": True, "reason_code": reason_code}
 
 
 class BackendStatusTUI:
@@ -650,11 +684,20 @@ class BackendStatusTUI:
             except Exception:
                 pnl_txt = "-"
 
+        truth = canonical if isinstance(canonical, dict) else {}
+        truth_line = (
+            f"TRUTH={str(truth.get('mode') or mode).upper()} "
+            f"{str(truth.get('phase') or phase).upper()} "
+            f"running={bool(truth.get('running', running))} "
+            f"lock={'on' if bool(truth.get('lock_exists', lock_exists)) else 'off'}"
+        )
+
         lines = [
             "=" * 78,
             " SafeBot Backend Status TUI (--tui)",
             "=" * 78,
             f" MODE           : {mode_badge}",
+            f" TRUTH          : {truth_line}",
             f" PHASE/CONN     : {phase} / {conn} (lock={'ON' if lock_exists else 'OFF'})",
             f" ACCOUNT        : equity={equity if equity is not None else '-'} KRW | PnL={pnl_txt}",
             f" POSITION       : {pos_state} | {pos_symbol} qty={pos_qty}",

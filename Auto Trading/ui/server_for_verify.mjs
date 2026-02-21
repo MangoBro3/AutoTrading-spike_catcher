@@ -216,7 +216,7 @@ async function writeUiSettings(next = {}) {
 }
 
 function deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }) {
-  const mode = String(runtimeStatus?.mode || workerSnap?.state?.pending?.mode || '').toUpperCase();
+  const mode = String(workerSnap?.state?.truth?.mode || workerSnap?.state?.pending?.mode || '').toUpperCase();
   if (mode !== 'PAPER') return '';
 
   const riskRaw = String(
