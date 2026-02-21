@@ -1,13 +1,40 @@
-[2026-02-21T09:09:16.101Z] mock: mock-worker-api listening on http://127.0.0.1:18080
-[2026-02-21T09:09:16.119Z] ui: auto-trading-ui listening on http://127.0.0.1:18890
-[2026-02-21T09:09:16.119Z] ui: [startup] worker.baseURL=http://127.0.0.1:18080
-[startup] worker.timeoutMs=3000
-[startup] worker.pollMs=1000 worker.downDebounceMs=4000
-[startup] overview.refreshMs=2000 overview.cmdTimeoutMs=1200
-[startup] api.workerKickTimeoutMs=120
-[2026-02-21T09:09:17.142Z] ui: [watchdog] #1 START GET /api/overview
-[2026-02-21T09:09:17.144Z] ui: [watchdog] #1 END status=200 took=2ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
-[2026-02-21T09:09:17.147Z] ui: [watchdog] #2 START GET /api/overview
-[2026-02-21T09:09:17.147Z] ui: [watchdog] #2 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
-[2026-02-21T09:09:17.230Z] ui: [watchdog] #3 START GET /api/overview
-[2026-02-21T09:09:17.231Z] ui: [watchdog] #3 END status=200 took=1ms route=/api/overview cache=immediate timelineLimit=30 timelineHours=0
+[2026-02-21T09:19:22.504Z] mock[err]: node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 127.0.0.1:18080
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '127.0.0.1',
+  port: 18080
+}
+
+Node.js v22.22.0
+[2026-02-21T09:19:22.527Z] ui[err]: node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 127.0.0.1:18890
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '127.0.0.1',
+  port: 18890
+}
+
+Node.js v22.22.0

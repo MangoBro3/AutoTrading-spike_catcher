@@ -26,6 +26,7 @@ const OVERVIEW_CMD_TIMEOUT_MS = process.env.AT_UI_OVERVIEW_CMD_TIMEOUT_MS ? Numb
 const API_WORKER_KICK_TIMEOUT_MS = process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS ? Number(process.env.AT_UI_API_WORKER_KICK_TIMEOUT_MS) : 120;
 const RUNTIME_STATUS_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_status.json');
 const RUNTIME_STATE_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'runtime_state.json');
+const EXCHANGE_TOGGLES_PATH = join(WORKSPACE_ROOT, 'Auto Trading', 'results', 'ui_exchange_toggles.json');
 const DEFAULT_TIMELINE_LIMIT = process.env.AT_UI_TIMELINE_DEFAULT_LIMIT ? Number(process.env.AT_UI_TIMELINE_DEFAULT_LIMIT) : 30;
 const DEFAULT_TIMELINE_WINDOW_HOURS = process.env.AT_UI_TIMELINE_DEFAULT_HOURS ? Number(process.env.AT_UI_TIMELINE_DEFAULT_HOURS) : 24;
 const TIMELINE_MAX_CAP = process.env.AT_UI_TIMELINE_MAX_CAP ? Number(process.env.AT_UI_TIMELINE_MAX_CAP) : 300;
@@ -143,6 +144,64 @@ function deriveExchangeIndicators({ runtimeStatus, workerSnap }) {
     upbit: asStatus('UPBIT'),
     bithumb: asStatus('BITHUMB'),
   };
+
+
+function normalizeExchangeToggles(raw) {
+  const upbit = raw?.upbit !== false;
+  const bithumb = raw?.bithumb !== false;
+  return { upbit, bithumb };
+}
+
+async function readExchangeToggles() {
+  const saved = await readJsonFile(EXCHANGE_TOGGLES_PATH, null);
+  return normalizeExchangeToggles(saved);
+}
+
+async function writeExchangeToggles(next) {
+  const normalized = normalizeExchangeToggles(next);
+  try {
+    await mkdir(join(WORKSPACE_ROOT, 'Auto Trading', 'results'), { recursive: true });
+    await writeFile(EXCHANGE_TOGGLES_PATH, JSON.stringify(normalized, null, 2), 'utf8');
+  } catch {
+    // ignore persistence failure
+  }
+  return normalized;
+}
+
+function deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }) {
+  const mode = String(runtimeStatus?.mode || workerSnap?.state?.pending?.mode || '').toUpperCase();
+  if (mode !== 'PAPER') return '';
+
+  const riskRaw = String(
+    runtimeState?.riskLevel
+    || runtimeState?.risk
+    || statePoint?.riskLevel
+    || statePoint?.risk
+    || workerSnap?.state?.riskLevel
+    || workerSnap?.state?.risk
+    || ''
+  ).toLowerCase();
+
+  const volRaw = Number(
+    runtimeState?.volatility
+    || runtimeStatus?.volatility
+    || statePoint?.volatility
+    || statePoint?.market?.volatility
+    || NaN
+  );
+
+  if (riskRaw.includes('red') || riskRaw.includes('critical') || riskRaw.includes('high')) {
+    return '시장 한줄 코멘트: 리스크 경계 (고위험 신호 감지, 포지션 축소/관망 권장)';
+  }
+  if (Number.isFinite(volRaw) && volRaw >= 0.04) {
+    return '시장 한줄 코멘트: 변동성 확대 (급등락 가능성↑, 진입 신중)';
+  }
+  if (Number.isFinite(volRaw) && volRaw <= 0.01) {
+    return '시장 한줄 코멘트: 횡보 구간 (모멘텀 약함, 신호 선별 필요)';
+  }
+  return '시장 한줄 코멘트: 데이터 제한으로 추세 판별 보류 (fallback)';
+}
+
 }
 
 async function readTaskSignals() {
@@ -482,7 +541,16 @@ let overviewCache = {
   usage: summarizeUsage([]),
   taskSignals: { inProgressWorkers: [], tasks: [], agentWork: {} },
   timeline: [],
+  timelineMeta: {
+    limit: DEFAULT_TIMELINE_LIMIT,
+    hours: DEFAULT_TIMELINE_WINDOW_HOURS,
+    totalAfterCompress: 0,
+    totalAfterWindow: 0,
+    cap: TIMELINE_MAX_CAP,
+  },
 };
+let overviewTimelineBase = [];
+let exchangeTogglesCache = normalizeExchangeToggles(null);
 let overviewRefreshRunning = false;
 
 async function rebuildOverviewCache() {
@@ -507,7 +575,8 @@ async function rebuildOverviewCache() {
       rawTimeline = await readActivityLog(TIMELINE_MAX_CAP);
     }
 
-    const timelineView = buildTimelineView(rawTimeline, {
+    overviewTimelineBase = compressConsecutiveSessionUpdates(rawTimeline).slice(0, TIMELINE_MAX_CAP);
+    const timelineView = buildTimelineView(overviewTimelineBase, {
       hours: DEFAULT_TIMELINE_WINDOW_HOURS,
       limit: DEFAULT_TIMELINE_LIMIT,
     });
@@ -515,6 +584,7 @@ async function rebuildOverviewCache() {
     const usage = summarizeUsage(await readSnapshots());
 
     const workerSnap = workerMonitor.stableSnapshotFallback();
+    exchangeTogglesCache = await readExchangeToggles();
     // Auto Trading UI split: keep only fields actually used by this UI.
     overviewCache = {
       now: new Date().toISOString(),
@@ -525,11 +595,12 @@ async function rebuildOverviewCache() {
       runtimeState,
       watchingSymbols: deriveWatchingSymbols({ runtimeStatus, runtimeState, statePoint, workerSnap }),
       exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
+      exchangeToggles: exchangeTogglesCache,
+      marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
       usage,
       taskSignals,
       timeline: timelineView.rows,
       timelineMeta: timelineView.meta,
-      timelineAll: compressConsecutiveSessionUpdates(rawTimeline).slice(0, TIMELINE_MAX_CAP),
     };
   } catch {
     overviewCache = {
@@ -572,7 +643,7 @@ const server = http.createServer((req, res) => {
       const qLimitRaw = url.searchParams.get('timelineLimit');
       const hours = (qHoursRaw === 'all' || qHoursRaw === '0') ? 'all' : toSafeInt(qHoursRaw, DEFAULT_TIMELINE_WINDOW_HOURS);
       const limit = clampTimelineLimit(qLimitRaw || DEFAULT_TIMELINE_LIMIT);
-      const timelineView = buildTimelineView(overviewCache.timelineAll || overviewCache.timeline || [], { hours, limit });
+      const timelineView = buildTimelineView(overviewTimelineBase.length ? overviewTimelineBase : (overviewCache.timeline || []), { hours, limit });
 
       const workerSnap = workerMonitor.stableSnapshotFallback();
       const runtimeStatus = overviewCache.runtimeStatus || null;
@@ -589,6 +660,8 @@ const server = http.createServer((req, res) => {
             workerSnap,
           }),
           exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
+      exchangeToggles: exchangeTogglesCache,
+      marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
           timeline: timelineView.rows,
           timelineMeta: timelineView.meta,
         },
@@ -610,6 +683,63 @@ const server = http.createServer((req, res) => {
         ctx,
         'route=/api/worker non_blocking',
       );
+    }
+
+
+    if (url.pathname === '/api/worker/control/exchanges') {
+      if ((req.method || 'GET').toUpperCase() !== 'POST') {
+        return sendJson(res, 405, { ok: false, error: 'method_not_allowed' }, ctx, 'route=/api/worker/control/exchanges method_guard');
+      }
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('error', (e) => sendApiError(res, ctx, e, '/api/worker/control/exchanges'));
+      req.on('end', async () => {
+        try {
+          const parsed = body ? JSON.parse(body) : {};
+          const toggles = normalizeExchangeToggles({
+            upbit: parsed?.upbit ?? parsed?.upbitEnabled,
+            bithumb: parsed?.bithumb ?? parsed?.bithumbEnabled,
+          });
+          exchangeTogglesCache = await writeExchangeToggles(toggles);
+
+          const modePayload = {
+            mode: String(parsed?.mode || overviewCache?.runtimeStatus?.mode || 'PAPER').toUpperCase(),
+            exchanges: {
+              upbit: exchangeTogglesCache.upbit,
+              bithumb: exchangeTogglesCache.bithumb,
+            },
+          };
+
+          let backendResult = null;
+          let backendRoute = null;
+          const attempts = [
+            { route: 'control/mode', fn: () => workerClient.control('mode', modePayload) },
+            { route: 'control/exchanges', fn: () => workerClient.control('exchanges', modePayload.exchanges) },
+          ];
+          for (const attempt of attempts) {
+            try {
+              backendResult = await attempt.fn();
+              backendRoute = attempt.route;
+              break;
+            } catch {
+              // try next
+            }
+          }
+
+          await workerMonitor.tick();
+          return sendJson(res, 200, {
+            ok: true,
+            action: 'exchanges',
+            applied: exchangeTogglesCache,
+            backendRoute,
+            result: backendResult,
+            worker: workerMonitor.snapshot(),
+          }, ctx, 'route=/api/worker/control/exchanges');
+        } catch (e) {
+          return sendApiError(res, ctx, e, '/api/worker/control/exchanges');
+        }
+      });
+      return;
     }
 
     if (url.pathname.startsWith('/api/worker/control/')) {

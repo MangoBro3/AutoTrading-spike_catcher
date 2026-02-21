@@ -35,6 +35,7 @@
   <div class="muted" id="ts">loading...</div>
   <div class="inline"><button id="refreshConnBtn" class="btn">연결 상태 새로고침</button><span id="refreshConnState" class="muted">수동 갱신: -</span></div>
   <div id="stopBanner" class="banner danger"></div>
+  <div id="marketOneLiner" class="banner" style="display:none;background:#1e3a27;border:1px solid #3f7a58;color:#d7ffe6"></div>
 
   <div class="grid">
     <div class="card">
@@ -45,6 +46,20 @@
         <button id="modeLiveBtn" class="btn btn-danger">LIVE</button>
       </div>
       <div id="modeStatus" class="muted" style="margin-top:8px"></div>
+      <div style="margin-top:10px">
+        <div class="muted">거래소 활성화</div>
+        <div class="switch-wrap" style="margin-top:6px">
+          <label class="switch"><input id="upbitToggle" type="checkbox" checked /><span class="slider"></span></label>
+          <span style="min-width:58px">Upbit</span>
+          <span id="upbitToggleLabel" class="muted">활성</span>
+        </div>
+        <div class="switch-wrap">
+          <label class="switch"><input id="bithumbToggle" type="checkbox" checked /><span class="slider"></span></label>
+          <span style="min-width:58px">Bithumb</span>
+          <span id="bithumbToggleLabel" class="muted">활성</span>
+        </div>
+        <div id="exchangeToggleStatus" class="muted">거래소 토글 대기중</div>
+      </div>
     </div>
 
     <div class="card">
@@ -91,9 +106,10 @@ const $ = (id)=>document.getElementById(id);
 const esc = (s)=>String(s??'').replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]));
 const val = (obj, keys, fallback='-') => { for (const k of keys){const v=obj?.[k]; if(v!==undefined&&v!==null&&v!=='') return v;} return fallback; };
 
-let latestOverview=null, controlBusy=false, syncingToggle=false;
+let latestOverview=null, controlBusy=false, syncingToggle=false, syncingExchangeToggle=false;
 let manualRefreshBusy=false, lastManualRefreshAt=null, lastManualRefreshError='';
 let selectedMode='PAPER';
+let exchangeToggles={upbit:true,bithumb:true};
 
 function phaseFromOverview(data){ return String(data?.worker?.state?.phase || data?.worker?.phase || data?.phase || 'STOPPED').toUpperCase(); }
 function isAutoOnByPhase(phase){ return phase==='RUNNING'||phase==='WAITING_OPERATOR'; }
@@ -101,9 +117,27 @@ function phaseBadgeClass(phase){ if(phase==='RUNNING') return 'pill pill-run'; i
 function syncToggleUI(phase){ syncingToggle=true; const checked=isAutoOnByPhase(phase); $('autoToggle').checked=checked; $('autoToggle').disabled=controlBusy; $('autoToggleLabel').textContent=checked?'ON':'OFF'; const b=$('controlPhaseBadge'); b.className=phaseBadgeClass(phase); b.textContent=phase; syncingToggle=false; }
 function setModeButtons(){ $('modePaperBtn').classList.toggle('btn-selected', selectedMode==='PAPER'); $('modeLiveBtn').classList.toggle('btn-selected', selectedMode==='LIVE'); $('modeStatus').textContent = `선택 모드: ${selectedMode}`; }
 
+function syncExchangeToggleUI(){
+  syncingExchangeToggle=true;
+  $('upbitToggle').checked=!!exchangeToggles.upbit;
+  $('bithumbToggle').checked=!!exchangeToggles.bithumb;
+  $('upbitToggleLabel').textContent=exchangeToggles.upbit?'활성':'비활성';
+  $('bithumbToggleLabel').textContent=exchangeToggles.bithumb?'활성':'비활성';
+  syncingExchangeToggle=false;
+}
+function pickStartExchange(){
+  const runtimeExchange=String(latestOverview?.runtimeStatus?.exchange || '').toUpperCase();
+  if (runtimeExchange==='UPBIT' && exchangeToggles.upbit) return 'UPBIT';
+  if (runtimeExchange==='BITHUMB' && exchangeToggles.bithumb) return 'BITHUMB';
+  if (exchangeToggles.upbit) return 'UPBIT';
+  if (exchangeToggles.bithumb) return 'BITHUMB';
+  return null;
+}
+
 function overviewUrl(){ return '/api/overview'; }
 async function fetchJson(url){ const r=await fetch(url); const j=await r.json(); if(!r.ok) throw new Error(`${url} ${r.status}`); return j; }
 async function postControl(action, body){ const r=await fetch(`/api/worker/control/${action}`, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||`control_failed:${action}`); if(j?.result?.ok===false) throw new Error(j?.result?.detail||j?.result?.error||`worker_control_failed:${action}`); return j; }
+async function postExchangeToggles(body){ const r=await fetch('/api/worker/control/exchanges', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body||{})}); const j=await r.json(); if(!r.ok||j.ok===false) throw new Error(j.error||'control_failed:exchanges'); return j; }
 
 function normalizeWorkerPayload(payload){ if(!payload||typeof payload!=='object') return null; if(payload.worker&&typeof payload.worker==='object') return payload.worker; if(payload.result?.worker&&typeof payload.result.worker==='object') return payload.result.worker; if(payload.state||payload.trafficLight||payload.connected!==undefined) return payload; return null; }
 
@@ -114,12 +148,19 @@ function render(data){
   const light=String(worker.trafficLight||'DISCONNECTED').toUpperCase();
   const lightClass=light==='GREEN'?'ok':(light==='YELLOW'?'warn':'bad');
   const banner=$('stopBanner');
+  const market=$('marketOneLiner');
+  const marketLine=String(data?.marketOneLiner||'').trim();
+  const uiMode = String(data?.runtimeStatus?.mode || selectedMode || '').toUpperCase();
+  if(uiMode==='PAPER' && marketLine){ market.classList.add('show'); market.style.display='block'; market.textContent=marketLine; } else { market.classList.remove('show'); market.style.display='none'; market.textContent=''; }
   if(worker.stopAll){ banner.className='banner danger show'; banner.textContent=worker.banner||`${light}: 전체 중단`; } else { banner.className='banner danger'; banner.textContent=''; }
 
   const phase = phaseFromOverview(data); syncToggleUI(phase);
   const backendMode = String(data?.runtimeStatus?.mode || data?.worker?.state?.pending?.mode || selectedMode || 'PAPER').toUpperCase();
   if (backendMode==='PAPER' || backendMode==='LIVE') selectedMode = backendMode;
   setModeButtons();
+  const srvToggles = data?.exchangeToggles;
+  if (srvToggles && typeof srvToggles==='object') exchangeToggles = { upbit: srvToggles.upbit !== false, bithumb: srvToggles.bithumb !== false };
+  syncExchangeToggleUI();
 
   const acc = data.account || data.balance || data.portfolio || data.trading?.account || {};
   const positions = data.positions || data.trading?.positions || [];
@@ -157,7 +198,7 @@ async function handleModeChange(nextMode){
   setModeButtons();
 }
 
-async function handleTurnOn(){ await runWithControlBusy(async()=>{ let phase=phaseFromOverview(latestOverview||{}); let expectedPhrase=latestOverview?.worker?.state?.pending?.expected_phrase||null; if(phase==='STOPPED'){ $('controlStatus').textContent='시작 요청 중...'; const started=await postControl('start',{mode:selectedMode}); expectedPhrase=started?.result?.expected_phrase||expectedPhrase; if(!expectedPhrase) throw new Error('expected_phrase 누락'); } else if(phase==='WAITING_OPERATOR'){ if(!expectedPhrase) throw new Error('pending expected_phrase 없음'); } else if(phase==='RUNNING'){ $('controlStatus').textContent='이미 RUNNING 상태입니다.'; await tick(); return; } else throw new Error(`지원하지 않는 phase: ${phase}`);
+async function handleTurnOn(){ await runWithControlBusy(async()=>{ let phase=phaseFromOverview(latestOverview||{}); let expectedPhrase=latestOverview?.worker?.state?.pending?.expected_phrase||null; if(phase==='STOPPED'){ $('controlStatus').textContent='시작 요청 중...'; const exchange=pickStartExchange(); if(!exchange) throw new Error('활성 거래소가 없습니다. Upbit/Bithumb 중 1개 이상 활성화하세요.'); const started=await postControl('start',{mode:selectedMode, exchange}); expectedPhrase=started?.result?.expected_phrase||expectedPhrase; if(!expectedPhrase) throw new Error('expected_phrase 누락'); } else if(phase==='WAITING_OPERATOR'){ if(!expectedPhrase) throw new Error('pending expected_phrase 없음'); } else if(phase==='RUNNING'){ $('controlStatus').textContent='이미 RUNNING 상태입니다.'; await tick(); return; } else throw new Error(`지원하지 않는 phase: ${phase}`);
     const approved=await openConfirmModal('시작 최종 승인: backend expected_phrase로 confirm을 수행합니다.'); if(!approved){ $('controlStatus').textContent='취소됨'; await tick(); return; }
     $('controlStatus').textContent='승인됨: 시작 확정 중...'; await postControl('confirm',{phrase:expectedPhrase}); $('controlStatus').textContent=`Auto Trading ON (${selectedMode})`; await tick();
   }); }
@@ -167,6 +208,27 @@ $('modePaperBtn').addEventListener('click', ()=>handleModeChange('PAPER'));
 $('modeLiveBtn').addEventListener('click', ()=>handleModeChange('LIVE'));
 $('autoToggle').addEventListener('change', async(ev)=>{ if(syncingToggle) return; try{ if(ev.target.checked) await handleTurnOn(); else await handleTurnOff(); }catch(e){ $('controlStatus').textContent=`실패: ${e.message}`; await tick(); } });
 
+
+async function handleExchangeToggleChange(){
+  if(syncingExchangeToggle) return;
+  const next={ upbit:$('upbitToggle').checked, bithumb:$('bithumbToggle').checked };
+  if(!next.upbit && !next.bithumb){
+    $('exchangeToggleStatus').textContent='실패: 최소 1개 거래소는 활성화해야 합니다.';
+    syncExchangeToggleUI();
+    return;
+  }
+  exchangeToggles=next;
+  syncExchangeToggleUI();
+  try{
+    const out=await postExchangeToggles({ mode:selectedMode, upbitEnabled:next.upbit, bithumbEnabled:next.bithumb });
+    const route=out?.backendRoute?` (${out.backendRoute})`:'';
+    $('exchangeToggleStatus').textContent=`적용됨: Upbit=${next.upbit?'활성':'비활성'}, Bithumb=${next.bithumb?'활성':'비활성'}${route}`;
+  }catch(e){
+    $('exchangeToggleStatus').textContent=`실패: ${e.message}`;
+  }
+}
+$('upbitToggle').addEventListener('change', handleExchangeToggleChange);
+$('bithumbToggle').addEventListener('change', handleExchangeToggleChange);
 const panicSlider=$('panicSlider'), panicValue=$('panicValue'), panicStatus=$('panicStatus'), panicHoldBtn=$('panicHoldBtn'); let holdTimer=null, holdStart=0;
 panicSlider.addEventListener('input',()=>{panicValue.textContent=panicSlider.value;});
 panicHoldBtn.addEventListener('mousedown',()=>{ if(Number(panicSlider.value)<100){panicStatus.textContent='실패: 슬라이더를 100으로 올리세요'; return;} holdStart=Date.now(); panicStatus.textContent='홀드 중...'; holdTimer=setTimeout(async()=>{ try{const out=await postControl('panic',{armed:true,holdMs:Date.now()-holdStart,slider:Number(panicSlider.value)}); panicStatus.textContent=`PANIC 실행됨 (${out?.result?.status||'ok'})`; await tick();}catch(e){panicStatus.textContent=`실패: ${e.message}`;} },2000);});
