@@ -18,6 +18,9 @@
     .btn{background:#243047;border:1px solid #33425f;color:#e9edf1;padding:6px 10px;border-radius:6px;cursor:pointer}
     .btn:disabled{opacity:.5;cursor:not-allowed}
     .btn-danger{background:#4a1f24;border-color:#7a2f39;color:#ffd7dc}
+    .inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .spinner{display:inline-block;width:12px;height:12px;border:2px solid #5d6a81;border-top-color:#e9edf1;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px}
+    @keyframes spin{to{transform:rotate(360deg)}}
     input[type="text"]{flex:1;background:#111722;border:1px solid #2a3342;color:#e9edf1;border-radius:6px;padding:6px}
     table{width:100%;border-collapse:collapse;font-size:13px}
     th,td{padding:7px;border-bottom:1px solid #262d38;text-align:left;vertical-align:top}
@@ -46,6 +49,10 @@
 <body>
   <h1>Auto Trading Dashboard</h1>
   <div class="muted" id="ts">loading...</div>
+  <div class="inline">
+    <button id="refreshConnBtn" class="btn">연결 상태 새로고침</button>
+    <span id="refreshConnState" class="muted">수동 갱신: -</span>
+  </div>
   <div id="stopBanner" class="banner danger"></div>
 
   <div class="grid">
@@ -122,6 +129,33 @@ function val(obj, keys, fallback='-') {
 let latestOverview = null;
 let controlBusy = false;
 let syncingToggle = false;
+let manualRefreshBusy = false;
+let lastManualRefreshAt = null;
+let lastManualRefreshError = '';
+
+function setManualRefreshState() {
+  const btn = $('refreshConnBtn');
+  const label = $('refreshConnState');
+  btn.disabled = manualRefreshBusy;
+  btn.innerHTML = manualRefreshBusy ? '<span class="spinner"></span> 새로고침 중...' : '연결 상태 새로고침';
+  const timeText = lastManualRefreshAt ? new Date(lastManualRefreshAt).toLocaleTimeString() : '-';
+  label.textContent = lastManualRefreshError ? `수동 갱신 실패: ${lastManualRefreshError}` : `수동 갱신: ${timeText}`;
+}
+
+async function fetchJson(url) {
+  const r = await fetch(url);
+  const j = await r.json();
+  if (!r.ok) throw new Error(`${url} ${r.status}`);
+  return j;
+}
+
+function normalizeWorkerPayload(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+  if (payload.worker && typeof payload.worker === 'object') return payload.worker;
+  if (payload.result && payload.result.worker && typeof payload.result.worker === 'object') return payload.result.worker;
+  if (payload.state || payload.trafficLight || payload.connected !== undefined) return payload;
+  return null;
+}
 
 function phaseFromOverview(data) {
   const phaseRaw = data?.worker?.state?.phase || data?.worker?.phase || data?.phase || 'STOPPED';
@@ -364,14 +398,36 @@ $('orderCancelBtn').addEventListener('click', async ()=>{
   }
 });
 
+$('refreshConnBtn').addEventListener('click', async () => {
+  if (manualRefreshBusy) return;
+  manualRefreshBusy = true;
+  setManualRefreshState();
+  try {
+    const [workerPayload, overview] = await Promise.all([
+      fetchJson('/api/worker'),
+      fetchJson('/api/overview'),
+    ]);
+    const worker = normalizeWorkerPayload(workerPayload);
+    if (worker) overview.worker = worker;
+    render(overview);
+    lastManualRefreshAt = Date.now();
+    lastManualRefreshError = '';
+  } catch (e) {
+    lastManualRefreshError = e.message;
+  } finally {
+    manualRefreshBusy = false;
+    setManualRefreshState();
+  }
+});
+
 async function tick(){
   try{
-    const r=await fetch('/api/overview');
-    const j=await r.json();
+    const j = await fetchJson('/api/overview');
     render(j);
   }catch(e){$('ts').textContent='fetch failed: '+e.message}
 }
 
+setManualRefreshState();
 tick(); setInterval(tick, 1000);
 </script>
 </body>
