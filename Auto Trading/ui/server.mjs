@@ -144,7 +144,7 @@ function deriveExchangeIndicators({ runtimeStatus, workerSnap }) {
     upbit: asStatus('UPBIT'),
     bithumb: asStatus('BITHUMB'),
   };
-
+}
 
 function normalizeExchangeToggles(raw) {
   const upbit = raw?.upbit !== false;
@@ -200,8 +200,6 @@ function deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerS
     return '시장 한줄 코멘트: 횡보 구간 (모멘텀 약함, 신호 선별 필요)';
   }
   return '시장 한줄 코멘트: 데이터 제한으로 추세 판별 보류 (fallback)';
-}
-
 }
 
 async function readTaskSignals() {
@@ -660,8 +658,13 @@ const server = http.createServer((req, res) => {
             workerSnap,
           }),
           exchangeIndicators: deriveExchangeIndicators({ runtimeStatus, workerSnap }),
-      exchangeToggles: exchangeTogglesCache,
-      marketOneLiner: deriveMarketOneLiner({ runtimeStatus, runtimeState, statePoint, workerSnap }),
+          exchangeToggles: exchangeTogglesCache,
+          marketOneLiner: deriveMarketOneLiner({
+            runtimeStatus,
+            runtimeState: overviewCache.runtimeState || null,
+            statePoint: overviewCache.statePoint || null,
+            workerSnap,
+          }),
           timeline: timelineView.rows,
           timelineMeta: timelineView.meta,
         },

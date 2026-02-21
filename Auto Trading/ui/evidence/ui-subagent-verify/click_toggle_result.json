@@ -1,0 +1,383 @@
+{
+  "before": {
+    "up": false,
+    "bithumb": true,
+    "status": "거래소 토글 대기중",
+    "marker": "시장 한줄 코멘트: 변동성 확대 (급등락 가능성↑, 진입 신중)"
+  },
+  "during": {
+    "up": false,
+    "bithumb": true,
+    "status": "거래소 토글 대기중"
+  },
+  "ov": {
+    "now": "2026-02-21T09:24:22.275Z",
+    "sourceOk": false,
+    "worker": {
+      "ts": 1771665863072,
+      "connected": true,
+      "health": {
+        "ok": true,
+        "status": "up"
+      },
+      "state": null,
+      "orders": null,
+      "errors": {
+        "health": null,
+        "state": "HTTP 404",
+        "orders": "HTTP 404"
+      },
+      "trafficLight": "GREEN",
+      "stopAll": false,
+      "banner": ""
+    },
+    "statePoint": null,
+    "runtimeStatus": {
+      "mode": "PAPER",
+      "exchange": "UPBIT",
+      "status": "OK",
+      "ts": 1771665812084,
+      "volatility": 0.05,
+      "riskLevel": "low"
+    },
+    "runtimeState": null,
+    "watchingSymbols": [],
+    "exchangeIndicators": {
+      "upbit": {
+        "status": "connected",
+        "detail": "worker connected"
+      },
+      "bithumb": {
+        "status": "idle",
+        "detail": "active=UPBIT"
+      }
+    },
+    "exchangeToggles": {
+      "upbit": false,
+      "bithumb": true
+    },
+    "marketOneLiner": "시장 한줄 코멘트: 변동성 확대 (급등락 가능성↑, 진입 신중)",
+    "usage": {
+      "daily": {
+        "total": 1921482,
+        "perAgent": {
+          "pm": 1473679,
+          "coder_b": 85848,
+          "tl": 182373,
+          "architect": 13044,
+          "coder_a": 107770,
+          "main": 58768
+        }
+      },
+      "weekly": {
+        "total": 5010210,
+        "perAgent": {
+          "pm": 2825699,
+          "main": 1144467,
+          "coder_b": 441463,
+          "tl": 356591,
+          "architect": 134220,
+          "coder_a": 107770
+        }
+      },
+      "byTask": {
+        "unassigned": 5010210
+      },
+      "warning": "warn",
+      "snapshotCount": 2015,
+      "deltaCount": 2015
+    },
+    "taskSignals": {
+      "inProgressWorkers": [],
+      "tasks": [
+        {
+          "taskId": "T-001",
+          "status": "DONE",
+          "owner": "pm",
+          "description": "Hybrid v1.2 core + backtest runner integration (Phase 1)",
+          "ownership": "a:engine/**,alloc/** b:guards/**,backtest/**,run_backtest.py"
+        }
+      ],
+      "agentWork": {}
+    },
+    "timeline": [
+      {
+        "ts": 1771660541172,
+        "time": "2026-02-21T07:55:41.172Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660536096,
+        "time": "2026-02-21T07:55:36.096Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660535853,
+        "time": "2026-02-21T07:55:35.853Z",
+        "agent": "tl",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660460557,
+        "time": "2026-02-21T07:54:20.557Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660455946,
+        "time": "2026-02-21T07:54:15.946Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660455718,
+        "time": "2026-02-21T07:54:15.718Z",
+        "agent": "coder_b",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660357810,
+        "time": "2026-02-21T07:52:37.810Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660353071,
+        "time": "2026-02-21T07:52:33.071Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660338159,
+        "time": "2026-02-21T07:52:18.159Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660332695,
+        "time": "2026-02-21T07:52:12.695Z",
+        "agent": "tl",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:tl:subagent:bf7e1134-71b8-4794-b512-af6f839cca12 updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660332608,
+        "time": "2026-02-21T07:52:12.608Z",
+        "agent": "coder_b",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:coder_b:subagent:55458f45-b2ff-4d87-8672-679a1139cd3f updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660300261,
+        "time": "2026-02-21T07:51:40.261Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660092345,
+        "time": "2026-02-21T07:48:12.345Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660089014,
+        "time": "2026-02-21T07:48:09.014Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660073920,
+        "time": "2026-02-21T07:47:53.920Z",
+        "agent": "tl",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660018892,
+        "time": "2026-02-21T07:46:58.892Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660014856,
+        "time": "2026-02-21T07:46:54.856Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771660014629,
+        "time": "2026-02-21T07:46:54.629Z",
+        "agent": "coder_b",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659970145,
+        "time": "2026-02-21T07:46:10.145Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659966294,
+        "time": "2026-02-21T07:46:06.294Z",
+        "agent": "tl",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:tl:subagent:5dbdfa23-b846-4795-a6d6-78b63f9592b2 updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659966174,
+        "time": "2026-02-21T07:46:06.174Z",
+        "agent": "coder_b",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:coder_b:subagent:ab2e35a9-a728-4da4-8792-c68f1821bfd5 updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659958988,
+        "time": "2026-02-21T07:45:58.988Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659958978,
+        "time": "2026-02-21T07:45:58.978Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659886693,
+        "time": "2026-02-21T07:44:46.693Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659878048,
+        "time": "2026-02-21T07:44:38.048Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659811079,
+        "time": "2026-02-21T07:43:31.079Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659802667,
+        "time": "2026-02-21T07:43:22.667Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659793144,
+        "time": "2026-02-21T07:43:13.144Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659745883,
+        "time": "2026-02-21T07:42:25.883Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      },
+      {
+        "ts": 1771659690325,
+        "time": "2026-02-21T07:41:30.325Z",
+        "agent": "pm",
+        "work": "run_update",
+        "project": "openclaw-news-workspace",
+        "detail": "agent:pm:main updated",
+        "count": 1
+      }
+    ],
+    "timelineMeta": {
+      "limit": 30,
+      "hours": 0,
+      "totalAfterCompress": 236,
+      "totalAfterWindow": 236,
+      "cap": 300
+    }
+  }
+}

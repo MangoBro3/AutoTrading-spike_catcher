@@ -1,0 +1,63 @@
+124560 out mock-worker-api listening on http://127.0.0.1:18080
+124561 out auto-trading-ui listening on http://127.0.0.1:18890
+124561 out [startup] worker.baseURL=http://127.0.0.1:8765/api/v1
+124561 out [startup] worker.timeoutMs=3000
+[startup] worker.pollMs=1000 worker.downDebounceMs=4000
+[startup] overview.refreshMs=2000 overview.cmdTimeoutMs=1200
+[startup] api.workerKickTimeoutMs=120
+124561 out [watchdog] #1 START GET /api/overview
+124561 out [watchdog] #1 END status=500 took=2ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #2 START GET /api/overview
+124561 out [watchdog] #2 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #3 START GET /api/overview
+124561 out [watchdog] #3 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #4 START GET /api/overview
+124561 out [watchdog] #4 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #5 START GET /api/overview
+124561 out [watchdog] #5 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #6 START GET /
+124561 out [watchdog] #6 END status=200 took=3ms static=index.html
+124561 out [watchdog] #7 START GET /api/overview
+124561 out [watchdog] #7 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #8 START GET /api/overview
+124561 out [watchdog] #8 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #9 START GET /api/overview
+124561 out [watchdog] #9 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #10 START GET /api/overview
+124561 out [watchdog] #10 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #11 START GET /api/overview
+124561 out [watchdog] #11 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #12 START GET /api/overview
+124561 out [watchdog] #12 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #13 START GET /api/overview
+124561 out [watchdog] #13 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #14 START GET /api/overview
+124561 out [watchdog] #14 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #15 START GET /api/overview
+124561 out [watchdog] #15 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #16 START GET /api/overview
+124561 out [watchdog] #16 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #17 START GET /api/overview
+124561 out [watchdog] #17 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #18 START GET /api/overview
+124561 out [watchdog] #18 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #19 START GET /api/overview
+124561 out [watchdog] #19 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #20 START GET /api/overview
+124561 out [watchdog] #20 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #21 START GET /api/overview
+124561 out [watchdog] #21 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #22 START GET /api/overview
+124561 out [watchdog] #22 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #23 START GET /api/overview
+124561 out [watchdog] #23 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #24 START GET /api/overview
+124561 out [watchdog] #24 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #25 START GET /api/overview
+124561 out [watchdog] #25 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #26 START GET /api/overview
+124561 out [watchdog] #26 END status=500 took=1ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #27 START GET /api/overview
+124561 out [watchdog] #27 END status=500 took=0ms route=/api/overview error=runtimeState is not defined
+124561 out [watchdog] #28 START GET /api/overview
+124561 out [watchdog] #28 END status=500 took=1ms route=/api/overview error=runtimeState is not defined

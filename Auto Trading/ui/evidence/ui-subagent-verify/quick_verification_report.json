@@ -1,0 +1,17 @@
+{
+  "ui": {
+    "upbitToggle": true,
+    "bithumbToggle": true,
+    "marketOneLinerElement": true,
+    "exchangeToggleStatus": true,
+    "exchangeHandlerDefined": true
+  },
+  "server": {
+    "runtimeStateReferenceInOverviewLine665": true,
+    "fileSyntaxCheck": true
+  },
+  "apiSample": {
+    "sv_test_exists": true,
+    "contains_runtimeStateError": true
+  }
+}

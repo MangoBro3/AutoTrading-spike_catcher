@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "action": "exchanges",
+  "applied": {
+    "upbit": false,
+    "bithumb": true
+  },
+  "backendRoute": null,
+  "result": null,
+  "worker": {
+    "ts": 1771665815622,
+    "connected": false,
+    "health": null,
+    "state": null,
+    "orders": null,
+    "errors": {
+      "health": "fetch failed",
+      "state": "fetch failed",
+      "orders": "fetch failed"
+    },
+    "trafficLight": "DISCONNECTED",
+    "stopAll": true,
+    "banner": "DISCONNECTED: 워커 연결 끊김 · 전체 중단"
+  }
+}

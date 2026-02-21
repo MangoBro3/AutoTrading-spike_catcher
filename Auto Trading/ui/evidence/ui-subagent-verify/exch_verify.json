@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "action": "exchanges",
+  "applied": {
+    "upbit": false,
+    "bithumb": true
+  },
+  "backendRoute": null,
+  "result": null,
+  "worker": {
+    "ts": 1771665782085,
+    "connected": true,
+    "health": {
+      "ok": true
+    },
+    "state": {
+      "ok": true,
+      "running": false,
+      "phase": "RUNNING",
+      "safe_start": {
+        "ts": 1771664608.6665466,
+        "phase": "RUNNING",
+        "details": {
+          "message": "Operator confirmed. RUNNING enabled.",
+          "running_blocked": false
+        }
+      },
+      "pending": null,
+      "last_error": null
+    },
+    "orders": {
+      "ok": true,
+      "running": false,
+      "phase": "RUNNING",
+      "safe_start": {
+        "ts": 1771664608.6665466,
+        "phase": "RUNNING",
+        "details": {
+          "message": "Operator confirmed. RUNNING enabled.",
+          "running_blocked": false
+        }
+      },
+      "pending": null,
+      "last_error": null
+    },
+    "errors": {
+      "health": null,
+      "state": null,
+      "orders": null
+    },
+    "trafficLight": "GREEN",
+    "stopAll": false,
+    "banner": ""
+  }
+}

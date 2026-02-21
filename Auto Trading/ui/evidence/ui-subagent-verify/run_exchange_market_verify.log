@@ -1,5 +1,5 @@
-[124196] out mock-worker-api listening on http://127.0.0.1:18080
-[124197] err file:///mnt/f/SafeBot/openclaw-news-workspace/python/Auto%20Trading/ui/server.mjs:553
+[124324] out mock-worker-api listening on http://127.0.0.1:18080
+[124325] err file:///mnt/f/SafeBot/openclaw-news-workspace/python/Auto%20Trading/ui/server.mjs:553
 let exchangeTogglesCache = normalizeExchangeToggles(null);
                            ^
 
