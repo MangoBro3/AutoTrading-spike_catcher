@@ -13,3 +13,44 @@
 - INSTALL_PLAN.md: 실행산출물/검증포인트/증거경로 포함
 - RISK_ROLLBACK.md: 단계별 리스크 제어 + 증거 매핑
 - VALIDATION_CHECKLIST.md: PASS 기준 + 전/후 비교 기준 추가
+
+---
+
+## PM apply run (2026-02-22 19:4x KST)
+
+### scope
+- 요청된 5개 핵심 에이전트(pm/tl/architect/coder_a/coder_b) 기준 Phase 1 적용 상태 점검
+- 증거 파일 갱신 및 체크리스트 판정
+
+### checklist result
+- [ ] 각 에이전트 allow/deny 실환경 적용 확인  
+  - **STATUS: PARTIAL/BLOCKED**  
+  - 이유: 현재 세션에서는 OpenClaw 에이전트 권한 정책 저장소(central agent policy) 직접 쓰기 인터페이스가 노출되지 않음.
+- [ ] main 브랜치 직접 푸시 차단 + PR only(branch protection) 확인  
+  - **STATUS: BLOCKED**  
+  - 이유: GitHub admin API/CLI(gh) 미설치 및 원격 권한 부재로 서버측 보호규칙 조회/적용 불가.
+- [ ] CI(테스트/린트) 통과 필수 병합 규칙 확인  
+  - **STATUS: BLOCKED**  
+  - 이유: branch protection의 required checks는 GitHub repo settings 권한 필요.
+- [x] 설정 완료 후 evidence 파일 생성  
+  - **STATUS: DONE**  
+  - 경로: `team/mcp-skills/evidence/config_diff_20260222.md`
+
+### local evidence
+```bash
+$ git -C /mnt/f/SafeBot/openclaw-news-workspace/python rev-parse --abbrev-ref HEAD
+main
+
+$ git -C /mnt/f/SafeBot/openclaw-news-workspace/python remote -v
+origin git@github.com:MangoBro3/AutoTrading-spike_catcher.git (fetch)
+origin git@github.com:MangoBro3/AutoTrading-spike_catcher.git (push)
+
+$ gh --version
+# not installed (GH_MISSING)
+```
+
+### required external actions (owner/admin)
+1) GitHub Branch protection on `main`: require PR, dismiss stale approvals, block force-push/delete.
+2) Required status checks: CI(test), lint.
+3) OpenClaw central agent policy에 role별 allow/deny 등록(Phase1만 allow).
+
