@@ -1,0 +1,56 @@
+{
+  "agent": "architect",
+  "phase": "phase1",
+  "version": "v1.0.0",
+  "default": "deny",
+  "allow": {
+    "mcp": [
+      "file_system",
+      "github"
+    ],
+    "skills": [
+      "read_files",
+      "write_files"
+    ],
+    "paths": [
+      "docs/**",
+      "adr/**",
+      "team/mcp-skills/**"
+    ],
+    "commands": [
+      "grep",
+      "sed -n",
+      "python3 -m json.tool"
+    ]
+  },
+  "deny": {
+    "mcp": [
+      "command:dangerous"
+    ],
+    "skills": [
+      "edit_files:src",
+      "run_test",
+      "run_lint",
+      "send_message"
+    ],
+    "paths": [
+      "src/**",
+      "tests/**"
+    ],
+    "commands": [
+      "git push origin main",
+      "git push --force",
+      "rm -rf /",
+      "sudo rm -rf",
+      "shutdown",
+      "reboot",
+      "pytest",
+      "ruff",
+      "flake8"
+    ]
+  },
+  "self_enforcement": {
+    "must_refuse_out_of_scope": true,
+    "write_scope_strict": true
+  }
+}

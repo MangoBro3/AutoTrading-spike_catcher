@@ -1,0 +1,23 @@
+{
+  "version": "v1.0.0",
+  "phase": "phase1",
+  "base_dir": "team/mcp-skills/policies",
+  "files": [
+    "role_policy_pm.json",
+    "role_policy_tl.json",
+    "role_policy_architect.json",
+    "role_policy_coder_a.json",
+    "role_policy_coder_b.json",
+    "role_policy_main.json",
+    "role_policy_mango.json"
+  ],
+  "load_order": [
+    "pm",
+    "tl",
+    "architect",
+    "coder_a",
+    "coder_b",
+    "main",
+    "mango"
+  ]
+}

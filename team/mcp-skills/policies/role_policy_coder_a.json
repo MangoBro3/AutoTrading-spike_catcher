@@ -1,0 +1,63 @@
+{
+  "agent": "coder_a",
+  "phase": "phase1",
+  "version": "v1.0.0",
+  "default": "deny",
+  "allow": {
+    "mcp": [
+      "file_system",
+      "command"
+    ],
+    "skills": [
+      "read_files",
+      "edit_files",
+      "run_test",
+      "run_lint"
+    ],
+    "paths": [
+      "src/**",
+      "tests/**",
+      "pyproject.toml",
+      "requirements*.txt"
+    ],
+    "commands": [
+      "pytest",
+      "ruff",
+      "flake8",
+      "python -m pytest",
+      "python3 -m pytest"
+    ]
+  },
+  "deny": {
+    "mcp": [
+      "github:approve",
+      "deploy",
+      "slack"
+    ],
+    "skills": [
+      "approve_pr",
+      "send_message",
+      "run_integration_test"
+    ],
+    "paths": [
+      ".github/workflows/**",
+      "infra/**",
+      "secrets/**"
+    ],
+    "commands": [
+      "git push origin main",
+      "git push --force",
+      "rm -rf /",
+      "sudo rm -rf",
+      "shutdown",
+      "reboot",
+      "kubectl",
+      "terraform",
+      "ansible-playbook"
+    ]
+  },
+  "self_enforcement": {
+    "must_refuse_out_of_scope": true,
+    "tests_must_pass_before_report": true
+  }
+}

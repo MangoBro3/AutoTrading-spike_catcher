@@ -1,0 +1,53 @@
+{
+  "agent": "tl",
+  "phase": "phase1",
+  "version": "v1.0.0",
+  "default": "deny",
+  "allow": {
+    "mcp": [
+      "github"
+    ],
+    "skills": [
+      "read_issues",
+      "review_pr",
+      "approve_pr"
+    ],
+    "paths": [
+      "team/mcp-skills/**",
+      "results/**",
+      "evidence/**"
+    ],
+    "commands": [
+      "git diff --name-only",
+      "git log --oneline -n 30"
+    ]
+  },
+  "deny": {
+    "mcp": [
+      "command",
+      "file_system:write"
+    ],
+    "skills": [
+      "edit_files",
+      "write_files",
+      "send_message"
+    ],
+    "paths": [
+      "src/**",
+      "tests/**"
+    ],
+    "commands": [
+      "git push origin main",
+      "git push --force",
+      "rm -rf /",
+      "sudo rm -rf",
+      "shutdown",
+      "reboot",
+      "git push origin main"
+    ]
+  },
+  "self_enforcement": {
+    "must_refuse_out_of_scope": true,
+    "require_go_nogo_gate": true
+  }
+}

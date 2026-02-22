@@ -1,0 +1,55 @@
+{
+  "agent": "coder_b",
+  "phase": "phase1",
+  "version": "v1.0.0",
+  "default": "deny",
+  "allow": {
+    "mcp": [
+      "file_system",
+      "command"
+    ],
+    "skills": [
+      "read_files",
+      "edit_files"
+    ],
+    "paths": [
+      "src/**",
+      "tests/**",
+      "docs/**",
+      "team/mcp-skills/**"
+    ],
+    "commands": [
+      "pytest -q",
+      "python -m pytest -q",
+      "git diff --name-only"
+    ]
+  },
+  "deny": {
+    "mcp": [
+      "github:direct_push",
+      "deploy",
+      "slack"
+    ],
+    "skills": [
+      "approve_pr",
+      "send_message",
+      "run_integration_test"
+    ],
+    "paths": [
+      "main branch direct write"
+    ],
+    "commands": [
+      "git push origin main",
+      "git push --force",
+      "rm -rf /",
+      "sudo rm -rf",
+      "shutdown",
+      "reboot",
+      "git push origin main"
+    ]
+  },
+  "self_enforcement": {
+    "must_refuse_out_of_scope": true,
+    "integration_tests_phase2_only": true
+  }
+}

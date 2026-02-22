@@ -1,0 +1,54 @@
+{
+  "agent": "pm",
+  "phase": "phase1",
+  "version": "v1.0.0",
+  "default": "deny",
+  "allow": {
+    "mcp": [
+      "github"
+    ],
+    "skills": [
+      "read_issues",
+      "read_pull_requests"
+    ],
+    "paths": [
+      "team/mcp-skills/**",
+      "results/**",
+      "evidence/**"
+    ],
+    "commands": [
+      "git status",
+      "git log --oneline -n 20"
+    ]
+  },
+  "deny": {
+    "mcp": [
+      "command",
+      "file_system:write",
+      "slack"
+    ],
+    "skills": [
+      "review_pr",
+      "approve_pr",
+      "edit_files",
+      "write_files",
+      "send_message"
+    ],
+    "paths": [
+      "src/**",
+      "tests/**"
+    ],
+    "commands": [
+      "git push origin main",
+      "git push --force",
+      "rm -rf /",
+      "sudo rm -rf",
+      "shutdown",
+      "reboot"
+    ]
+  },
+  "self_enforcement": {
+    "must_refuse_out_of_scope": true,
+    "require_evidence_on_report": true
+  }
+}

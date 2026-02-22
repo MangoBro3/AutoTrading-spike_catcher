@@ -1,0 +1,48 @@
+{
+  "agent": "main",
+  "phase": "phase1",
+  "version": "v1.0.0",
+  "default": "deny",
+  "allow": {
+    "mcp": [
+      "github:read"
+    ],
+    "skills": [
+      "read_files"
+    ],
+    "paths": [
+      "team/mcp-skills/**",
+      "results/**",
+      "evidence/**"
+    ],
+    "commands": [
+      "git status"
+    ]
+  },
+  "deny": {
+    "mcp": [
+      "file_system:write",
+      "command:dangerous"
+    ],
+    "skills": [
+      "edit_files",
+      "approve_pr",
+      "send_message"
+    ],
+    "paths": [
+      "src/**",
+      "tests/**"
+    ],
+    "commands": [
+      "git push origin main",
+      "git push --force",
+      "rm -rf /",
+      "sudo rm -rf",
+      "shutdown",
+      "reboot"
+    ]
+  },
+  "self_enforcement": {
+    "must_refuse_out_of_scope": true
+  }
+}
