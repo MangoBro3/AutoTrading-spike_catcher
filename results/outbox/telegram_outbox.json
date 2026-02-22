@@ -2576,7 +2576,63 @@
             "retry_count": 0,
             "next_retry_ts": 1771699038.7166047,
             "last_error": null
+        },
+        {
+            "id": "1771739504119_ALL_RISK",
+            "ts": "2026-02-22T14:51:44.119470",
+            "event_type": "RISK",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [RISK] Regime Change",
+            "message": "Market Regime Changed: NEUTRAL -> RISK_OFF (BTC: 99961000, SMA20: 101609450)",
+            "dedupe_key": "REGIME_RISK_OFF_2026022214",
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771739504.1194324,
+            "last_error": null
+        },
+        {
+            "id": "1771739507123_ALL_SYSTEM",
+            "ts": "2026-02-22T14:51:47.123045",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**\nreason_code: manual_stop",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771739507.1230185,
+            "last_error": null
+        },
+        {
+            "id": "1771739533732_ALL_SYSTEM",
+            "ts": "2026-02-22T14:52:13.732607",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**\nreason_code: manual_stop",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771739533.73257,
+            "last_error": null
+        },
+        {
+            "id": "1771739573283_ALL_SYSTEM",
+            "ts": "2026-02-22T14:52:53.283636",
+            "event_type": "SYSTEM",
+            "exchange": "ALL",
+            "severity": "INFO",
+            "title": "[ALL] [SYSTEM] BOT STOPPED",
+            "message": "🛑 **RUN STOPPED**\nreason_code: manual_stop",
+            "dedupe_key": null,
+            "status": "filled",
+            "retry_count": 0,
+            "next_retry_ts": 1771739573.2836087,
+            "last_error": null
         }
     ],
-    "updated_at": 1771699040.2851582
+    "updated_at": 1771739574.2959087
 }
