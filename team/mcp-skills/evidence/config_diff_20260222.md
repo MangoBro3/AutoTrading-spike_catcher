@@ -54,3 +54,10 @@ $ gh --version
 2) Required status checks: CI(test), lint.
 3) OpenClaw central agent policy에 role별 allow/deny 등록(Phase1만 allow).
 
+
+## Branch Protection 수동 적용 완료 (UI) 업데이트
+- updated_at: 2026-02-22 20:09:36 KST
+- status: DONE (manual via GitHub Web UI)
+- note: GitHub API 데이터 타입 이슈(HTTP 422)로 API 적용은 중단하고 Web UI에서 보호 규칙 수동 반영 완료.
+- policy: main 브랜치 보호(직접 푸시 제한/PR 중심 병합) 적용 완료.
+- ci_note: `test`, `lint` required check는 실제 CI 워크플로우 최초/재실행 후 체크 컨텍스트가 생성되면 활성화/고정할 예정.
